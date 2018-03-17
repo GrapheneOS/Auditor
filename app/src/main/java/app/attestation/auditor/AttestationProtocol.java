@@ -527,6 +527,26 @@ class AttestationProtocol {
     }
 
     static byte[] getChallengeMessage(final Context context) {
+        String[] sampleCertificates = {
+        };
+
+        try {
+            Certificate[] certificates = new Certificate[sampleCertificates.length];
+
+            for (int i = 0; i < sampleCertificates.length; i++) {
+                byte[] der = BaseEncoding.base64().decode(sampleCertificates[i]);
+                certificates[i] = generateCertificate(new ByteArrayInputStream(der));
+            }
+            try (final InputStream stream = context.getResources().openRawResource(R.raw.google_root)) {
+                Verified verified = verifyStateless(certificates, "sample".getBytes(),
+                        generateCertificate(context.getResources(), R.raw.google_root),
+                        generateCertificate(context.getResources(), R.raw.google_root_2));
+                Log.d(TAG, "device: " + context.getString(verified.device) + ", osVersion: " + verified.osVersion + ", osPatchLevel: " + verified.osPatchLevel);
+            }
+        } catch (GeneralSecurityException | IOException e) {
+            Log.e(TAG, "broken", e);
+        }
+
         return Bytes.concat(new byte[]{PROTOCOL_VERSION}, getChallengeIndex(context), getChallenge());
     }
 
