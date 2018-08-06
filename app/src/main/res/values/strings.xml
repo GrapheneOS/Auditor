@@ -1,0 +1,74 @@
+<resources>
+    <string name="app_name">Auditor</string>
+    <string name="introduction">Two devices are needed to perform verification:\n\n- The device to be verified (Auditee), which needs to be one of the supported devices launched with Android 8.0+.\n\n- An Android 7.0+ device to perform the verification (Auditor).\n\nThe verification process requires sending data between the devices by scanning QR codes.</string>
+    <string name="unsupported_auditee">Device is not one of the supported models with hardware-based attestation.</string>
+    <string name="camera_permission_denied">Camera permission is required to scan QR codes. Please try again.</string>
+    <string name="auditee_button">Auditee (device being verified)</string>
+    <string name="auditor_button">Auditor (device performing verification)</string>
+    <string name="qrcode_content_description">QR code</string>
+    <string name="generate_error"><b>Error encountered generating attestation:\n\n</b></string>
+    <string name="verify_error"><b>Error encountered verifying attestation:\n\n</b></string>
+    <string name="qr_code_scan_hint_auditee">Now scan this QR Code from the other device.</string>
+    <string name="qr_code_scan_hint_auditee_pairing">Now scan this QR Code from the other device.\n\nThis is the initial pairing and needs to be completed or pairings will need to be cleared on either side to try again.</string>
+    <string name="qr_code_scan_hint_auditor">Now scan this QR Code from the other device.\n\nTap this QR code after scanning to proceed.</string>
+    <string name="scanned_invalid_account_qr_code">Scanned invalid account QR code</string>
+
+    <string name="action_clear_auditee">Clear Auditee pairings</string>
+    <string name="action_clear_auditor">Clear Auditor pairings</string>
+    <string name="action_enable_remote_verify">Enable remote verification</string>
+    <string name="action_disable_remote_verify">Disable remote verification</string>
+    <string name="action_submit_sample">Submit sample data</string>
+
+    <string name="enable_remote_verify">Scheduling regular remote verification</string>
+    <string name="disable_remote_verify">Disabling regular remote verification</string>
+    <string name="schedule_submit_sample">Submitting sample data</string>
+
+    <string name="remote_verification_notification_channel">Remote verification</string>
+    <string name="remote_verification_notification_title">Remote verification</string>
+    <string name="remote_verification_notification_success">Successfully submitted remote attestation.</string>
+    <string name="remote_verification_notification_failure">Failed to submit remote attestation.</string>
+
+    <string name="sample_submission_notification_channel">Sample submission</string>
+    <string name="sample_submission_notification_title">Submitted sample data</string>
+    <string name="sample_submission_notification_content">Successfully submitted sample data.</string>
+
+    <string name="scanner_label">Scan QR code shown on the other device.</string>
+    <string name="verifying_attestation">Verifying attestation…</string>
+    <string name="generating_attestation">Generating attestation…</string>
+    <string name="verify_strong"><b>Successfully performed strong paired verification and identity confirmation.</b>\n\n</string>
+    <string name="verify_basic"><b>Successfully performed basic initial verification and pairing.</b>\n\n</string>
+    <string name="device_information"><b>Verified device information:</b>\n\n</string>
+    <string name="device">Device: %s\n</string>
+    <string name="os">OS: %s (unmodified official release)\n</string>
+    <string name="stock">Stock</string>
+    <string name="os_version">OS version: %s\n</string>
+    <string name="os_version_developer_preview">not a production release</string>
+    <string name="os_patch_level">OS patch level: %s\n</string>
+    <string name="identity">Identity: %s\n</string>
+    <string name="first_verified">First verified: %s\n</string>
+    <string name="last_verified">Last verified: %s\n</string>
+    <string name="os_enforced">\n<b>Information provided by the verified OS:</b>\n\n</string>
+    <string name="auditor_app_version">Auditor app version: %d\n</string>
+    <string name="user_profile_secure">User profile secure: %s\n</string>
+    <string name="enrolled_fingerprints">Enrolled fingerprints: %s\n</string>
+    <string name="accessibility">Accessibility service(s) enabled: %s\n</string>
+    <string name="device_admin">Device administrator(s) enabled: %s\n</string>
+    <string name="device_admin_system">yes, but only system apps</string>
+    <string name="device_admin_non_system">yes, with non-system apps</string>
+    <string name="adb_enabled">Android Debug Bridge enabled: %s\n</string>
+    <string name="add_users_when_locked">Add users from lock screen: %s\n</string>
+    <string name="deny_new_usb">Disallow new USB peripherals when locked: %s\n</string>
+    <string name="oem_unlock_allowed">OEM unlocking allowed: %s\n</string>
+    <string name="no">no</string>
+    <string name="yes">yes</string>
+    <string name="device_bkl_l04">Huawei Honor View 10 (BKL-L04)</string>
+    <string name="device_nokia_6_1">Nokia 6.1</string>
+    <string name="device_pixel_2">Google Pixel 2</string>
+    <string name="device_pixel_2_xl">Google Pixel 2 XL</string>
+    <string name="device_sm_g960f">Samsung Galaxy S9 (SM-G960F)</string>
+    <string name="device_sm_g960u">Samsung Galaxy S9 (SM-G960U)</string>
+    <string name="device_sm_g965f">Samsung Galaxy S9+ (SM-G965F)</string>
+    <string name="device_sm_g965_msm">Samsung Galaxy S9+ (Snapdragon)</string>
+    <string name="device_sony_xperia_xa2">Sony Xperia XA2</string>
+    <string name="device_sony_xperia_xz1_compact">Sony Xperia XZ1 Compact</string>
+</resources>

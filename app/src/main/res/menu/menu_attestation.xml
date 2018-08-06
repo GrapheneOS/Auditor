@@ -1,0 +1,20 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context="app.attestation.auditor.AttestationActivity">
+    <item android:id="@+id/action_clear_auditee"
+            android:title="@string/action_clear_auditee"
+            app:showAsAction="never" />
+    <item android:id="@+id/action_clear_auditor"
+            android:title="@string/action_clear_auditor"
+            app:showAsAction="never" />
+    <item android:id="@+id/action_enable_remote_verify"
+            android:title="@string/action_enable_remote_verify"
+            app:showAsAction="never" />
+    <item android:id="@+id/action_disable_remote_verify"
+            android:title="@string/action_disable_remote_verify"
+            app:showAsAction="never" />
+    <item android:id="@+id/action_submit_sample"
+            android:title="@string/action_submit_sample"
+            app:showAsAction="never" />
+</menu>

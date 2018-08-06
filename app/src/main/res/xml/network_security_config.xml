@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false"/>
+    <domain-config>
+        <domain includeSubdomains="true">attestation.app</domain>
+        <!-- no expiry since the app is expected to be kept relatively up-to-date to use the services -->
+        <pin-set>
+            <!-- Let's Encrypt Authority X3 -->
+            <pin digest="SHA-256">YLh1dUR9y6Kja30RrAn7JKnbQG/uEtLMkBgFF2Fuihg=</pin>
+
+            <!-- Let's Encrypt Authority X4 -->
+            <pin digest="SHA-256">sRHdihwgkaib1P1gxX8HFszlD+7/gTfNvuAybgLPNis=</pin>
+
+            <!-- DST Root CA X3 -->
+            <pin digest="SHA-256">Vjs8r4z+80wjNcr1YKepWQboSIRi63WsWXhIMN+eWys=</pin>
+
+            <!-- ISRG Root X1 -->
+            <pin digest="SHA-256">C5+lpZ7tcVwmwQIMcRtPbsQtWLABXhQzejna0wHFr8M=</pin>
+
+            <!-- RSA 2048 backup key -->
+            <pin digest="SHA-256">UyW1UzOXIUvgTTAd61XqaA2aLV6tefmJThzJ3h6S6Xw=</pin>
+
+            <!-- RSA 3072 backup key -->
+            <pin digest="SHA-256">bln7A7rNm7XjQfTcHfr++lc6YdSB2cDn5cVrhi9kN2E=</pin>
+
+            <!-- RSA 4096 backup key -->
+            <pin digest="SHA-256">QmiW5jZDB8Ac5x9RlnUg7KWZrRTgG6af18OIT3sR6+o=</pin>
+
+            <!-- ECDSA secp256r1 backup key -->
+            <pin digest="SHA-256">M7x6QI6KzGR6nuz1ggDjd5+q3xqMq1QHUWdQ5SToGes=</pin>
+
+            <!-- ECDSA secp384r1 backup key -->
+            <pin digest="SHA-256">MHTuuvUtY/BsEx5eo4Jf0TL2F9dyfmN40pqhyIDnp7U=</pin>
+        </pin-set>
+    </domain-config>
+</network-security-config>
