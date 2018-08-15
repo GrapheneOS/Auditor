@@ -241,7 +241,7 @@ class AttestationProtocol {
             .put("5341E6B2646979A70E57653007A1F310169421EC9BDD9F1A5648F75ADE005AF1",
                     new DeviceInfo(R.string.device_bkl_l04, 2, 3, false, true))
             .put("DFC2920C81E136FDD2A510478FDA137B262DC51D449EDD7D0BDB554745725CFE",
-                    new DeviceInfo(R.string.device_nokia_6_1, 2, 3, true, true))
+                    new DeviceInfo(R.string.device_nokia, 2, 3, true, true))
             .put("1962B0538579FFCE9AC9F507C46AFE3B92055BAC7146462283C85C500BE78D82",
                     new DeviceInfo(R.string.device_pixel_2, 2, 3, true, true))
             .put("171616EAEF26009FC46DC6D89F3D24217E926C81A67CE65D2E3A9DC27040C7AB",
