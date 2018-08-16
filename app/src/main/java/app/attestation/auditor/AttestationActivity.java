@@ -76,9 +76,9 @@ public class AttestationActivity extends AppCompatActivity {
     private boolean canSubmitSample;
 
     private static final boolean isSupportedAuditee = ImmutableSet.of(
-            "BKL-L04", "G8441", "H3113", "H3123", "H4113", "Nokia 6.1", "Nokia 7 plus", "Pixel 2",
-            "Pixel 2 XL", "SM-G960F", "SM-G960U", "SM-G965F", "SM-G965U", "SM-G965U1", "SM-G965W")
-            .contains(Build.MODEL);
+            "BKL-L04", "G8342", "G8441", "H3113", "H3123", "H4113", "Nokia 6.1", "Nokia 7 plus",
+            "Pixel 2", "Pixel 2 XL", "SM-G960F", "SM-G960U", "SM-G965F", "SM-G965U", "SM-G965U1",
+            "SM-G965W").contains(Build.MODEL);
 
     private static int getFirstApiLevel() {
         return Integer.parseInt(SystemProperties.get("ro.product.first_api_level",
