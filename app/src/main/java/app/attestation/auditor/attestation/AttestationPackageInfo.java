@@ -26,9 +26,9 @@ public class AttestationPackageInfo implements java.lang.Comparable<AttestationP
     private static final int VERSION_INDEX = 1;
 
     private final String packageName;
-    private final int version;
+    private final long version;
 
-    public AttestationPackageInfo(String packageName, int version) {
+    public AttestationPackageInfo(String packageName, long version) {
         this.packageName = packageName;
         this.version = version;
     }
@@ -49,14 +49,14 @@ public class AttestationPackageInfo implements java.lang.Comparable<AttestationP
                     "Converting octet stream to String triggered an UnsupportedEncodingException",
                     e);
         }
-        version = Asn1Utils.getIntegerFromAsn1(sequence.getObjectAt(VERSION_INDEX));
+        version = Asn1Utils.getLongFromAsn1(sequence.getObjectAt(VERSION_INDEX));
     }
 
     public String getPackageName() {
         return packageName;
     }
 
-    public int getVersion() {
+    public long getVersion() {
         return version;
     }
 
@@ -70,7 +70,7 @@ public class AttestationPackageInfo implements java.lang.Comparable<AttestationP
     public int compareTo(AttestationPackageInfo other) {
         int res = packageName.compareTo(other.packageName);
         if (res != 0) return res;
-        res = Integer.compare(version, other.version);
+        res = Long.compare(version, other.version);
         if (res != 0) return res;
         return res;
     }

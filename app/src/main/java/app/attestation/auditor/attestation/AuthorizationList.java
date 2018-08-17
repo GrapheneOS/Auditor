@@ -35,6 +35,7 @@ import org.bouncycastle.asn1.ASN1TaggedObject;
 import org.bouncycastle.asn1.ASN1InputStream;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.cert.CertificateParsingException;
 import java.text.DateFormat;
 import java.util.Collection;
@@ -79,8 +80,6 @@ public class AuthorizationList {
     public static final int KM_PURPOSE_DECRYPT = 1;
     public static final int KM_PURPOSE_SIGN = 2;
     public static final int KM_PURPOSE_VERIFY = 3;
-    public static final int KM_PURPOSE_DERIVE_KEY = 4;
-    public static final int KM_PURPOSE_WRAP_KEY = 5;
 
     // User authenticators.
     public static final int HW_AUTH_PASSWORD = 1 << 0;
@@ -106,15 +105,18 @@ public class AuthorizationList {
     private static final int KM_TAG_PADDING = KM_ENUM_REP | 6;
     private static final int KM_TAG_EC_CURVE = KM_ENUM | 10;
     private static final int KM_TAG_RSA_PUBLIC_EXPONENT = KM_ULONG | 200;
+    private static final int KM_TAG_ROLLBACK_RESISTANCE = KM_BOOL | 303;
     private static final int KM_TAG_ACTIVE_DATETIME = KM_DATE | 400;
     private static final int KM_TAG_ORIGINATION_EXPIRE_DATETIME = KM_DATE | 401;
     private static final int KM_TAG_USAGE_EXPIRE_DATETIME = KM_DATE | 402;
     private static final int KM_TAG_NO_AUTH_REQUIRED = KM_BOOL | 503;
     private static final int KM_TAG_USER_AUTH_TYPE = KM_ENUM | 504;
-    private static final int KM_TAG_ALLOW_WHILE_ON_BODY = KM_BOOL | 506;
     private static final int KM_TAG_AUTH_TIMEOUT = KM_UINT | 505;
+    private static final int KM_TAG_ALLOW_WHILE_ON_BODY = KM_BOOL | 506;
+    private static final int KM_TAG_TRUSTED_USER_PRESENCE_REQUIRED = KM_BOOL | 507;
+    private static final int KM_TAG_TRUSTED_CONFIRMATION_REQUIRED = KM_BOOL | 508;
+    private static final int KM_TAG_UNLOCKED_DEVICE_REQUIRED = KM_BOOL | 509;
     private static final int KM_TAG_ALL_APPLICATIONS = KM_BOOL | 600;
-    private static final int KM_TAG_APPLICATION_ID = KM_BYTES | 601;
     private static final int KM_TAG_CREATION_DATETIME = KM_DATE | 701;
     private static final int KM_TAG_ORIGIN = KM_ENUM | 702;
     private static final int KM_TAG_ROLLBACK_RESISTANT = KM_BOOL | 703;
@@ -122,6 +124,16 @@ public class AuthorizationList {
     private static final int KM_TAG_OS_VERSION = KM_UINT | 705;
     private static final int KM_TAG_OS_PATCHLEVEL = KM_UINT | 706;
     private static final int KM_TAG_ATTESTATION_APPLICATION_ID = KM_BYTES | 709;
+    private static final int KM_TAG_ATTESTATION_ID_BRAND = KM_BYTES | 710;
+    private static final int KM_TAG_ATTESTATION_ID_DEVICE = KM_BYTES | 711;
+    private static final int KM_TAG_ATTESTATION_ID_PRODUCT = KM_BYTES | 712;
+    private static final int KM_TAG_ATTESTATION_ID_SERIAL = KM_BYTES | 713;
+    private static final int KM_TAG_ATTESTATION_ID_IMEI = KM_BYTES | 714;
+    private static final int KM_TAG_ATTESTATION_ID_MEID = KM_BYTES | 715;
+    private static final int KM_TAG_ATTESTATION_ID_MANUFACTURER = KM_BYTES | 716;
+    private static final int KM_TAG_ATTESTATION_ID_MODEL = KM_BYTES | 717;
+    private static final int KM_TAG_VENDOR_PATCHLEVEL = KM_UINT | 718;
+    private static final int KM_TAG_BOOT_PATCHLEVEL = KM_UINT | 719;
 
     // Map for converting padding values to strings
     private static final ImmutableMap<Integer, String> paddingMap = ImmutableMap
@@ -176,7 +188,19 @@ public class AuthorizationList {
     private RootOfTrust rootOfTrust;
     private Integer osVersion;
     private Integer osPatchLevel;
+    private Integer vendorPatchLevel;
+    private Integer bootPatchLevel;
     private AttestationApplicationId attestationApplicationId;
+    private String brand;
+    private String device;
+    private String serialNumber;
+    private String imei;
+    private String meid;
+    private String product;
+    private String manufacturer;
+    private String model;
+    private boolean userPresenceRequired;
+    private boolean confirmationRequired;
 
     public AuthorizationList(ASN1Encodable sequence) throws CertificateParsingException {
         if (!(sequence instanceof ASN1Sequence)) {
@@ -228,6 +252,12 @@ public class AuthorizationList {
                 case KM_TAG_OS_PATCHLEVEL & KEYMASTER_TAG_TYPE_MASK:
                     osPatchLevel = Asn1Utils.getIntegerFromAsn1(value);
                     break;
+                case KM_TAG_VENDOR_PATCHLEVEL & KEYMASTER_TAG_TYPE_MASK:
+                    vendorPatchLevel = Asn1Utils.getIntegerFromAsn1(value);
+                    break;
+                case KM_TAG_BOOT_PATCHLEVEL & KEYMASTER_TAG_TYPE_MASK:
+                    bootPatchLevel = Asn1Utils.getIntegerFromAsn1(value);
+                    break;
                 case KM_TAG_ACTIVE_DATETIME & KEYMASTER_TAG_TYPE_MASK:
                     activeDateTime = Asn1Utils.getDateFromAsn1(value);
                     break;
@@ -236,9 +266,6 @@ public class AuthorizationList {
                     break;
                 case KM_TAG_USAGE_EXPIRE_DATETIME & KEYMASTER_TAG_TYPE_MASK:
                     usageExpireDateTime = Asn1Utils.getDateFromAsn1(value);
-                    break;
-                case KM_TAG_APPLICATION_ID & KEYMASTER_TAG_TYPE_MASK:
-                    applicationId = Asn1Utils.getByteArrayFromAsn1(value);
                     break;
                 case KM_TAG_ROLLBACK_RESISTANT & KEYMASTER_TAG_TYPE_MASK:
                     rollbackResistant = true;
@@ -262,8 +289,38 @@ public class AuthorizationList {
                     attestationApplicationId = new AttestationApplicationId(Asn1Utils
                             .getAsn1EncodableFromBytes(Asn1Utils.getByteArrayFromAsn1(value)));
                     break;
+                case KM_TAG_ATTESTATION_ID_BRAND & KEYMASTER_TAG_TYPE_MASK:
+                    brand = getStringFromAsn1Value(value);
+                    break;
+                case KM_TAG_ATTESTATION_ID_DEVICE & KEYMASTER_TAG_TYPE_MASK:
+                    device = getStringFromAsn1Value(value);
+                    break;
+                case KM_TAG_ATTESTATION_ID_PRODUCT & KEYMASTER_TAG_TYPE_MASK:
+                    product = getStringFromAsn1Value(value);
+                    break;
+                case KM_TAG_ATTESTATION_ID_SERIAL & KEYMASTER_TAG_TYPE_MASK:
+                    serialNumber = getStringFromAsn1Value(value);
+                    break;
+                case KM_TAG_ATTESTATION_ID_IMEI & KEYMASTER_TAG_TYPE_MASK:
+                    imei = getStringFromAsn1Value(value);
+                    break;
+                case KM_TAG_ATTESTATION_ID_MEID & KEYMASTER_TAG_TYPE_MASK:
+                    meid = getStringFromAsn1Value(value);
+                    break;
+                case KM_TAG_ATTESTATION_ID_MANUFACTURER & KEYMASTER_TAG_TYPE_MASK:
+                    manufacturer = getStringFromAsn1Value(value);
+                    break;
+                case KM_TAG_ATTESTATION_ID_MODEL & KEYMASTER_TAG_TYPE_MASK:
+                    model = getStringFromAsn1Value(value);
+                    break;
                 case KM_TAG_ALL_APPLICATIONS & KEYMASTER_TAG_TYPE_MASK:
                     allApplications = true;
+                    break;
+                case KM_TAG_TRUSTED_USER_PRESENCE_REQUIRED & KEYMASTER_TAG_TYPE_MASK:
+                    userPresenceRequired = true;
+                    break;
+                case KM_TAG_TRUSTED_CONFIRMATION_REQUIRED & KEYMASTER_TAG_TYPE_MASK:
+                    confirmationRequired = true;
                     break;
             }
         }
@@ -490,8 +547,64 @@ public class AuthorizationList {
         return osPatchLevel;
     }
 
+    public Integer getVendorPatchLevel() {
+        return vendorPatchLevel;
+    }
+
+    public Integer getBootPatchLevel() {
+        return bootPatchLevel;
+    }
+
     public AttestationApplicationId getAttestationApplicationId() {
         return attestationApplicationId;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public String getDevice() {
+        return device;
+    }
+
+    public String getSerialNumber() {
+        return serialNumber;
+    };
+
+    public String getImei() {
+        return imei;
+    };
+
+    public String getMeid() {
+        return meid;
+    };
+
+    public String getProduct() {
+        return product;
+    };
+
+    public String getManufacturer() {
+        return manufacturer;
+    };
+
+    public String getModel() {
+        return model;
+    };
+
+    public boolean isUserPresenceRequired() {
+        return userPresenceRequired;
+    }
+
+    public boolean isConfirmationRequired() {
+        return confirmationRequired;
+    }
+
+    private String getStringFromAsn1Value(ASN1Primitive value) throws CertificateParsingException {
+        try {
+            return Asn1Utils.getStringFromAsn1OctetStreamAssumingUTF8(value);
+        } catch (UnsupportedEncodingException e) {
+            throw new CertificateParsingException("Error parsing ASN.1 value", e);
+        }
     }
 
     @Override
@@ -575,10 +688,32 @@ public class AuthorizationList {
             s.append("\nOS Patchlevel: ").append(osPatchLevel);
         }
 
-        if (attestationApplicationId != null) {
-            s.append("\nApplication ID:").append(attestationApplicationId.toString());
+        if (vendorPatchLevel != null) {
+            s.append("\nVendor Patchlevel: ").append(vendorPatchLevel);
         }
 
+        if (bootPatchLevel != null) {
+            s.append("\nBoot Patchlevel: ").append(bootPatchLevel);
+        }
+
+        if (attestationApplicationId != null) {
+            s.append("\nAttestation Application Id:").append(attestationApplicationId);
+        }
+
+        if (userPresenceRequired) {
+            s.append("\nUser presence required");
+        }
+
+        if (confirmationRequired) {
+            s.append("\nConfirmation required");
+        }
+
+        if (brand != null) {
+            s.append("\nBrand: ").append(brand);
+        }
+        if (device != null) {
+            s.append("\nDevice type: ").append(device);
+        }
         return s.toString();
     }
 }

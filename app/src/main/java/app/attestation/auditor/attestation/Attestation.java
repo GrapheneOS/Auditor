@@ -42,7 +42,6 @@ public class Attestation {
     public static final int KM_SECURITY_LEVEL_SOFTWARE = 0;
     public static final int KM_SECURITY_LEVEL_TRUSTED_ENVIRONMENT = 1;
 
-    private final boolean haveAttestation;
     private final int attestationVersion;
     private final int attestationSecurityLevel;
     private final int keymasterVersion;
@@ -62,20 +61,7 @@ public class Attestation {
      */
     public Attestation(X509Certificate x509Cert) throws CertificateParsingException {
         ASN1Sequence seq = getAttestationSequence(x509Cert);
-        if (seq == null) {
-            haveAttestation = false;
-            attestationVersion = 0;
-            attestationSecurityLevel = 0;
-            keymasterVersion = 0;
-            keymasterSecurityLevel = 0;
-            attestationChallenge = null;
-            uniqueId = null;
-            softwareEnforced = null;
-            teeEnforced = null;
-            return;
-        }
 
-        haveAttestation = true;
         attestationVersion = Asn1Utils.getIntegerFromAsn1(seq.getObjectAt(ATTESTATION_VERSION_INDEX));
         attestationSecurityLevel = Asn1Utils.getIntegerFromAsn1(seq.getObjectAt(ATTESTATION_SECURITY_LEVEL_INDEX));
         keymasterVersion = Asn1Utils.getIntegerFromAsn1(seq.getObjectAt(KEYMASTER_VERSION_INDEX));
@@ -135,13 +121,9 @@ public class Attestation {
 
     @Override
     public String toString() {
-        if (!haveAttestation) {
-            return "No attestation";
-        }
-
         StringBuilder s = new StringBuilder();
-        s.append("Attestation version: " + attestationVersion);
-        s.append("\nAttestation security: " + securityLevelToString(attestationSecurityLevel));
+        s.append("Attest version: " + attestationVersion);
+        s.append("\nAttest security: " + securityLevelToString(attestationSecurityLevel));
         s.append("\nKM version: " + keymasterVersion);
         s.append("\nKM security: " + securityLevelToString(keymasterSecurityLevel));
 
@@ -156,11 +138,10 @@ public class Attestation {
             s.append("\nUnique ID (base64): [" + BaseEncoding.base64().encode(uniqueId) + "]");
         }
 
-        s.append("\n\n-- SW enforced --");
+        s.append("\n-- SW enforced --");
         s.append(softwareEnforced);
-        s.append("\n\n-- TEE enforced --");
+        s.append("\n-- TEE enforced --");
         s.append(teeEnforced);
-        s.append("\n");
 
         return s.toString();
     }
@@ -169,7 +150,8 @@ public class Attestation {
             throws CertificateParsingException {
         byte[] attestationExtensionBytes = x509Cert.getExtensionValue(KEY_DESCRIPTION_OID);
         if (attestationExtensionBytes == null || attestationExtensionBytes.length == 0) {
-            return null;
+            throw new CertificateParsingException(
+                    "Did not find extension with OID " + KEY_DESCRIPTION_OID);
         }
         return Asn1Utils.getAsn1SequenceFromBytes(attestationExtensionBytes);
     }

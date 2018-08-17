@@ -360,7 +360,7 @@ class AttestationProtocol {
         if (!ATTESTATION_APP_PACKAGE_NAME.equals(info.getPackageName())) {
             throw new GeneralSecurityException("wrong attestation app package name");
         }
-        final int appVersion = info.getVersion();
+        final int appVersion = Math.toIntExact(info.getVersion()); // int for compatibility
         if (appVersion < ATTESTATION_APP_MINIMUM_VERSION) {
             throw new GeneralSecurityException("attestation app is too old");
         }
