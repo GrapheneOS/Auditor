@@ -92,6 +92,8 @@ class AttestationProtocol {
     private static final String KEY_PINNED_VERIFIED_BOOT_KEY = "pinned_verified_boot_key";
     private static final String KEY_PINNED_OS_VERSION = "pinned_os_version";
     private static final String KEY_PINNED_OS_PATCH_LEVEL = "pinned_os_patch_level";
+    private static final String KEY_PINNED_VENDOR_PATCH_LEVEL = "pinned_vendor_patch_level";
+    private static final String KEY_PINNED_BOOT_PATCH_LEVEL = "pinned_boot_patch_level";
     private static final String KEY_PINNED_APP_VERSION = "pinned_app_version";
     private static final String KEY_VERIFIED_TIME_FIRST = "verified_time_first";
     private static final String KEY_VERIFIED_TIME_LAST = "verified_time_last";
@@ -208,6 +210,8 @@ class AttestationProtocol {
             "990E04F0864B19F14F84E0E432F7A393F297AB105A22C1E1B10B442A4A62C42C";
     private static final int OS_VERSION_MINIMUM = 80000;
     private static final int OS_PATCH_LEVEL_MINIMUM = 201801;
+    private static final int VENDOR_PATCH_LEVEL_MINIMUM = 20180105;
+    private static final int BOOT_PATCH_LEVEL_MINIMUM = 20180105;
 
     // Split displayed fingerprint into groups of 4 characters
     private static final int FINGERPRINT_SPLIT_INTERVAL = 4;
@@ -295,17 +299,21 @@ class AttestationProtocol {
         final String verifiedBootKey;
         final int osVersion;
         final int osPatchLevel;
+        final int vendorPatchLevel;
+        final int bootPatchLevel;
         final int appVersion;
         final boolean isStock;
         final boolean perUserEncryption;
 
         Verified(final int device, final String verifiedBootKey, final int osVersion,
-                final int osPatchLevel, final int appVersion, final boolean isStock,
-                final boolean perUserEncryption) {
+                final int osPatchLevel, final int vendorPatchLevel, final int bootPatchLevel,
+                final int appVersion, final boolean isStock, final boolean perUserEncryption) {
             this.device = device;
             this.verifiedBootKey = verifiedBootKey;
             this.osVersion = osVersion;
             this.osPatchLevel = osPatchLevel;
+            this.vendorPatchLevel = vendorPatchLevel;
+            this.bootPatchLevel = bootPatchLevel;
             this.appVersion = appVersion;
             this.isStock = isStock;
             this.perUserEncryption = perUserEncryption;
@@ -397,6 +405,24 @@ class AttestationProtocol {
         if (osPatchLevel < OS_PATCH_LEVEL_MINIMUM) {
             throw new GeneralSecurityException("OS patch level too old");
         }
+        final int vendorPatchLevel;
+        if (teeEnforced.getVendorPatchLevel() == null) {
+            vendorPatchLevel = 0;
+        } else {
+            vendorPatchLevel = teeEnforced.getVendorPatchLevel();
+            if (vendorPatchLevel < VENDOR_PATCH_LEVEL_MINIMUM) {
+                throw new GeneralSecurityException("Vendor patch level too old");
+            }
+        }
+        final int bootPatchLevel;
+        if (teeEnforced.getBootPatchLevel() == null) {
+            bootPatchLevel = 0;
+        } else {
+            bootPatchLevel = teeEnforced.getBootPatchLevel();
+            if (bootPatchLevel < BOOT_PATCH_LEVEL_MINIMUM) {
+                throw new GeneralSecurityException("Boot patch level too old");
+            }
+        }
 
         final int verifiedBootState = rootOfTrust.getVerifiedBootState();
         final String verifiedBootKey = BaseEncoding.base16().encode(rootOfTrust.getVerifiedBootKey());
@@ -435,8 +461,8 @@ class AttestationProtocol {
             throw new GeneralSecurityException("keymaster version below " + device.keymasterVersion);
         }
 
-        return new Verified(device.name, verifiedBootKey, osVersion, osPatchLevel, appVersion,
-                stock, device.perUserEncryption);
+        return new Verified(device.name, verifiedBootKey, osVersion, osPatchLevel, bootPatchLevel,
+                vendorPatchLevel, appVersion, stock, device.perUserEncryption);
     }
 
     private static void verifyCertificateSignatures(Certificate[] certChain)
@@ -487,6 +513,20 @@ class AttestationProtocol {
         final String osPatchLevel = Integer.toString(verified.osPatchLevel);
         builder.append(context.getString(R.string.os_patch_level,
                 osPatchLevel.substring(0, 4) + "-" + osPatchLevel.substring(4, 6)));
+
+        final String vendorPatchLevel = Integer.toString(verified.vendorPatchLevel);
+        if (verified.vendorPatchLevel != 0) {
+            builder.append(context.getString(R.string.vendor_patch_level,
+                    vendorPatchLevel.substring(0, 4) + "-" + vendorPatchLevel.substring(4, 6) + "-" +
+                    vendorPatchLevel.substring(6, 8)));
+        }
+
+        final String bootPatchLevel = Integer.toString(verified.bootPatchLevel);
+        if (verified.bootPatchLevel != 0) {
+            builder.append(context.getString(R.string.boot_patch_level,
+                    bootPatchLevel.substring(0, 4) + "-" + bootPatchLevel.substring(4, 6) + "-" +
+                    bootPatchLevel.substring(6, 8)));
+        }
 
         final StringBuilder splitFingerprint = new StringBuilder();
         for (int i = 0; i < fingerprint.length(); i += FINGERPRINT_SPLIT_INTERVAL) {
@@ -585,6 +625,12 @@ class AttestationProtocol {
             if (verified.osPatchLevel < preferences.getInt(KEY_PINNED_OS_PATCH_LEVEL, Integer.MAX_VALUE)) {
                 throw new GeneralSecurityException("OS patch level downgrade detected");
             }
+            if (verified.vendorPatchLevel < preferences.getInt(KEY_PINNED_VENDOR_PATCH_LEVEL, 0)) {
+                throw new GeneralSecurityException("Vendor patch level downgrade detected");
+            }
+            if (verified.bootPatchLevel < preferences.getInt(KEY_PINNED_BOOT_PATCH_LEVEL, 0)) {
+                throw new GeneralSecurityException("Boot patch level downgrade detected");
+            }
             final int pinnedAppVersion = preferences.getInt(KEY_PINNED_APP_VERSION, Integer.MAX_VALUE);
             if (verified.appVersion < pinnedAppVersion) {
                 throw new GeneralSecurityException("App version downgraded");
@@ -596,12 +642,18 @@ class AttestationProtocol {
             teeEnforced.append(context.getString(R.string.last_verified,
                     new Date(preferences.getLong(KEY_VERIFIED_TIME_LAST, 0))));
 
-            preferences.edit()
-                    .putInt(KEY_PINNED_OS_VERSION, verified.osVersion)
-                    .putInt(KEY_PINNED_OS_PATCH_LEVEL, verified.osPatchLevel)
-                    .putInt(KEY_PINNED_APP_VERSION, verified.appVersion)
-                    .putLong(KEY_VERIFIED_TIME_LAST, new Date().getTime())
-                    .apply();
+            final SharedPreferences.Editor editor = preferences.edit();
+            editor.putInt(KEY_PINNED_OS_VERSION, verified.osVersion);
+            editor.putInt(KEY_PINNED_OS_PATCH_LEVEL, verified.osPatchLevel);
+            if (verified.vendorPatchLevel != 0) {
+                editor.putInt(KEY_PINNED_VENDOR_PATCH_LEVEL, verified.vendorPatchLevel);
+            }
+            if (verified.bootPatchLevel != 0) {
+                editor.putInt(KEY_PINNED_BOOT_PATCH_LEVEL, verified.bootPatchLevel);
+            }
+            editor.putInt(KEY_PINNED_APP_VERSION, verified.appVersion);
+            editor.putLong(KEY_VERIFIED_TIME_LAST, new Date().getTime());
+            editor.apply();
         } else {
             verifySignature(attestationCertificates[0].getPublicKey(), signedMessage, signature);
 
@@ -617,6 +669,12 @@ class AttestationProtocol {
             editor.putString(KEY_PINNED_VERIFIED_BOOT_KEY, verified.verifiedBootKey);
             editor.putInt(KEY_PINNED_OS_VERSION, verified.osVersion);
             editor.putInt(KEY_PINNED_OS_PATCH_LEVEL, verified.osPatchLevel);
+            if (verified.vendorPatchLevel != 0) {
+                editor.putInt(KEY_PINNED_VENDOR_PATCH_LEVEL, verified.vendorPatchLevel);
+            }
+            if (verified.bootPatchLevel != 0) {
+                editor.putInt(KEY_PINNED_BOOT_PATCH_LEVEL, verified.bootPatchLevel);
+            }
             editor.putInt(KEY_PINNED_APP_VERSION, verified.appVersion);
 
             final long now = new Date().getTime();

@@ -44,6 +44,8 @@
     <string name="os_version">OS version: %s\n</string>
     <string name="os_version_developer_preview">not a production release</string>
     <string name="os_patch_level">OS patch level: %s\n</string>
+    <string name="vendor_patch_level">Vendor patch level: %s\n</string>
+    <string name="boot_patch_level">Boot patch level: %s\n</string>
     <string name="identity">Identity: %s\n</string>
     <string name="first_verified">First verified: %s\n</string>
     <string name="last_verified">Last verified: %s\n</string>
