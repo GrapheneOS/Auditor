@@ -264,6 +264,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_sony_xperia_xa2, 2, 3, true, true))
             .put("54A9F21E9CFAD3A2D028517EF333A658302417DB7FB75E0A109A019646CC5F39",
                     new DeviceInfo(R.string.device_sony_xperia_xz1, 2, 3, true, true))
+            .put("BC3B5E121974113939B8A2FE758F9B923F1D195F038D2FD1C04929F886E83BB5",
+                    new DeviceInfo(R.string.device_sony_xperia_xz2, 2, 3, false, true))
             .build();
 
     private static byte[] getChallengeIndex(final Context context) {
