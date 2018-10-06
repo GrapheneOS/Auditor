@@ -63,7 +63,7 @@
     <string name="oem_unlock_allowed">OEM unlocking allowed: %s\n</string>
     <string name="no">no</string>
     <string name="yes">yes</string>
-    <string name="device_bkl_l04">Huawei Honor View 10</string>
+    <string name="device_bkl_l04">Huawei Honor View 10 / Mate 10</string>
     <string name="device_nokia">Nokia (6.1, 7 Plus)</string>
     <string name="device_pixel_2">Google Pixel 2</string>
     <string name="device_pixel_2_xl">Google Pixel 2 XL</string>
@@ -72,7 +72,7 @@
     <string name="device_sm_g965f">Samsung Galaxy S9+ (SM-G965F)</string>
     <string name="device_sm_g965_msm">Samsung Galaxy S9+ (Snapdragon)</string>
     <string name="device_sony_xperia_xa2">Sony Xperia XA2</string>
-    <string name="device_sony_xperia_xz1">Sony Xperia XZ1 / XZ1 Compact</string>
+    <string name="device_sony_xperia_xz1">Sony Xperia XZ1 / Xperia XZ1 Compact</string>
     <string name="device_sony_xperia_xz2">Sony Xperia XZ2 (H8216)</string>
     <string name="device_oneplus_6_a6003">OnePlus 6 A6003</string>
 </resources>
