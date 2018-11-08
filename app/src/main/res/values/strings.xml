@@ -71,6 +71,7 @@
     <string name="device_sm_g960u">Samsung Galaxy S9 (SM-G960U)</string>
     <string name="device_sm_g965f">Samsung Galaxy S9+ (SM-G965F)</string>
     <string name="device_sm_g965_msm">Samsung Galaxy S9+ (Snapdragon)</string>
+    <string name="device_sm_n960u">Samsung Galaxy Note 9 (SM-N960U)</string>
     <string name="device_sony_xperia_xa2">Sony Xperia XA2</string>
     <string name="device_sony_xperia_xz1">Sony Xperia XZ1 / Xperia XZ1 Compact</string>
     <string name="device_sony_xperia_xz2">Sony Xperia XZ2 (H8216)</string>
