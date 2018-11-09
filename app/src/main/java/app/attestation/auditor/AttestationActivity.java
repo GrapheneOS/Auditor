@@ -82,6 +82,7 @@ public class AttestationActivity extends AppCompatActivity {
             "BKL-L04",
             "BKL-L09",
             "CLT-L29",
+            "COL-L29",
             "G8341",
             "G8342",
             "G8441",
