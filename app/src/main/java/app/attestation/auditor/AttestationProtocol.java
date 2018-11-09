@@ -210,8 +210,8 @@ class AttestationProtocol {
             "990E04F0864B19F14F84E0E432F7A393F297AB105A22C1E1B10B442A4A62C42C";
     private static final int OS_VERSION_MINIMUM = 80000;
     private static final int OS_PATCH_LEVEL_MINIMUM = 201801;
-    private static final int VENDOR_PATCH_LEVEL_MINIMUM = 20180105;
-    private static final int BOOT_PATCH_LEVEL_MINIMUM = 20180105;
+    private static final int VENDOR_PATCH_LEVEL_MINIMUM = 201809;
+    private static final int BOOT_PATCH_LEVEL_MINIMUM = 201809;
 
     // Split displayed fingerprint into groups of 4 characters
     private static final int FINGERPRINT_SPLIT_INTERVAL = 4;
@@ -529,15 +529,13 @@ class AttestationProtocol {
         final String vendorPatchLevel = Integer.toString(verified.vendorPatchLevel);
         if (verified.vendorPatchLevel != 0) {
             builder.append(context.getString(R.string.vendor_patch_level,
-                    vendorPatchLevel.substring(0, 4) + "-" + vendorPatchLevel.substring(4, 6) + "-" +
-                    vendorPatchLevel.substring(6, 8)));
+                    vendorPatchLevel.substring(0, 4) + "-" + vendorPatchLevel.substring(4, 6)));
         }
 
         final String bootPatchLevel = Integer.toString(verified.bootPatchLevel);
         if (verified.bootPatchLevel != 0) {
             builder.append(context.getString(R.string.boot_patch_level,
-                    bootPatchLevel.substring(0, 4) + "-" + bootPatchLevel.substring(4, 6) + "-" +
-                    bootPatchLevel.substring(6, 8)));
+                    bootPatchLevel.substring(0, 4) + "-" + bootPatchLevel.substring(4, 6)));
         }
 
         final StringBuilder splitFingerprint = new StringBuilder();
