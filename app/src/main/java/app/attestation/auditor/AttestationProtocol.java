@@ -473,8 +473,8 @@ class AttestationProtocol {
             throw new GeneralSecurityException("keymaster version below " + device.keymasterVersion);
         }
 
-        return new Verified(device.name, verifiedBootKey, osVersion, osPatchLevel, bootPatchLevel,
-                vendorPatchLevel, appVersion, stock, device.perUserEncryption);
+        return new Verified(device.name, verifiedBootKey, osVersion, osPatchLevel, vendorPatchLevel,
+                bootPatchLevel, appVersion, stock, device.perUserEncryption);
     }
 
     private static void verifyCertificateSignatures(Certificate[] certChain)
