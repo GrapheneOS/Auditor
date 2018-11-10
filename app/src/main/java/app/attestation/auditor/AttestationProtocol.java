@@ -271,7 +271,7 @@ class AttestationProtocol {
             .put("BC3B5E121974113939B8A2FE758F9B923F1D195F038D2FD1C04929F886E83BB5",
                     new DeviceInfo(R.string.device_sony_xperia_xz2, 2, 3, false, true))
             .put("94B8B4E3260B4BF8211A02CF2F3DE257A127CFFB2E4047D5580A752A5E253DE0",
-                    new DeviceInfo(R.string.device_sony_xperia_xz2_compact, 2, 3, false, true))
+                    new DeviceInfo(R.string.device_sony_xperia_xz2_compact, 2, 3, true, true))
             .put("728800FEBB119ADD74519618AFEDB715E1C39FE08A4DE37D249BF54ACF1CE00F",
                     new DeviceInfo(R.string.device_blackberry_key2, 2, 3, true, true))
             .put("1194659B40EA291245E54A3C4EC4AA5B7077BD244D65C7DD8C0A2DBB9DB1FB35",
