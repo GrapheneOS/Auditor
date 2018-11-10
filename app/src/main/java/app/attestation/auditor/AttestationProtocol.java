@@ -239,6 +239,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_2, 2, 3, true, true))
             .put("674E69685D8D0E49D25CB192B76BA69AA0E1AF5BE0CBF925BD6EC61704662A8E",
                     new DeviceInfo(R.string.device_pixel_2_xl, 2, 3, true, true))
+            .put("4F308FF86A7D10FC5B5D0B7852DD2727103E71E6DE6E0772AC01AD25CA38C076",
+                    new DeviceInfo(R.string.device_pixel_3, 3, 3, false /* uses new API */, true))
             .build();
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStock = ImmutableMap
             .<String, DeviceInfo>builder()
@@ -253,7 +255,7 @@ class AttestationProtocol {
             .put("171616EAEF26009FC46DC6D89F3D24217E926C81A67CE65D2E3A9DC27040C7AB",
                     new DeviceInfo(R.string.device_pixel_2_xl, 2, 3, true, true))
             .put("B799391AFAE3B35522D1EDC5C70A3746B097BDD1CABD59F72BB049705C7A03EF",
-                    new DeviceInfo(R.string.device_pixel_3, 3, 3, false /* needs new API */, true))
+                    new DeviceInfo(R.string.device_pixel_3, 3, 3, false /* uses new API */, true))
             .put("33D9484FD512E610BCF00C502827F3D55A415088F276C6506657215E622FA770",
                     new DeviceInfo(R.string.device_sm_g960f, 1, 2, false, false))
             .put("266869F7CF2FB56008EFC4BE8946C8F84190577F9CA688F59C72DD585E696488",
