@@ -459,7 +459,7 @@ class AttestationProtocol {
         }
 
         if (device == null) {
-            throw new GeneralSecurityException("invalid key fingerprint");
+            throw new GeneralSecurityException("invalid verified boot key fingerprint");
         }
 
         // key sanity checks
