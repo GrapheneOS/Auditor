@@ -7,7 +7,7 @@ android {
         applicationId "app.attestation.auditor"
         minSdkVersion 24
         targetSdkVersion 28
-        versionCode 4
+        versionCode 5
         versionName versionCode.toString()
     }
     signingConfigs {
