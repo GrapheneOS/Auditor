@@ -99,6 +99,7 @@ public class AttestationActivity extends AppCompatActivity {
             "Pixel 2",
             "Pixel 2 XL",
             "Pixel 3",
+            "Pixel 3 XL",
             "SM-G960F",
             "SM-G960U",
             "SM-G965F",
