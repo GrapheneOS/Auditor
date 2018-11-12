@@ -12,6 +12,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
+import android.security.keystore.StrongBoxUnavailableException;
 import android.system.Os;
 import android.system.StructUtsname;
 import android.util.Log;
@@ -94,12 +95,28 @@ public class SubmitSampleJob extends JobService {
                 final Certificate[] certs = keyStore.getCertificateChain(KEYSTORE_ALIAS_SAMPLE);
                 keyStore.deleteEntry(KEYSTORE_ALIAS_SAMPLE);
 
+                Certificate[] strongBoxCerts = null;
+                try {
+                    builder.setIsStrongBoxBacked(true);
+                    AttestationProtocol.generateKeyPair(KEY_ALGORITHM_EC, builder.build());
+                    strongBoxCerts = keyStore.getCertificateChain(KEYSTORE_ALIAS_SAMPLE);
+                    keyStore.deleteEntry(KEYSTORE_ALIAS_SAMPLE);
+                } catch (final StrongBoxUnavailableException e) {}
+
                 final Process process = new ProcessBuilder("getprop").start();
                 try (final InputStream propertyStream = process.getInputStream();
                         final OutputStream output = connection.getOutputStream()) {
                     for (final Certificate cert : certs) {
                         output.write(BaseEncoding.base64().encode(cert.getEncoded()).getBytes());
                         output.write("\n".getBytes());
+                    }
+
+                    if (strongBoxCerts != null) {
+                        output.write("StrongBox\n".getBytes());
+                        for (final Certificate cert : strongBoxCerts) {
+                            output.write(BaseEncoding.base64().encode(cert.getEncoded()).getBytes());
+                            output.write("\n".getBytes());
+                        }
                     }
 
                     ByteStreams.copy(propertyStream, output);
