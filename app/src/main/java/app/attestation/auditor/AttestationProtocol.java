@@ -127,8 +127,8 @@ class AttestationProtocol {
     // The Auditor will eventually start trying to be backwards compatible with older Auditee app
     // versions but not the other way around.
     //
-    // Compression is done with raw DEFLATE (no zlib wrapper) with a preset dictionary
-    // (DEFLATE_DICTIONARY) generated from sample certificates.
+    // Compression is done with raw DEFLATE (no zlib wrapper) with a preset dictionary generated from
+    // sample certificates.
     //
     // signed message {
     // byte version = min(maxVersion, PROTOCOL_VERSION)
