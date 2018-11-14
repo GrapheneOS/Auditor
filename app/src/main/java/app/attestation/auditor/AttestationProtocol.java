@@ -286,6 +286,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_xiaomi_mi_a2, 2, 3, true, false))
             .put("6FA710B639848C9D47378937A1AFB1B6A52DDA738BEB6657E2AE70A15B40541A",
                     new DeviceInfo(R.string.device_xiaomi_mi_a2_lite, 2, 3, true, false))
+            .put("1CC39488D2F85DEE0A8E0903CDC4124CFDF2BE2531ED6060B678057ED2CB89B4",
+                    new DeviceInfo(R.string.device_htc_exodus_1, 2, 3, true, false))
             .build();
 
     private static byte[] getChallengeIndex(final Context context) {

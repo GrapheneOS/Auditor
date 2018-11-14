@@ -82,4 +82,5 @@
     <string name="device_bq_aquaris_x2_pro">BQ Aquaris X2 Pro</string>
     <string name="device_xiaomi_mi_a2">Xiaomi Mi A2</string>
     <string name="device_xiaomi_mi_a2_lite">Xiaomi Mi A2 Lite</string>
+    <string name="device_htc_exodus_1">HTC EXODUS 1</string>
 </resources>
