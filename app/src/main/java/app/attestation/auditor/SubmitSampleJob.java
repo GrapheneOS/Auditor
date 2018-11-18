@@ -87,6 +87,7 @@ public class SubmitSampleJob extends JobService {
                 final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
                 keyStore.load(null);
 
+                keyStore.deleteEntry(KEYSTORE_ALIAS_SAMPLE);
                 final KeyGenParameterSpec.Builder builder = new KeyGenParameterSpec.Builder(KEYSTORE_ALIAS_SAMPLE,
                         KeyProperties.PURPOSE_SIGN | KeyProperties.PURPOSE_VERIFY)
                         .setAlgorithmParameterSpec(new ECGenParameterSpec(AttestationProtocol.EC_CURVE))
