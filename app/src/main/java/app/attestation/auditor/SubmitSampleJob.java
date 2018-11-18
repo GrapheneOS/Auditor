@@ -10,6 +10,7 @@ import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.security.keystore.StrongBoxUnavailableException;
@@ -96,12 +97,14 @@ public class SubmitSampleJob extends JobService {
                 keyStore.deleteEntry(KEYSTORE_ALIAS_SAMPLE);
 
                 Certificate[] strongBoxCerts = null;
-                try {
-                    builder.setIsStrongBoxBacked(true);
-                    AttestationProtocol.generateKeyPair(KEY_ALGORITHM_EC, builder.build());
-                    strongBoxCerts = keyStore.getCertificateChain(KEYSTORE_ALIAS_SAMPLE);
-                    keyStore.deleteEntry(KEYSTORE_ALIAS_SAMPLE);
-                } catch (final StrongBoxUnavailableException e) {}
+                if (Build.VERSION.SDK_INT >= 28) {
+                    try {
+                        builder.setIsStrongBoxBacked(true);
+                        AttestationProtocol.generateKeyPair(KEY_ALGORITHM_EC, builder.build());
+                        strongBoxCerts = keyStore.getCertificateChain(KEYSTORE_ALIAS_SAMPLE);
+                        keyStore.deleteEntry(KEYSTORE_ALIAS_SAMPLE);
+                    } catch (final StrongBoxUnavailableException e) {}
+                }
 
                 final Process process = new ProcessBuilder("getprop").start();
                 try (final InputStream propertyStream = process.getInputStream();
