@@ -107,6 +107,7 @@ public class AttestationActivity extends AppCompatActivity {
             "SM-G965U",
             "SM-G965U1",
             "SM-G965W",
+            "SM-N960F",
             "SM-N960U").contains(Build.MODEL);
 
     private static int getFirstApiLevel() {
