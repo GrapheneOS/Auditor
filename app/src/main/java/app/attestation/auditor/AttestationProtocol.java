@@ -239,7 +239,7 @@ class AttestationProtocol {
 
     private static final ImmutableMap<String, DeviceInfo> fingerprintsSampleOS = ImmutableMap
             .<String, DeviceInfo>builder()
-            .put("9599B4AF7C15FD5F59AF839405A9AACF0F5EB1BECBFF1B9FC3B41FBF27B1BD8A",
+            .put("B094E48B27C6E15661223CEFF539CF35E481DEB4E3250331E973AC2C15CAD6CD",
                     new DeviceInfo(R.string.device_pixel_2, 2, 3, true, true))
             .put("674E69685D8D0E49D25CB192B76BA69AA0E1AF5BE0CBF925BD6EC61704662A8E",
                     new DeviceInfo(R.string.device_pixel_2_xl, 2, 3, true, true))
