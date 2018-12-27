@@ -67,7 +67,9 @@
     <string name="device_nokia">Nokia (6.1, 7 Plus)</string>
     <string name="device_pixel_2">Google Pixel 2</string>
     <string name="device_pixel_2_xl">Google Pixel 2 XL</string>
-    <string name="device_pixel_3">Google Pixel 3 / Pixel 3 XL</string>
+    <string name="device_pixel_3_generic">Google Pixel 3 / Pixel 3 XL</string>
+    <string name="device_pixel_3">Google Pixel 3</string>
+    <string name="device_pixel_3_xl">Google Pixel 3 XL</string>
     <string name="device_sm_g960f">Samsung Galaxy S9 (SM-G960F)</string>
     <string name="device_sm_g960_na">Samsung Galaxy S9 USA/Canada (SM-G960U/SM-G960W)</string>
     <string name="device_sm_g965f">Samsung Galaxy S9+ (SM-G965F)</string>
