@@ -904,163 +904,170 @@ class AttestationProtocol {
         }
         generateKeyPair(KEY_ALGORITHM_EC, builder.build());
 
-        final byte[] fingerprint =
-                getFingerprint(keyStore.getCertificate(persistentKeystoreAlias));
+        try {
+            final byte[] fingerprint =
+                    getFingerprint(keyStore.getCertificate(persistentKeystoreAlias));
 
-        final Certificate[] attestationCertificates = keyStore.getCertificateChain(attestationKeystoreAlias);
+            final Certificate[] attestationCertificates = keyStore.getCertificateChain(attestationKeystoreAlias);
 
-        // sanity check on the device being verified before sending it off to the verifying device
-        final Verified verified = verifyStateless(attestationCertificates, challenge,
-                attestationCertificates[attestationCertificates.length - 1]);
+            // sanity check on the device being verified before sending it off to the verifying device
+            final Verified verified = verifyStateless(attestationCertificates, challenge,
+                    attestationCertificates[attestationCertificates.length - 1]);
 
-        // OS-enforced checks and information
+            // OS-enforced checks and information
 
-        final DevicePolicyManager dpm = context.getSystemService(DevicePolicyManager.class);
+            final DevicePolicyManager dpm = context.getSystemService(DevicePolicyManager.class);
 
-        final List<ComponentName> activeAdmins = dpm.getActiveAdmins();
-        final boolean deviceAdmin = activeAdmins != null && activeAdmins.size() > 0;
-        boolean deviceAdminNonSystem = false;
-        if (activeAdmins != null) {
-            for (final ComponentName name : activeAdmins) {
-                final PackageManager pm = context.getPackageManager();
-                try {
-                    final ApplicationInfo info = pm.getApplicationInfo(name.getPackageName(), 0);
-                    if ((info.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
-                        deviceAdminNonSystem = true;
+            final List<ComponentName> activeAdmins = dpm.getActiveAdmins();
+            final boolean deviceAdmin = activeAdmins != null && activeAdmins.size() > 0;
+            boolean deviceAdminNonSystem = false;
+            if (activeAdmins != null) {
+                for (final ComponentName name : activeAdmins) {
+                    final PackageManager pm = context.getPackageManager();
+                    try {
+                        final ApplicationInfo info = pm.getApplicationInfo(name.getPackageName(), 0);
+                        if ((info.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+                            deviceAdminNonSystem = true;
+                        }
+                    } catch (final PackageManager.NameNotFoundException e) {
+                        throw new GeneralSecurityException(e);
                     }
-                } catch (final PackageManager.NameNotFoundException e) {
-                    throw new GeneralSecurityException(e);
                 }
             }
-        }
 
-        final int encryptionStatus = dpm.getStorageEncryptionStatus();
-        if (verified.perUserEncryption) {
-            if (encryptionStatus != DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE_PER_USER) {
-                throw new GeneralSecurityException("invalid encryption status");
+            final int encryptionStatus = dpm.getStorageEncryptionStatus();
+            if (verified.perUserEncryption) {
+                if (encryptionStatus != DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE_PER_USER) {
+                    throw new GeneralSecurityException("invalid encryption status");
+                }
+            } else {
+                if (encryptionStatus != DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE &&
+                        encryptionStatus != DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE_DEFAULT_KEY) {
+                    throw new GeneralSecurityException("invalid encryption status");
+                }
             }
-        } else {
-            if (encryptionStatus != DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE &&
-                    encryptionStatus != DevicePolicyManager.ENCRYPTION_STATUS_ACTIVE_DEFAULT_KEY) {
-                throw new GeneralSecurityException("invalid encryption status");
+            final KeyguardManager keyguard = context.getSystemService(KeyguardManager.class);
+            final boolean userProfileSecure = keyguard.isDeviceSecure();
+            if (userProfileSecure && !keyguard.isKeyguardSecure()) {
+                throw new GeneralSecurityException("keyguard state inconsistent");
             }
-        }
-        final KeyguardManager keyguard = context.getSystemService(KeyguardManager.class);
-        final boolean userProfileSecure = keyguard.isDeviceSecure();
-        if (userProfileSecure && !keyguard.isKeyguardSecure()) {
-            throw new GeneralSecurityException("keyguard state inconsistent");
-        }
-        final FingerprintManager fingerprintManager = context.getSystemService(FingerprintManager.class);
-        final boolean enrolledFingerprints = fingerprintManager.hasEnrolledFingerprints();
+            final FingerprintManager fingerprintManager = context.getSystemService(FingerprintManager.class);
+            final boolean enrolledFingerprints = fingerprintManager.hasEnrolledFingerprints();
 
-        final AccessibilityManager am = context.getSystemService(AccessibilityManager.class);
-        final boolean accessibility = am.isEnabled();
+            final AccessibilityManager am = context.getSystemService(AccessibilityManager.class);
+            final boolean accessibility = am.isEnabled();
 
-        final boolean adbEnabled = Settings.Global.getInt(context.getContentResolver(),
-                Settings.Global.ADB_ENABLED, 0) != 0;
-        final boolean addUsersWhenLocked = Settings.Global.getInt(context.getContentResolver(),
-                ADD_USERS_WHEN_LOCKED, 0) != 0;
+            final boolean adbEnabled = Settings.Global.getInt(context.getContentResolver(),
+                    Settings.Global.ADB_ENABLED, 0) != 0;
+            final boolean addUsersWhenLocked = Settings.Global.getInt(context.getContentResolver(),
+                    ADD_USERS_WHEN_LOCKED, 0) != 0;
 
-        final String denyNewUsbValue =
-                SystemProperties.get("persist.security.deny_new_usb", "disabled");
-        final boolean denyNewUsb = !denyNewUsbValue.equals("disabled");
+            final String denyNewUsbValue =
+                    SystemProperties.get("persist.security.deny_new_usb", "disabled");
+            final boolean denyNewUsb = !denyNewUsbValue.equals("disabled");
 
-        final String oemUnlockAllowedValue = SystemProperties.get("sys.oem_unlock_allowed", "0");
-        final boolean oemUnlockAllowed = oemUnlockAllowedValue.equals("1");
+            final String oemUnlockAllowedValue = SystemProperties.get("sys.oem_unlock_allowed", "0");
+            final boolean oemUnlockAllowed = oemUnlockAllowedValue.equals("1");
 
-        // Serialization
+            // Serialization
 
-        final ByteBuffer serializer = ByteBuffer.allocate(MAX_MESSAGE_SIZE);
+            final ByteBuffer serializer = ByteBuffer.allocate(MAX_MESSAGE_SIZE);
 
-        final byte version = (byte) Math.min(PROTOCOL_VERSION, maxVersion);
-        serializer.put(version);
+            final byte version = (byte) Math.min(PROTOCOL_VERSION, maxVersion);
+            serializer.put(version);
 
-        final ByteBuffer chainSerializer = ByteBuffer.allocate(MAX_ENCODED_CHAIN_LENGTH);
-        final int certificateCount = attestationCertificates.length - 1;
-        for (int i = 0; i < certificateCount; i++) {
-            final byte[] encoded = attestationCertificates[i].getEncoded();
-            if (encoded.length > Short.MAX_VALUE) {
-                throw new RuntimeException("encoded certificate too long");
+            final ByteBuffer chainSerializer = ByteBuffer.allocate(MAX_ENCODED_CHAIN_LENGTH);
+            final int certificateCount = attestationCertificates.length - 1;
+            for (int i = 0; i < certificateCount; i++) {
+                final byte[] encoded = attestationCertificates[i].getEncoded();
+                if (encoded.length > Short.MAX_VALUE) {
+                    throw new RuntimeException("encoded certificate too long");
+                }
+                chainSerializer.putShort((short) encoded.length);
+                chainSerializer.put(encoded);
             }
-            chainSerializer.putShort((short) encoded.length);
-            chainSerializer.put(encoded);
-        }
-        chainSerializer.flip();
-        final byte[] chain = new byte[chainSerializer.remaining()];
-        chainSerializer.get(chain);
+            chainSerializer.flip();
+            final byte[] chain = new byte[chainSerializer.remaining()];
+            chainSerializer.get(chain);
 
-        if (chain.length > MAX_ENCODED_CHAIN_LENGTH) {
-            throw new RuntimeException("encoded certificate chain too long");
-        }
+            if (chain.length > MAX_ENCODED_CHAIN_LENGTH) {
+                throw new RuntimeException("encoded certificate chain too long");
+            }
 
-        final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-        final Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION, true);
-        final int dictionary = version > 0 ? R.raw.deflate_dictionary_1 : R.raw.deflate_dictionary_0;
-        try (final InputStream stream = context.getResources().openRawResource(dictionary)) {
-            deflater.setDictionary(ByteStreams.toByteArray(stream));
-        }
-        final DeflaterOutputStream deflaterStream = new DeflaterOutputStream(byteStream, deflater);
-        deflaterStream.write(chain);
-        deflaterStream.finish();
-        final byte[] compressed = byteStream.toByteArray();
-        Log.d(TAG, "encoded length: " + chain.length + ", compressed length: " + compressed.length);
+            final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+            final Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION, true);
+            final int dictionary = version > 0 ? R.raw.deflate_dictionary_1 : R.raw.deflate_dictionary_0;
+            try (final InputStream stream = context.getResources().openRawResource(dictionary)) {
+                deflater.setDictionary(ByteStreams.toByteArray(stream));
+            }
+            final DeflaterOutputStream deflaterStream = new DeflaterOutputStream(byteStream, deflater);
+            deflaterStream.write(chain);
+            deflaterStream.finish();
+            final byte[] compressed = byteStream.toByteArray();
+            Log.d(TAG, "encoded length: " + chain.length + ", compressed length: " + compressed.length);
 
-        if (compressed.length > Short.MAX_VALUE) {
-            throw new RuntimeException("compressed chain too long");
-        }
-        serializer.putShort((short) compressed.length);
-        serializer.put(compressed);
+            if (compressed.length > Short.MAX_VALUE) {
+                throw new RuntimeException("compressed chain too long");
+            }
+            serializer.putShort((short) compressed.length);
+            serializer.put(compressed);
 
-        if (fingerprint.length != FINGERPRINT_LENGTH) {
-            throw new RuntimeException("fingerprint length mismatch");
-        }
-        serializer.put(fingerprint);
+            if (fingerprint.length != FINGERPRINT_LENGTH) {
+                throw new RuntimeException("fingerprint length mismatch");
+            }
+            serializer.put(fingerprint);
 
-        int osEnforcedFlags = OS_ENFORCED_FLAGS_NONE;
-        if (userProfileSecure) {
-            osEnforcedFlags |= OS_ENFORCED_FLAGS_USER_PROFILE_SECURE;
-        }
-        if (accessibility) {
-            osEnforcedFlags |= OS_ENFORCED_FLAGS_ACCESSIBILITY;
-        }
-        if (deviceAdmin) {
-            osEnforcedFlags |= OS_ENFORCED_FLAGS_DEVICE_ADMIN;
-        }
-        if (deviceAdminNonSystem) {
-            osEnforcedFlags |= OS_ENFORCED_FLAGS_DEVICE_ADMIN_NON_SYSTEM;
-        }
-        if (adbEnabled) {
-            osEnforcedFlags |= OS_ENFORCED_FLAGS_ADB_ENABLED;
-        }
-        if (addUsersWhenLocked) {
-            osEnforcedFlags |= OS_ENFORCED_FLAGS_ADD_USERS_WHEN_LOCKED;
-        }
-        if (enrolledFingerprints) {
-            osEnforcedFlags |= OS_ENFORCED_FLAGS_ENROLLED_FINGERPRINTS;
-        }
-        if (denyNewUsb) {
-            osEnforcedFlags |= OS_ENFORCED_FLAGS_DENY_NEW_USB;
-        }
-        if (oemUnlockAllowed) {
-            osEnforcedFlags |= OS_ENFORCED_FLAGS_OEM_UNLOCK_ALLOWED;
-        }
-        serializer.putInt(osEnforcedFlags);
+            int osEnforcedFlags = OS_ENFORCED_FLAGS_NONE;
+            if (userProfileSecure) {
+                osEnforcedFlags |= OS_ENFORCED_FLAGS_USER_PROFILE_SECURE;
+            }
+            if (accessibility) {
+                osEnforcedFlags |= OS_ENFORCED_FLAGS_ACCESSIBILITY;
+            }
+            if (deviceAdmin) {
+                osEnforcedFlags |= OS_ENFORCED_FLAGS_DEVICE_ADMIN;
+            }
+            if (deviceAdminNonSystem) {
+                osEnforcedFlags |= OS_ENFORCED_FLAGS_DEVICE_ADMIN_NON_SYSTEM;
+            }
+            if (adbEnabled) {
+                osEnforcedFlags |= OS_ENFORCED_FLAGS_ADB_ENABLED;
+            }
+            if (addUsersWhenLocked) {
+                osEnforcedFlags |= OS_ENFORCED_FLAGS_ADD_USERS_WHEN_LOCKED;
+            }
+            if (enrolledFingerprints) {
+                osEnforcedFlags |= OS_ENFORCED_FLAGS_ENROLLED_FINGERPRINTS;
+            }
+            if (denyNewUsb) {
+                osEnforcedFlags |= OS_ENFORCED_FLAGS_DENY_NEW_USB;
+            }
+            if (oemUnlockAllowed) {
+                osEnforcedFlags |= OS_ENFORCED_FLAGS_OEM_UNLOCK_ALLOWED;
+            }
+            serializer.putInt(osEnforcedFlags);
 
-        final ByteBuffer message = serializer.duplicate();
-        message.flip();
+            final ByteBuffer message = serializer.duplicate();
+            message.flip();
 
-        final Signature sig = Signature.getInstance(SIGNATURE_ALGORITHM);
-        sig.initSign((PrivateKey) keyStore.getKey(persistentKeystoreAlias, null));
-        sig.update(message);
-        final byte[] signature = sig.sign();
+            final Signature sig = Signature.getInstance(SIGNATURE_ALGORITHM);
+            sig.initSign((PrivateKey) keyStore.getKey(persistentKeystoreAlias, null));
+            sig.update(message);
+            final byte[] signature = sig.sign();
 
-        serializer.put(signature);
+            serializer.put(signature);
 
-        serializer.flip();
-        final byte[] serialized = new byte[serializer.remaining()];
-        serializer.get(serialized);
+            serializer.flip();
+            final byte[] serialized = new byte[serializer.remaining()];
+            serializer.get(serialized);
 
-        return new AttestationResult(!hasPersistentKey, serialized);
+            return new AttestationResult(!hasPersistentKey, serialized);
+        } catch (final GeneralSecurityException | IOException e) {
+            if (!hasPersistentKey) {
+                keyStore.deleteEntry(persistentKeystoreAlias);
+            }
+            throw e;
+        }
     }
 
     static void generateKeyPair(final String algorithm, final KeyGenParameterSpec spec)
