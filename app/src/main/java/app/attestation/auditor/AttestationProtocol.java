@@ -296,7 +296,7 @@ class AttestationProtocol {
 
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxSampleOS = ImmutableMap
             .<String, DeviceInfo>builder()
-            .put("1CFBCCC117998B87373356F4BC2E68F688EFD2BEB367CBE27796AA299563D4D3",
+            .put("0F9A9CC8ADE73064A54A35C5509E77994E3AA37B6FB889DD53AF82C3C570C5CF",
                     new DeviceInfo(R.string.device_pixel_3, 3, 3, false /* uses new API */, true))
             .put("06DD526EE9B1CB92AA19D9835B68B4FF1A48A3AD31D813F27C9A7D6C271E9451",
                     new DeviceInfo(R.string.device_pixel_3_xl, 3, 3, false /* uses new API */, true))
