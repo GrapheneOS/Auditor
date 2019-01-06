@@ -77,6 +77,7 @@ public class AttestationActivity extends AppCompatActivity {
 
     private static final boolean isSupportedAuditee = ImmutableSet.of(
             "ALP-L29",
+            "AUM-L29",
             "Aquaris X2 Pro",
             "BBF100-6",
             "BKL-L04",

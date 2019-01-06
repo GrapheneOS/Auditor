@@ -252,6 +252,8 @@ class AttestationProtocol {
             .<String, DeviceInfo>builder()
             .put("5341E6B2646979A70E57653007A1F310169421EC9BDD9F1A5648F75ADE005AF1",
                     new DeviceInfo(R.string.device_huawei, 2, 3, false, true))
+            .put("7E2E8CC82A77CA74554457E5DF3A3ED82E7032B3182D17FE17919BC6E989FF09",
+                    new DeviceInfo(R.string.device_huawei_honor_7a_pro, 2, 3, false, true))
             .put("DFC2920C81E136FDD2A510478FDA137B262DC51D449EDD7D0BDB554745725CFE",
                     new DeviceInfo(R.string.device_nokia, 2, 3, true, true))
             .put("6101853DFF451FAE5B137DF914D5E6C15C659337F2C405AC50B513A159071958",
