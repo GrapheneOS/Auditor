@@ -237,7 +237,7 @@ class AttestationProtocol {
         }
     }
 
-    private static final ImmutableMap<String, DeviceInfo> fingerprintsSampleOS = ImmutableMap
+    private static final ImmutableMap<String, DeviceInfo> fingerprintsGrapheneOS = ImmutableMap
             .<String, DeviceInfo>builder()
             .put("B094E48B27C6E15661223CEFF539CF35E481DEB4E3250331E973AC2C15CAD6CD",
                     new DeviceInfo(R.string.device_pixel_2, 2, 3, true, true))
@@ -296,7 +296,7 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_htc, 2, 3, true, false))
             .build();
 
-    private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxSampleOS = ImmutableMap
+    private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxGrapheneOS = ImmutableMap
             .<String, DeviceInfo>builder()
             .put("0F9A9CC8ADE73064A54A35C5509E77994E3AA37B6FB889DD53AF82C3C570C5CF",
                     new DeviceInfo(R.string.device_pixel_3, 3, 3, false /* uses new API */, true))
@@ -478,9 +478,9 @@ class AttestationProtocol {
         final boolean stock;
         if (verifiedBootState == RootOfTrust.KM_VERIFIED_BOOT_SELF_SIGNED) {
             if (attestationSecurityLevel == 2) {
-                device = fingerprintsStrongBoxSampleOS.get(verifiedBootKey);
+                device = fingerprintsStrongBoxGrapheneOS.get(verifiedBootKey);
             } else {
-                device = fingerprintsSampleOS.get(verifiedBootKey);
+                device = fingerprintsGrapheneOS.get(verifiedBootKey);
             }
             stock = false;
         } else if (verifiedBootState == RootOfTrust.KM_VERIFIED_BOOT_VERIFIED) {
@@ -552,7 +552,7 @@ class AttestationProtocol {
         if (verified.isStock) {
             builder.append(context.getString(R.string.os, context.getString(R.string.stock)));
         } else {
-            builder.append(context.getString(R.string.os, "SampleOS"));
+            builder.append(context.getString(R.string.os, "GrapheneOS"));
         }
 
         if (verified.osVersion == DEVELOPER_PREVIEW_OS_VERSION) {
