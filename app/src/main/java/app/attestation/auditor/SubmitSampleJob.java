@@ -104,7 +104,7 @@ public class SubmitSampleJob extends JobService {
                         AttestationProtocol.generateKeyPair(KEY_ALGORITHM_EC, builder.build());
                         strongBoxCerts = keyStore.getCertificateChain(KEYSTORE_ALIAS_SAMPLE);
                         keyStore.deleteEntry(KEYSTORE_ALIAS_SAMPLE);
-                    } catch (final StrongBoxUnavailableException e) {}
+                    } catch (final StrongBoxUnavailableException ignored) {}
                 }
 
                 final Process process = new ProcessBuilder("getprop").start();
