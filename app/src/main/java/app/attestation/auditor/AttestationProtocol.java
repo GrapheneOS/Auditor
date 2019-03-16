@@ -243,7 +243,7 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_2, 2, 3, true, true))
             .put("B6851E9B9C0EBB7185420BD0E79D20A84CB15AB0B018505EFFAA4A72B9D9DAC7",
                     new DeviceInfo(R.string.device_pixel_2_xl, 2, 3, true, true))
-            .put("4F308FF86A7D10FC5B5D0B7852DD2727103E71E6DE6E0772AC01AD25CA38C076",
+            .put("213AA4392BF7CABB9676C2680E134FB5FD3E5937D7E607B4EB907CB0A9D9E400",
                     new DeviceInfo(R.string.device_pixel_3, 3, 3, false /* uses new API */, true))
             .put("60D551860CC7FD32A9DC65FB3BCEB87A5E5C1F88928026F454A234D69B385580",
                     new DeviceInfo(R.string.device_pixel_3_xl, 3, 3, false /* uses new API */, true))
