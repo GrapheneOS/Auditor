@@ -31,6 +31,7 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -274,14 +275,10 @@ public class AttestationActivity extends AppCompatActivity {
         try {
             final QRCodeWriter writer = new QRCodeWriter();
             final Map<EncodeHintType,Object> hints = new EnumMap<>(EncodeHintType.class);
-            hints.put(EncodeHintType.CHARACTER_SET, "ISO-8859-1");
-            try {
-                final int size = Math.min(imageView.getWidth(), imageView.getHeight());
-                result = writer.encode(new String(contents, "ISO-8859-1"), BarcodeFormat.QR_CODE,
-                        size, size, hints);
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException("ISO-8859-1 not supported", e);
-            }
+            hints.put(EncodeHintType.CHARACTER_SET, StandardCharsets.ISO_8859_1);
+            final int size = Math.min(imageView.getWidth(), imageView.getHeight());
+            result = writer.encode(new String(contents, StandardCharsets.ISO_8859_1), BarcodeFormat.QR_CODE,
+                    size, size, hints);
         } catch (WriterException e) {
             throw new RuntimeException(e);
         }
