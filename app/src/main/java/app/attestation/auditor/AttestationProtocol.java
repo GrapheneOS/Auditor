@@ -642,11 +642,8 @@ class AttestationProtocol {
                     "\nIf the initial pairing was simply not completed, clear the pairing data on either the Auditee or the Auditor via the menu and try again.\n");
         }
 
-        final Verified verified;
-        try (final InputStream stream = context.getResources().openRawResource(R.raw.google_root)) {
-            verified = verifyStateless(attestationCertificates, challenge,
-                    generateCertificate(stream));
-        }
+        final Verified verified = verifyStateless(attestationCertificates, challenge,
+            generateCertificate(context.getResources(), R.raw.google_root));
 
         final StringBuilder teeEnforced = new StringBuilder();
 
@@ -835,9 +832,7 @@ class AttestationProtocol {
         final byte[] signature = new byte[signatureLength];
         deserializer.get(signature);
 
-        try (final InputStream stream = context.getResources().openRawResource(R.raw.google_root)) {
-            certificates[certificates.length - 1] = generateCertificate(stream);
-        }
+        certificates[certificates.length - 1] = generateCertificate(context.getResources(), R.raw.google_root);
 
         deserializer.rewind();
         deserializer.limit(deserializer.capacity() - signature.length);
