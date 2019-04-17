@@ -267,8 +267,9 @@ class AttestationProtocol {
                     "B799391AFAE3B35522D1EDC5C70A3746B097BDD1CABD59F72BB049705C7A03EF") // v1
             .build();
 
-    private static final ImmutableMap<String, DeviceInfo> fingerprintsGrapheneOS = ImmutableMap
+    private static final ImmutableMap<String, DeviceInfo> fingerprintsCustomOS = ImmutableMap
             .<String, DeviceInfo>builder()
+            // GrapheneOS
             .put("B094E48B27C6E15661223CEFF539CF35E481DEB4E3250331E973AC2C15CAD6CD",
                     new DeviceInfo(R.string.device_pixel_2, 2, 3, true, true))
             .put("B6851E9B9C0EBB7185420BD0E79D20A84CB15AB0B018505EFFAA4A72B9D9DAC7",
@@ -281,6 +282,11 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_3_xl, 3, 3, false /* uses new API */, true))
             .put("06DD526EE9B1CB92AA19D9835B68B4FF1A48A3AD31D813F27C9A7D6C271E9451", // v2
                     new DeviceInfo(R.string.device_pixel_3_xl, 3, 3, false /* uses new API */, true))
+            // CalyxOS
+            .put("BCEBF6844F6B0FA2ABE8E62A9D0D57A324D0C02CEFDFA019FD49832F9ED39105",
+                    new DeviceInfo(R.string.device_pixel_2_generic, 2, 3, true, true))
+            .put("B4DE537A5F4B8FDAB6789EB2C06EC6E065E48A79EDD493A91F635004DD89F3E2",
+                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 3, false /* uses new API */, true))
             .build();
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStock = ImmutableMap
             .<String, DeviceInfo>builder()
@@ -340,12 +346,16 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_htc, 2, 3, true, false))
             .build();
 
-    private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxGrapheneOS = ImmutableMap
+    private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxCustomOS = ImmutableMap
             .<String, DeviceInfo>builder()
+            // GrapheneOS
             .put("0F9A9CC8ADE73064A54A35C5509E77994E3AA37B6FB889DD53AF82C3C570C5CF",
                     new DeviceInfo(R.string.device_pixel_3, 3, 3, false /* uses new API */, true))
             .put("06DD526EE9B1CB92AA19D9835B68B4FF1A48A3AD31D813F27C9A7D6C271E9451",
                     new DeviceInfo(R.string.device_pixel_3_xl, 3, 3, false /* uses new API */, true))
+            // CalyxOS
+            .put("B4DE537A5F4B8FDAB6789EB2C06EC6E065E48A79EDD493A91F635004DD89F3E2",
+                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 3, false /* uses new API */, true))
             .build();
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxStock = ImmutableMap
             .<String, DeviceInfo>builder()
@@ -527,9 +537,9 @@ class AttestationProtocol {
         final boolean stock;
         if (verifiedBootState == RootOfTrust.KM_VERIFIED_BOOT_SELF_SIGNED) {
             if (attestationSecurityLevel == SECURITY_LEVEL_STRONGBOX) {
-                device = fingerprintsStrongBoxGrapheneOS.get(verifiedBootKey);
+                device = fingerprintsStrongBoxCustomOS.get(verifiedBootKey);
             } else {
-                device = fingerprintsGrapheneOS.get(verifiedBootKey);
+                device = fingerprintsCustomOS.get(verifiedBootKey);
             }
             stock = false;
         } else if (verifiedBootState == RootOfTrust.KM_VERIFIED_BOOT_VERIFIED) {
@@ -602,7 +612,7 @@ class AttestationProtocol {
         if (verified.isStock) {
             builder.append(context.getString(R.string.os, context.getString(R.string.stock)));
         } else {
-            builder.append(context.getString(R.string.os, "GrapheneOS"));
+            builder.append(context.getString(R.string.os, "CustomOS"));
         }
 
         if (verified.osVersion == DEVELOPER_PREVIEW_OS_VERSION) {
