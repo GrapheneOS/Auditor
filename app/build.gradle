@@ -9,6 +9,7 @@ android {
         targetSdkVersion 28
         versionCode 8
         versionName versionCode.toString()
+        resConfigs "en"
     }
     signingConfigs {
         release
