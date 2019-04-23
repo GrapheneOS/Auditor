@@ -94,6 +94,7 @@ public class AttestationActivity extends AppCompatActivity {
             "H4113",
             "H8216",
             "H8314",
+            "H8324",
             "HTC 2Q55100",
             "LYA-L29",
             "Mi A2",
