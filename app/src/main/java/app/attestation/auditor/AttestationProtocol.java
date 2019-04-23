@@ -37,6 +37,7 @@ import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
+import java.security.ProviderException;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Signature;
@@ -1069,11 +1070,22 @@ class AttestationProtocol {
 
     static void generateKeyPair(final String algorithm, final KeyGenParameterSpec spec)
             throws NoSuchAlgorithmException, NoSuchProviderException,
-            InvalidAlgorithmParameterException {
-        final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algorithm,
-                "AndroidKeyStore");
-        keyPairGenerator.initialize(spec);
-        keyPairGenerator.generateKeyPair();
+            InvalidAlgorithmParameterException, IOException {
+        // Handle RuntimeExceptions caused by a broken keystore. A common issue involves users
+        // unlocking the device and wiping the encrypted TEE attestation keys from the persist
+        // partition. Additionally, some non-CTS compliant devices or operating systems have a
+        // non-existent or broken implementation. No one has reported these uncaught exceptions,
+        // presumably because they know their device or OS is broken, but the crash reports are
+        // being spammed to the Google Play error collection and causing it to think the app is
+        // unreliable.
+        try {
+            final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algorithm,
+                    "AndroidKeyStore");
+            keyPairGenerator.initialize(spec);
+            keyPairGenerator.generateKeyPair();
+        } catch (final ProviderException e) {
+            throw new IOException(e);
+        }
     }
 
     static void clearAuditee() throws GeneralSecurityException, IOException {
