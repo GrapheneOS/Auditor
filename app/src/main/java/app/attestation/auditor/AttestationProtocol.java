@@ -140,10 +140,6 @@ class AttestationProtocol {
     // }
     // byte[] signature (rest of message)
     //
-    // Protocol version changes:
-    //
-    // 1: replace deflate_dictionary_0 with deflate_dictionary_1
-    //
     // For each audit, the Auditee generates a fresh hardware-backed key with key attestation
     // using the provided challenge. It reports back the certificate chain to be verified by the
     // Auditor. The public key certificate of the generated key is signed by a key provisioned on
@@ -180,7 +176,7 @@ class AttestationProtocol {
     // downgrade protection for the OS version/patch (bootloader/TEE enforced) and app version (OS
     // enforced) by keeping them updated.
     private static final byte PROTOCOL_VERSION = 1;
-    private static final byte PROTOCOL_VERSION_MINIMUM = 0;
+    private static final byte PROTOCOL_VERSION_MINIMUM = 1;
     // can become longer in the future, but this is the minimum length
     static final byte CHALLENGE_MESSAGE_LENGTH = 1 + CHALLENGE_LENGTH * 2;
     private static final int MAX_ENCODED_CHAIN_LENGTH = 3000;
@@ -786,7 +782,7 @@ class AttestationProtocol {
         final byte[] chain = new byte[MAX_ENCODED_CHAIN_LENGTH];
         final Inflater inflater = new Inflater(true);
         inflater.setInput(compressedChain);
-        final int dictionary = version > 0 ? R.raw.deflate_dictionary_1 : R.raw.deflate_dictionary_0;
+        final int dictionary = R.raw.deflate_dictionary_1;
         try (final InputStream stream = context.getResources().openRawResource(dictionary)) {
             inflater.setDictionary(ByteStreams.toByteArray(stream));
         }
@@ -994,7 +990,7 @@ class AttestationProtocol {
 
             final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
             final Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION, true);
-            final int dictionary = version > 0 ? R.raw.deflate_dictionary_1 : R.raw.deflate_dictionary_0;
+            final int dictionary = R.raw.deflate_dictionary_1;
             try (final InputStream stream = context.getResources().openRawResource(dictionary)) {
                 deflater.setDictionary(ByteStreams.toByteArray(stream));
             }
