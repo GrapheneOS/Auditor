@@ -106,6 +106,8 @@ class AttestationProtocol {
     private static final HashFunction FINGERPRINT_HASH_FUNCTION = Hashing.sha256();
     private static final int FINGERPRINT_LENGTH = FINGERPRINT_HASH_FUNCTION.bits() / 8;
 
+    private static final int SECURITY_LEVEL_STRONGBOX = 2;
+
     // Challenge message:
     //
     // byte maxVersion = PROTOCOL_VERSION
@@ -390,7 +392,7 @@ class AttestationProtocol {
 
         // enforce hardware-based attestation
         if (attestationSecurityLevel != Attestation.KM_SECURITY_LEVEL_TRUSTED_ENVIRONMENT &&
-                attestationSecurityLevel != 2) {
+                attestationSecurityLevel != SECURITY_LEVEL_STRONGBOX) {
             throw new GeneralSecurityException("attestation security level is not valid");
         }
         if (attestation.getKeymasterSecurityLevel() != attestationSecurityLevel) {
