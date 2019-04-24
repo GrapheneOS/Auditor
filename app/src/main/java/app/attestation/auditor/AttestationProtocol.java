@@ -9,6 +9,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.hardware.fingerprint.FingerprintManager;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.security.keystore.KeyGenParameterSpec;
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityManager;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import com.google.common.io.BaseEncoding;
@@ -237,6 +239,10 @@ class AttestationProtocol {
             this.perUserEncryption = perUserEncryption;
         }
     }
+
+    private static final boolean isStrongBoxSupported = ImmutableSet.of(
+            "Pixel 3",
+            "Pixel 3 XL").contains(Build.MODEL);
 
     private static final ImmutableMap<String, DeviceInfo> fingerprintsGrapheneOS = ImmutableMap
             .<String, DeviceInfo>builder()
@@ -893,7 +899,7 @@ class AttestationProtocol {
             useStrongBox = dn.contains("StrongBox");
         } else {
             attestationKeystoreAlias = persistentKeystoreAlias;
-            useStrongBox = false;
+            useStrongBox = isStrongBoxSupported;
         }
 
         final Date startTime = new Date(new Date().getTime() - CLOCK_SKEW_MS);
@@ -905,6 +911,9 @@ class AttestationProtocol {
                 .setKeyValidityStart(startTime);
         if (hasPersistentKey) {
             builder.setKeyValidityEnd(new Date(startTime.getTime() + EXPIRE_OFFSET_MS));
+        }
+        if (useStrongBox) {
+            builder.setIsStrongBoxBacked(useStrongBox);
         }
         generateKeyPair(KEY_ALGORITHM_EC, builder.build());
 
