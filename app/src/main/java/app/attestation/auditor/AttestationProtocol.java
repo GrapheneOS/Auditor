@@ -59,6 +59,8 @@ import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.Inflater;
 
+import javax.security.auth.x500.X500Principal;
+
 import app.attestation.auditor.attestation.Attestation;
 import app.attestation.auditor.attestation.AttestationApplicationId;
 import app.attestation.auditor.attestation.AttestationPackageInfo;
@@ -882,10 +884,16 @@ class AttestationProtocol {
         keyStore.deleteEntry(statePrefix + KEYSTORE_ALIAS_FRESH);
         final boolean hasPersistentKey = keyStore.containsAlias(persistentKeystoreAlias);
         final String attestationKeystoreAlias;
+        final boolean useStrongBox;
         if (hasPersistentKey) {
             attestationKeystoreAlias = statePrefix + KEYSTORE_ALIAS_FRESH;
+            final X509Certificate persistent =
+                (X509Certificate) keyStore.getCertificate(persistentKeystoreAlias);
+            final String dn = persistent.getIssuerX500Principal().getName(X500Principal.RFC1779);
+            useStrongBox = dn.contains("StrongBox");
         } else {
             attestationKeystoreAlias = persistentKeystoreAlias;
+            useStrongBox = false;
         }
 
         final Date startTime = new Date(new Date().getTime() - CLOCK_SKEW_MS);
