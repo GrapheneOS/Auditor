@@ -111,6 +111,7 @@ class AttestationProtocol {
     private static final int FINGERPRINT_LENGTH = FINGERPRINT_HASH_FUNCTION.bits() / 8;
 
     private static final int SECURITY_LEVEL_STRONGBOX = 2;
+    private static final boolean PREFER_STRONGBOX = false;
 
     // Challenge message:
     //
@@ -904,7 +905,7 @@ class AttestationProtocol {
             useStrongBox = dn.contains("StrongBox");
         } else {
             attestationKeystoreAlias = persistentKeystoreAlias;
-            useStrongBox = isStrongBoxSupported;
+            useStrongBox = isStrongBoxSupported && PREFER_STRONGBOX;
         }
 
         final Date startTime = new Date(new Date().getTime() - CLOCK_SKEW_MS);
