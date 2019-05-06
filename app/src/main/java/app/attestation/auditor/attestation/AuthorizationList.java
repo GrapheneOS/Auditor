@@ -242,7 +242,12 @@ public class AuthorizationList {
                     noAuthRequired = true;
                     break;
                 case KM_TAG_CREATION_DATETIME & KEYMASTER_TAG_TYPE_MASK:
-                    creationDateTime = Asn1Utils.getDateFromAsn1(value);
+                    // work around issue with the Pixel 3 StrongBox implementation
+                    try {
+                        creationDateTime = Asn1Utils.getDateFromAsn1(value);
+                    } catch (final CertificateParsingException e) {
+                        Log.e("Attestation", "invalid creationDateTime field");
+                    }
                     break;
                 case KM_TAG_ORIGIN & KEYMASTER_TAG_TYPE_MASK:
                     origin = Asn1Utils.getIntegerFromAsn1(value);
