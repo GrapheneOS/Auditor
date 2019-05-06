@@ -703,7 +703,7 @@ class AttestationProtocol {
             if (!verified.verifiedBootKey.equals(pinnedVerifiedBootKey)) {
                 final String legacyFingerprint = fingerprintsMigration.get(verified.verifiedBootKey);
                 if (legacyFingerprint != null && legacyFingerprint.equals(pinnedVerifiedBootKey)) {
-                    Log.e(TAG, "migration from legacy fingerprint " + legacyFingerprint + " to " + verified.verifiedBootKey);
+                    Log.d(TAG, "migration from legacy fingerprint " + legacyFingerprint + " to " + verified.verifiedBootKey);
                 } else {
                     throw new GeneralSecurityException("pinned verified boot key mismatch");
                 }
