@@ -1,5 +1,6 @@
 package app.attestation.auditor;
 
+import android.annotation.SuppressLint;
 import android.app.KeyguardManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
@@ -893,6 +894,7 @@ class AttestationProtocol {
         }
     }
 
+    @SuppressLint("NewApi")
     static AttestationResult generateSerialized(final Context context, final byte[] challengeMessage,
             String index, final String statePrefix) throws GeneralSecurityException, IOException {
         if (challengeMessage.length < CHALLENGE_MESSAGE_LENGTH) {
