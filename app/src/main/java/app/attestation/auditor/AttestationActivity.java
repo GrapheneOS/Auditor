@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -40,6 +41,8 @@ import static android.graphics.Color.WHITE;
 
 public class AttestationActivity extends AppCompatActivity {
     private static final String TAG = "AttestationActivity";
+
+    private static final String TUTORIAL_URL = "https://attestation.app/tutorial";
 
     private static final String STATE_AUDITEE_PAIRING = "auditee_pairing";
     private static final String STATE_AUDITEE_SERIALIZED_ATTESTATION = "auditee_serialized_attestation";
@@ -466,6 +469,10 @@ public class AttestationActivity extends AppCompatActivity {
             case R.id.action_submit_sample: {
                 SubmitSampleJob.schedule(this);
                 snackbar.setText(R.string.schedule_submit_sample).show();
+                return true;
+            }
+            case R.id.action_help: {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(TUTORIAL_URL)));
                 return true;
             }
         }

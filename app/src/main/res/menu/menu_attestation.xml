@@ -17,4 +17,7 @@
     <item android:id="@+id/action_submit_sample"
             android:title="@string/action_submit_sample"
             app:showAsAction="never" />
+    <item android:id="@+id/action_help"
+            android:title="@string/action_help"
+            app:showAsAction="never" />
 </menu>

@@ -18,6 +18,7 @@
     <string name="action_enable_remote_verify">Enable remote verification</string>
     <string name="action_disable_remote_verify">Disable remote verification</string>
     <string name="action_submit_sample">Submit sample data</string>
+    <string name="action_help">Help</string>
 
     <string name="enable_remote_verify">Scheduling regular remote verification</string>
     <string name="disable_remote_verify">Disabling regular remote verification</string>
