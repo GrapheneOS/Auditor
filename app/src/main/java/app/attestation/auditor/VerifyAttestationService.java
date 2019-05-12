@@ -61,7 +61,7 @@ public class VerifyAttestationService extends IntentService {
         } catch (final DataFormatException | GeneralSecurityException | IOException e) {
             Log.e(TAG, "attestation generation error", e);
             resultIntent.putExtra(EXTRA_ERROR, e.getMessage());
-        } catch (final BufferUnderflowException e) {
+        } catch (final BufferUnderflowException | NegativeArraySizeException e) {
             Log.e(TAG, "attestation generation error", e);
             resultIntent.putExtra(EXTRA_ERROR, "Invalid attestation format");
         }
