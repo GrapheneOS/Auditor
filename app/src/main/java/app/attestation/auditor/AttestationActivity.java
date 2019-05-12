@@ -112,6 +112,7 @@ public class AttestationActivity extends AppCompatActivity {
             "POCOPHONE F1",
             "SM-G960F",
             "SM-G960U",
+            "SM-G960U1",
             "SM-G960W",
             "SM-G965F",
             "SM-G965U",
