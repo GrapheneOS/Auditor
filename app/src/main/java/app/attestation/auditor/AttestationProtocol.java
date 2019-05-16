@@ -297,6 +297,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_3_generic, 3, 3, false /* uses new API */, true))
             .put("61FDA12B32ED84214A9CF13D1AFFB7AA80BD8A268A861ED4BB7A15170F1AB00C", // v2
                     new DeviceInfo(R.string.device_pixel_3_generic, 3, 3, false /* uses new API */, true))
+            .put("E75B86C52C7496255A95FB1E2B1C044BFA9D5FE34DD1E4EEBD752EEF0EA89875",
+                    new DeviceInfo(R.string.device_pixel_3a, 3, 3, false /* uses new API */, true))
             .put("33D9484FD512E610BCF00C502827F3D55A415088F276C6506657215E622FA770",
                     new DeviceInfo(R.string.device_sm_g960f, 1, 2, false, false))
             .put("266869F7CF2FB56008EFC4BE8946C8F84190577F9CA688F59C72DD585E696488",
@@ -340,6 +342,8 @@ class AttestationProtocol {
             .<String, DeviceInfo>builder()
             .put("61FDA12B32ED84214A9CF13D1AFFB7AA80BD8A268A861ED4BB7A15170F1AB00C",
                     new DeviceInfo(R.string.device_pixel_3_generic, 3, 3, false /* uses new API */, true))
+            .put("8CA89AF1A6DAA74B00810849356DE929CFC4498EF36AF964757BDE8A113BF46D",
+                    new DeviceInfo(R.string.device_pixel_3a, 3, 3, false /* uses new API */, true))
             .build();
 
     private static byte[] getChallengeIndex(final Context context) {
