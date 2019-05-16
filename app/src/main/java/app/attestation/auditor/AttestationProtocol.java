@@ -224,7 +224,7 @@ class AttestationProtocol {
             "990E04F0864B19F14F84E0E432F7A393F297AB105A22C1E1B10B442A4A62C42C";
     private static final int OS_VERSION_MINIMUM = 80000;
     private static final int OS_PATCH_LEVEL_MINIMUM = 201801;
-    private static final int VENDOR_PATCH_LEVEL_MINIMUM = 201809;
+    private static final int VENDOR_PATCH_LEVEL_MINIMUM = 201808;
     private static final int BOOT_PATCH_LEVEL_MINIMUM = 201809;
 
     // Split displayed fingerprint into groups of 4 characters
@@ -327,6 +327,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_xiaomi_mi_a2, 2, 3, true, false))
             .put("6FA710B639848C9D47378937A1AFB1B6A52DDA738BEB6657E2AE70A15B40541A",
                     new DeviceInfo(R.string.device_xiaomi_mi_a2_lite, 2, 3, true, false))
+            .put("84BC8445A29B5444A2D1629C9774C8626DAFF3574D865EC5067A78FAEC96B013",
+                    new DeviceInfo(R.string.device_xiaomi_mi_9, 3, 3, false /* uses new API */, false))
             .put("1CC39488D2F85DEE0A8E0903CDC4124CFDF2BE2531ED6060B678057ED2CB89B4",
                     new DeviceInfo(R.string.device_htc, 2, 3, true, false))
             .build();
