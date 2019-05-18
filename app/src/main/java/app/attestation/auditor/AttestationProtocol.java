@@ -101,6 +101,7 @@ class AttestationProtocol {
     private static final String KEY_PINNED_VENDOR_PATCH_LEVEL = "pinned_vendor_patch_level";
     private static final String KEY_PINNED_BOOT_PATCH_LEVEL = "pinned_boot_patch_level";
     private static final String KEY_PINNED_APP_VERSION = "pinned_app_version";
+    private static final String KEY_PINNED_SECURITY_LEVEL = "pinned_security_level";
     private static final String KEY_VERIFIED_TIME_FIRST = "verified_time_first";
     private static final String KEY_VERIFIED_TIME_LAST = "verified_time_last";
 
@@ -387,12 +388,14 @@ class AttestationProtocol {
         final int vendorPatchLevel;
         final int bootPatchLevel;
         final int appVersion;
+        final int securityLevel;
         final boolean isStock;
         final boolean perUserEncryption;
 
         Verified(final int device, final String verifiedBootKey, final int osVersion,
                 final int osPatchLevel, final int vendorPatchLevel, final int bootPatchLevel,
-                final int appVersion, final boolean isStock, final boolean perUserEncryption) {
+                final int appVersion, final int securityLevel, final boolean isStock,
+                final boolean perUserEncryption) {
             this.device = device;
             this.verifiedBootKey = verifiedBootKey;
             this.osVersion = osVersion;
@@ -400,6 +403,7 @@ class AttestationProtocol {
             this.vendorPatchLevel = vendorPatchLevel;
             this.bootPatchLevel = bootPatchLevel;
             this.appVersion = appVersion;
+            this.securityLevel = securityLevel;
             this.isStock = isStock;
             this.perUserEncryption = perUserEncryption;
         }
@@ -558,7 +562,8 @@ class AttestationProtocol {
         }
 
         return new Verified(device.name, verifiedBootKey, osVersion, osPatchLevel, vendorPatchLevel,
-                bootPatchLevel, appVersion, stock, device.perUserEncryption);
+                bootPatchLevel, appVersion, attestationSecurityLevel, stock,
+                device.perUserEncryption);
     }
 
     private static void verifyCertificateSignatures(Certificate[] certChain)
@@ -732,6 +737,9 @@ class AttestationProtocol {
             if (verified.appVersion < pinnedAppVersion) {
                 throw new GeneralSecurityException("App version downgraded");
             }
+            if (verified.securityLevel != preferences.getInt(KEY_PINNED_SECURITY_LEVEL, Attestation.KM_SECURITY_LEVEL_TRUSTED_ENVIRONMENT)) {
+                throw new GeneralSecurityException("Security level mismatch");
+            }
 
             appendVerifiedInformation(context, teeEnforced, verified, fingerprintHex);
             teeEnforced.append(context.getString(R.string.first_verified,
@@ -751,6 +759,7 @@ class AttestationProtocol {
                 editor.putInt(KEY_PINNED_BOOT_PATCH_LEVEL, verified.bootPatchLevel);
             }
             editor.putInt(KEY_PINNED_APP_VERSION, verified.appVersion);
+            editor.putInt(KEY_PINNED_SECURITY_LEVEL, verified.securityLevel); // new field
             editor.putLong(KEY_VERIFIED_TIME_LAST, new Date().getTime());
             editor.apply();
         } else {
@@ -775,6 +784,7 @@ class AttestationProtocol {
                 editor.putInt(KEY_PINNED_BOOT_PATCH_LEVEL, verified.bootPatchLevel);
             }
             editor.putInt(KEY_PINNED_APP_VERSION, verified.appVersion);
+            editor.putInt(KEY_PINNED_SECURITY_LEVEL, verified.securityLevel);
 
             final long now = new Date().getTime();
             editor.putLong(KEY_VERIFIED_TIME_FIRST, now);
