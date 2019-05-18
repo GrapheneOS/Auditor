@@ -521,14 +521,14 @@ class AttestationProtocol {
         final DeviceInfo device;
         final boolean stock;
         if (verifiedBootState == RootOfTrust.KM_VERIFIED_BOOT_SELF_SIGNED) {
-            if (attestationSecurityLevel == 2) {
+            if (attestationSecurityLevel == SECURITY_LEVEL_STRONGBOX) {
                 device = fingerprintsStrongBoxGrapheneOS.get(verifiedBootKey);
             } else {
                 device = fingerprintsGrapheneOS.get(verifiedBootKey);
             }
             stock = false;
         } else if (verifiedBootState == RootOfTrust.KM_VERIFIED_BOOT_VERIFIED) {
-            if (attestationSecurityLevel == 2) {
+            if (attestationSecurityLevel == SECURITY_LEVEL_STRONGBOX) {
                 device = fingerprintsStrongBoxStock.get(verifiedBootKey);
             } else {
                 device = fingerprintsStock.get(verifiedBootKey);
