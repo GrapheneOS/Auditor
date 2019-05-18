@@ -249,7 +249,8 @@ class AttestationProtocol {
 
     private static final boolean isStrongBoxSupported = ImmutableSet.of(
             "Pixel 3",
-            "Pixel 3 XL").contains(Build.MODEL);
+            "Pixel 3 XL",
+            "Pixel 3a").contains(Build.MODEL);
 
     private static final ImmutableMap<String, String> fingerprintsMigration = ImmutableMap
             .<String, String>builder()
