@@ -47,6 +47,9 @@
     <string name="os_patch_level">OS patch level: %s\n</string>
     <string name="vendor_patch_level">Vendor patch level: %s\n</string>
     <string name="boot_patch_level">Boot patch level: %s\n</string>
+    <string name="security_level">Security level: %s\n</string>
+    <string name="security_level_tee">Standard - Trusted Execution Environment (TEE)</string>
+    <string name="security_level_strongbox">High (StrongBox) - Hardware Security Module (HSM)</string>
     <string name="identity">Identity: %s\n</string>
     <string name="first_verified">First verified: %s\n</string>
     <string name="last_verified">Last verified: %s\n</string>

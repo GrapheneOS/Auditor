@@ -628,6 +628,14 @@ class AttestationProtocol {
                     bootPatchLevel.substring(0, 4) + "-" + bootPatchLevel.substring(4, 6)));
         }
 
+        final String securityLevel;
+        if (verified.securityLevel == SECURITY_LEVEL_STRONGBOX) {
+            securityLevel = context.getString(R.string.security_level_strongbox);
+        } else {
+            securityLevel = context.getString(R.string.security_level_tee);
+        }
+        builder.append(context.getString(R.string.security_level, securityLevel));
+
         final StringBuilder splitFingerprint = new StringBuilder();
         for (int i = 0; i < fingerprint.length(); i += FINGERPRINT_SPLIT_INTERVAL) {
             splitFingerprint.append(fingerprint.substring(i,
