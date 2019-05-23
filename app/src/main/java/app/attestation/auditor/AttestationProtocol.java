@@ -292,6 +292,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_nokia, 2, 3, true, true))
             .put("6101853DFF451FAE5B137DF914D5E6C15C659337F2C405AC50B513A159071958",
                     new DeviceInfo(R.string.device_oneplus_6_a6003, 2, 3, true, true))
+            .put("4B9201B11685BE6710E2B2BA8482F444E237E0C8A3D1F7F447FE29C37CECC559",
+                    new DeviceInfo(R.string.device_oneplus_7_pro_gm1913, 3, 3, false /* uses new API */, true))
             .put("1962B0538579FFCE9AC9F507C46AFE3B92055BAC7146462283C85C500BE78D82",
                     new DeviceInfo(R.string.device_pixel_2, 2, 3, true, true))
             .put("171616EAEF26009FC46DC6D89F3D24217E926C81A67CE65D2E3A9DC27040C7AB",
