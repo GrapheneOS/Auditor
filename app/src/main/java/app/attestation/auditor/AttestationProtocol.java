@@ -237,14 +237,16 @@ class AttestationProtocol {
         final int keymasterVersion;
         final boolean rollbackResistant;
         final boolean perUserEncryption;
+        final int osName;
 
         DeviceInfo(final int name, final int attestationVersion, final int keymasterVersion,
-                final boolean rollbackResistant, final boolean perUserEncryption) {
+                final boolean rollbackResistant, final boolean perUserEncryption, final int osName) {
             this.name = name;
             this.attestationVersion = attestationVersion;
             this.keymasterVersion = keymasterVersion;
             this.rollbackResistant = rollbackResistant;
             this.perUserEncryption = perUserEncryption;
+            this.osName = osName;
         }
     }
 
@@ -271,98 +273,98 @@ class AttestationProtocol {
             .<String, DeviceInfo>builder()
             // GrapheneOS
             .put("B094E48B27C6E15661223CEFF539CF35E481DEB4E3250331E973AC2C15CAD6CD",
-                    new DeviceInfo(R.string.device_pixel_2, 2, 3, true, true))
+                    new DeviceInfo(R.string.device_pixel_2, 2, 3, true, true, R.string.graphene))
             .put("B6851E9B9C0EBB7185420BD0E79D20A84CB15AB0B018505EFFAA4A72B9D9DAC7",
-                    new DeviceInfo(R.string.device_pixel_2_xl, 2, 3, true, true))
+                    new DeviceInfo(R.string.device_pixel_2_xl, 2, 3, true, true, R.string.graphene))
             .put("213AA4392BF7CABB9676C2680E134FB5FD3E5937D7E607B4EB907CB0A9D9E400", // v1
-                    new DeviceInfo(R.string.device_pixel_3, 3, 3, false /* uses new API */, true))
+                    new DeviceInfo(R.string.device_pixel_3, 3, 3, false /* uses new API */, true, R.string.graphene))
             .put("0F9A9CC8ADE73064A54A35C5509E77994E3AA37B6FB889DD53AF82C3C570C5CF", // v2
-                    new DeviceInfo(R.string.device_pixel_3, 3, 3, false /* uses new API */, true))
+                    new DeviceInfo(R.string.device_pixel_3, 3, 3, false /* uses new API */, true, R.string.graphene))
             .put("60D551860CC7FD32A9DC65FB3BCEB87A5E5C1F88928026F454A234D69B385580", // v1
-                    new DeviceInfo(R.string.device_pixel_3_xl, 3, 3, false /* uses new API */, true))
+                    new DeviceInfo(R.string.device_pixel_3_xl, 3, 3, false /* uses new API */, true, R.string.graphene))
             .put("06DD526EE9B1CB92AA19D9835B68B4FF1A48A3AD31D813F27C9A7D6C271E9451", // v2
-                    new DeviceInfo(R.string.device_pixel_3_xl, 3, 3, false /* uses new API */, true))
+                    new DeviceInfo(R.string.device_pixel_3_xl, 3, 3, false /* uses new API */, true, R.string.graphene))
             // CalyxOS
             .put("BCEBF6844F6B0FA2ABE8E62A9D0D57A324D0C02CEFDFA019FD49832F9ED39105",
-                    new DeviceInfo(R.string.device_pixel_2_generic, 2, 3, true, true))
+                    new DeviceInfo(R.string.device_pixel_2_generic, 2, 3, true, true, R.string.calyx))
             .put("B4DE537A5F4B8FDAB6789EB2C06EC6E065E48A79EDD493A91F635004DD89F3E2",
-                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 3, false /* uses new API */, true))
+                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 3, false /* uses new API */, true, R.string.calyx))
             .build();
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStock = ImmutableMap
             .<String, DeviceInfo>builder()
             .put("5341E6B2646979A70E57653007A1F310169421EC9BDD9F1A5648F75ADE005AF1",
-                    new DeviceInfo(R.string.device_huawei, 2, 3, false, true))
+                    new DeviceInfo(R.string.device_huawei, 2, 3, false, true, R.string.stock))
             .put("7E2E8CC82A77CA74554457E5DF3A3ED82E7032B3182D17FE17919BC6E989FF09",
-                    new DeviceInfo(R.string.device_huawei_honor_7a_pro, 2, 3, false, true))
+                    new DeviceInfo(R.string.device_huawei_honor_7a_pro, 2, 3, false, true, R.string.stock))
             .put("DFC2920C81E136FDD2A510478FDA137B262DC51D449EDD7D0BDB554745725CFE",
-                    new DeviceInfo(R.string.device_nokia, 2, 3, true, true))
+                    new DeviceInfo(R.string.device_nokia, 2, 3, true, true, R.string.stock))
             .put("6101853DFF451FAE5B137DF914D5E6C15C659337F2C405AC50B513A159071958",
-                    new DeviceInfo(R.string.device_oneplus_6_a6003, 2, 3, true, true))
+                    new DeviceInfo(R.string.device_oneplus_6_a6003, 2, 3, true, true, R.string.stock))
             .put("1B90B7D1449D697FB2732A7D2DFA405D587254593F5137F7B6E64F7A0CE03BFD",
-                    new DeviceInfo(R.string.device_oneplus_6t_a6013, 3, 3, false /* uses new API */, true))
+                    new DeviceInfo(R.string.device_oneplus_6t_a6013, 3, 3, false /* uses new API */, true, R.string.stock))
             .put("4B9201B11685BE6710E2B2BA8482F444E237E0C8A3D1F7F447FE29C37CECC559",
-                    new DeviceInfo(R.string.device_oneplus_7_pro_gm1913, 3, 3, false /* uses new API */, true))
+                    new DeviceInfo(R.string.device_oneplus_7_pro_gm1913, 3, 3, false /* uses new API */, true, R.string.stock))
             .put("1962B0538579FFCE9AC9F507C46AFE3B92055BAC7146462283C85C500BE78D82",
-                    new DeviceInfo(R.string.device_pixel_2, 2, 3, true, true))
+                    new DeviceInfo(R.string.device_pixel_2, 2, 3, true, true, R.string.stock))
             .put("171616EAEF26009FC46DC6D89F3D24217E926C81A67CE65D2E3A9DC27040C7AB",
-                    new DeviceInfo(R.string.device_pixel_2_xl, 2, 3, true, true))
+                    new DeviceInfo(R.string.device_pixel_2_xl, 2, 3, true, true, R.string.stock))
             .put("B799391AFAE3B35522D1EDC5C70A3746B097BDD1CABD59F72BB049705C7A03EF", // v1
-                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 3, false /* uses new API */, true))
+                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 3, false /* uses new API */, true, R.string.stock))
             .put("61FDA12B32ED84214A9CF13D1AFFB7AA80BD8A268A861ED4BB7A15170F1AB00C", // v2
-                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 3, false /* uses new API */, true))
+                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 3, false /* uses new API */, true, R.string.stock))
             .put("E75B86C52C7496255A95FB1E2B1C044BFA9D5FE34DD1E4EEBD752EEF0EA89875",
-                    new DeviceInfo(R.string.device_pixel_3a_generic, 3, 3, false /* uses new API */, true))
+                    new DeviceInfo(R.string.device_pixel_3a_generic, 3, 3, false /* uses new API */, true, R.string.stock))
             .put("33D9484FD512E610BCF00C502827F3D55A415088F276C6506657215E622FA770",
-                    new DeviceInfo(R.string.device_sm_g960f, 1, 2, false, false))
+                    new DeviceInfo(R.string.device_sm_g960f, 1, 2, false, false, R.string.stock))
             .put("266869F7CF2FB56008EFC4BE8946C8F84190577F9CA688F59C72DD585E696488",
-                    new DeviceInfo(R.string.device_sm_g960_na, 1, 2, false, false))
+                    new DeviceInfo(R.string.device_sm_g960_na, 1, 2, false, false, R.string.stock))
             .put("D1C53B7A931909EC37F1939B14621C6E4FD19BF9079D195F86B3CEA47CD1F92D",
-                    new DeviceInfo(R.string.device_sm_g965f, 1, 2, false, false))
+                    new DeviceInfo(R.string.device_sm_g965f, 1, 2, false, false, R.string.stock))
             .put("A4A544C2CFBAEAA88C12360C2E4B44C29722FC8DBB81392A6C1FAEDB7BF63010",
-                    new DeviceInfo(R.string.device_sm_g965_msm, 1, 2, false, false))
+                    new DeviceInfo(R.string.device_sm_g965_msm, 1, 2, false, false, R.string.stock))
             .put("2A7E4954C9F703F3AC805AC660EA1727B981DB39B1E0F41E4013FA2586D3DF7F",
-                    new DeviceInfo(R.string.device_sm_n960f, 1, 2, false, false))
+                    new DeviceInfo(R.string.device_sm_n960f, 1, 2, false, false, R.string.stock))
             .put("173ACFA8AE9EDE7BBD998F45A49231F3A4BDDF0779345732E309446B46B5641B",
-                    new DeviceInfo(R.string.device_sm_n960u, 1, 2, false, false))
+                    new DeviceInfo(R.string.device_sm_n960u, 1, 2, false, false, R.string.stock))
             .put("4285AD64745CC79B4499817F264DC16BF2AF5163AF6C328964F39E61EC84693E",
-                    new DeviceInfo(R.string.device_sony_xperia_xa2, 2, 3, true, true))
+                    new DeviceInfo(R.string.device_sony_xperia_xa2, 2, 3, true, true, R.string.stock))
             .put("54A9F21E9CFAD3A2D028517EF333A658302417DB7FB75E0A109A019646CC5F39",
-                    new DeviceInfo(R.string.device_sony_xperia_xz1, 2, 3, true, true))
+                    new DeviceInfo(R.string.device_sony_xperia_xz1, 2, 3, true, true, R.string.stock))
             .put("BC3B5E121974113939B8A2FE758F9B923F1D195F038D2FD1C04929F886E83BB5",
-                    new DeviceInfo(R.string.device_sony_xperia_xz2, 2, 3, false, true))
+                    new DeviceInfo(R.string.device_sony_xperia_xz2, 2, 3, false, true, R.string.stock))
             .put("94B8B4E3260B4BF8211A02CF2F3DE257A127CFFB2E4047D5580A752A5E253DE0",
-                    new DeviceInfo(R.string.device_sony_xperia_xz2_compact, 2, 3, true, true))
+                    new DeviceInfo(R.string.device_sony_xperia_xz2_compact, 2, 3, true, true, R.string.stock))
             .put("728800FEBB119ADD74519618AFEDB715E1C39FE08A4DE37D249BF54ACF1CE00F",
-                    new DeviceInfo(R.string.device_blackberry_key2, 2, 3, true, true))
+                    new DeviceInfo(R.string.device_blackberry_key2, 2, 3, true, true, R.string.stock))
             .put("1194659B40EA291245E54A3C4EC4AA5B7077BD244D65C7DD8C0A2DBB9DB1FB35",
-                    new DeviceInfo(R.string.device_bq_aquaris_x2_pro, 2, 3, true, false))
+                    new DeviceInfo(R.string.device_bq_aquaris_x2_pro, 2, 3, true, false, R.string.stock))
             .put("A9C6758D509600D0EB94FA8D2BF6EE7A6A6097F0CCEF94A755DDE065AA1AA1B0",
-                    new DeviceInfo(R.string.device_xiaomi_mi_a2, 2, 3, true, false))
+                    new DeviceInfo(R.string.device_xiaomi_mi_a2, 2, 3, true, false, R.string.stock))
             .put("6FA710B639848C9D47378937A1AFB1B6A52DDA738BEB6657E2AE70A15B40541A",
-                    new DeviceInfo(R.string.device_xiaomi_mi_a2_lite, 2, 3, true, false))
+                    new DeviceInfo(R.string.device_xiaomi_mi_a2_lite, 2, 3, true, false, R.string.stock))
             .put("84BC8445A29B5444A2D1629C9774C8626DAFF3574D865EC5067A78FAEC96B013",
-                    new DeviceInfo(R.string.device_xiaomi_mi_9, 3, 3, false /* uses new API */, false))
+                    new DeviceInfo(R.string.device_xiaomi_mi_9, 3, 3, false /* uses new API */, false, R.string.stock))
             .put("1CC39488D2F85DEE0A8E0903CDC4124CFDF2BE2531ED6060B678057ED2CB89B4",
-                    new DeviceInfo(R.string.device_htc, 2, 3, true, false))
+                    new DeviceInfo(R.string.device_htc, 2, 3, true, false, R.string.stock))
             .build();
 
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxCustomOS = ImmutableMap
             .<String, DeviceInfo>builder()
             // GrapheneOS
             .put("0F9A9CC8ADE73064A54A35C5509E77994E3AA37B6FB889DD53AF82C3C570C5CF",
-                    new DeviceInfo(R.string.device_pixel_3, 3, 3, false /* uses new API */, true))
+                    new DeviceInfo(R.string.device_pixel_3, 3, 3, false /* uses new API */, true, R.string.graphene))
             .put("06DD526EE9B1CB92AA19D9835B68B4FF1A48A3AD31D813F27C9A7D6C271E9451",
-                    new DeviceInfo(R.string.device_pixel_3_xl, 3, 3, false /* uses new API */, true))
+                    new DeviceInfo(R.string.device_pixel_3_xl, 3, 3, false /* uses new API */, true, R.string.graphene))
             // CalyxOS
             .put("B4DE537A5F4B8FDAB6789EB2C06EC6E065E48A79EDD493A91F635004DD89F3E2",
-                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 3, false /* uses new API */, true))
+                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 3, false /* uses new API */, true, R.string.calyx))
             .build();
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxStock = ImmutableMap
             .<String, DeviceInfo>builder()
             .put("61FDA12B32ED84214A9CF13D1AFFB7AA80BD8A268A861ED4BB7A15170F1AB00C",
-                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 3, false /* uses new API */, true))
+                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 3, false /* uses new API */, true, R.string.stock))
             .put("8CA89AF1A6DAA74B00810849356DE929CFC4498EF36AF964757BDE8A113BF46D",
-                    new DeviceInfo(R.string.device_pixel_3a_generic, 3, 3, false /* uses new API */, true))
+                    new DeviceInfo(R.string.device_pixel_3a_generic, 3, 3, false /* uses new API */, true, R.string.stock))
             .build();
 
     private static byte[] getChallengeIndex(final Context context) {
@@ -398,28 +400,27 @@ class AttestationProtocol {
     private static class Verified {
         final int device;
         final String verifiedBootKey;
+        final int osName;
         final int osVersion;
         final int osPatchLevel;
         final int vendorPatchLevel;
         final int bootPatchLevel;
         final int appVersion;
         final int securityLevel;
-        final boolean isStock;
         final boolean perUserEncryption;
 
-        Verified(final int device, final String verifiedBootKey, final int osVersion,
+        Verified(final int device, final String verifiedBootKey, final int osName, final int osVersion,
                 final int osPatchLevel, final int vendorPatchLevel, final int bootPatchLevel,
-                final int appVersion, final int securityLevel, final boolean isStock,
-                final boolean perUserEncryption) {
+                final int appVersion, final int securityLevel, final boolean perUserEncryption) {
             this.device = device;
             this.verifiedBootKey = verifiedBootKey;
+            this.osName = osName;
             this.osVersion = osVersion;
             this.osPatchLevel = osPatchLevel;
             this.vendorPatchLevel = vendorPatchLevel;
             this.bootPatchLevel = bootPatchLevel;
             this.appVersion = appVersion;
             this.securityLevel = securityLevel;
-            this.isStock = isStock;
             this.perUserEncryption = perUserEncryption;
         }
     }
@@ -534,21 +535,18 @@ class AttestationProtocol {
         final int verifiedBootState = rootOfTrust.getVerifiedBootState();
         final String verifiedBootKey = BaseEncoding.base16().encode(rootOfTrust.getVerifiedBootKey());
         final DeviceInfo device;
-        final boolean stock;
         if (verifiedBootState == RootOfTrust.KM_VERIFIED_BOOT_SELF_SIGNED) {
             if (attestationSecurityLevel == SECURITY_LEVEL_STRONGBOX) {
                 device = fingerprintsStrongBoxCustomOS.get(verifiedBootKey);
             } else {
                 device = fingerprintsCustomOS.get(verifiedBootKey);
             }
-            stock = false;
         } else if (verifiedBootState == RootOfTrust.KM_VERIFIED_BOOT_VERIFIED) {
             if (attestationSecurityLevel == SECURITY_LEVEL_STRONGBOX) {
                 device = fingerprintsStrongBoxStock.get(verifiedBootKey);
             } else {
                 device = fingerprintsStock.get(verifiedBootKey);
             }
-            stock = true;
         } else {
             throw new GeneralSecurityException("verified boot state is not verified or self signed");
         }
@@ -576,8 +574,8 @@ class AttestationProtocol {
             throw new GeneralSecurityException("keymaster version below " + device.keymasterVersion);
         }
 
-        return new Verified(device.name, verifiedBootKey, osVersion, osPatchLevel, vendorPatchLevel,
-                bootPatchLevel, appVersion, attestationSecurityLevel, stock,
+        return new Verified(device.name, verifiedBootKey, device.osName, osVersion, osPatchLevel,
+                vendorPatchLevel, bootPatchLevel, appVersion, attestationSecurityLevel,
                 device.perUserEncryption);
     }
 
@@ -609,11 +607,7 @@ class AttestationProtocol {
     private static void appendVerifiedInformation(final Context context,
             final StringBuilder builder, final Verified verified, final String fingerprint) {
         builder.append(context.getString(R.string.device, context.getString(verified.device)));
-        if (verified.isStock) {
-            builder.append(context.getString(R.string.os, context.getString(R.string.stock)));
-        } else {
-            builder.append(context.getString(R.string.os, "CustomOS"));
-        }
+        builder.append(context.getString(R.string.os, context.getString(verified.osName)));
 
         if (verified.osVersion == DEVELOPER_PREVIEW_OS_VERSION) {
             builder.append(context.getString(R.string.os_version,
