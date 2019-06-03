@@ -1,4 +1,2 @@
--dontwarn afu.org.checkerframework.**
 -dontwarn com.google.**
--dontwarn org.checkerframework.**
 -dontwarn org.bouncycastle.**
