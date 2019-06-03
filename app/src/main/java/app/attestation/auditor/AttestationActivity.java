@@ -107,6 +107,7 @@ public class AttestationActivity extends AppCompatActivity {
             "Nokia 6.1",
             "Nokia 7 plus",
             "ONEPLUS A6003",
+            "ONEPLUS A6013",
             "Pixel 2",
             "Pixel 2 XL",
             "Pixel 3",
