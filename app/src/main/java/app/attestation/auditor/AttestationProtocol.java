@@ -400,6 +400,7 @@ class AttestationProtocol {
     private static class Verified {
         final int device;
         final String verifiedBootKey;
+        final byte[] verifiedBootHash;
         final int osName;
         final int osVersion;
         final int osPatchLevel;
@@ -409,11 +410,13 @@ class AttestationProtocol {
         final int securityLevel;
         final boolean perUserEncryption;
 
-        Verified(final int device, final String verifiedBootKey, final int osName, final int osVersion,
-                final int osPatchLevel, final int vendorPatchLevel, final int bootPatchLevel,
-                final int appVersion, final int securityLevel, final boolean perUserEncryption) {
+        Verified(final int device, final String verifiedBootKey, final byte[] verifiedBootHash,
+                final int osName, final int osVersion, final int osPatchLevel,
+                final int vendorPatchLevel, final int bootPatchLevel, final int appVersion,
+                final int securityLevel, final boolean perUserEncryption) {
             this.device = device;
             this.verifiedBootKey = verifiedBootKey;
+            this.verifiedBootHash = verifiedBootHash;
             this.osName = osName;
             this.osVersion = osVersion;
             this.osPatchLevel = osPatchLevel;
@@ -567,16 +570,22 @@ class AttestationProtocol {
         }
 
         // version sanity checks
-        if (attestation.getAttestationVersion() < device.attestationVersion) {
+        final int attestationVersion = attestation.getAttestationVersion();
+        if (attestationVersion < device.attestationVersion) {
             throw new GeneralSecurityException("attestation version below " + device.attestationVersion);
         }
         if (attestation.getKeymasterVersion() < device.keymasterVersion) {
             throw new GeneralSecurityException("keymaster version below " + device.keymasterVersion);
         }
 
-        return new Verified(device.name, verifiedBootKey, device.osName, osVersion, osPatchLevel,
-                vendorPatchLevel, bootPatchLevel, appVersion, attestationSecurityLevel,
-                device.perUserEncryption);
+        final byte[] verifiedBootHash = rootOfTrust.getVerifiedBootHash();
+        if (attestationVersion >= 3 && verifiedBootHash == null) {
+            throw new GeneralSecurityException("verifiedBootHash expected for attestation version >= 3");
+        }
+
+        return new Verified(device.name, verifiedBootKey, verifiedBootHash, device.osName,
+                osVersion, osPatchLevel, vendorPatchLevel, bootPatchLevel, appVersion,
+                attestationSecurityLevel, device.perUserEncryption);
     }
 
     private static void verifyCertificateSignatures(Certificate[] certChain)
@@ -643,6 +652,11 @@ class AttestationProtocol {
             securityLevel = context.getString(R.string.security_level_tee);
         }
         builder.append(context.getString(R.string.security_level, securityLevel));
+
+        if (verified.verifiedBootHash != null) {
+            builder.append(context.getString(R.string.verified_boot_hash,
+                    BaseEncoding.base16().encode(verified.verifiedBootHash)));
+        }
 
         final StringBuilder splitFingerprint = new StringBuilder();
         for (int i = 0; i < fingerprint.length(); i += FINGERPRINT_SPLIT_INTERVAL) {
