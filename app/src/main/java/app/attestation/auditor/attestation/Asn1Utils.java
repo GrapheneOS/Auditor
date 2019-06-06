@@ -31,7 +31,6 @@ import org.bouncycastle.asn1.DEROctetString;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.String;
 import java.math.BigInteger;
 import java.security.cert.CertificateParsingException;
 import java.util.Date;
