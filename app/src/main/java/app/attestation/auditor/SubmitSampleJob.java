@@ -1,5 +1,6 @@
 package app.attestation.auditor;
 
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -35,6 +36,7 @@ import java.util.Properties;
 
 import static android.security.keystore.KeyProperties.KEY_ALGORITHM_EC;
 
+@TargetApi(26)
 public class SubmitSampleJob extends JobService {
     private static final String TAG = "SubmitSampleJob";
     private static final int JOB_ID = 2;

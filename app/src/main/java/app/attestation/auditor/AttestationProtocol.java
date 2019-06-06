@@ -1,6 +1,6 @@
 package app.attestation.auditor;
 
-import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.KeyguardManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
@@ -941,6 +941,11 @@ class AttestationProtocol {
         }
     }
 
+    @TargetApi(28)
+    static void enableStrongBox(final KeyGenParameterSpec.Builder builder) {
+        builder.setIsStrongBoxBacked(true);
+    }
+
     // Need FingerprintManager until BiometricManager is available in API 29+
     @SuppressWarnings("deprecation")
     static boolean hasEnrolledFingerprints(final Context context) {
@@ -948,7 +953,6 @@ class AttestationProtocol {
                 .hasEnrolledFingerprints();
     }
 
-    @SuppressLint("NewApi")
     static AttestationResult generateSerialized(final Context context, final byte[] challengeMessage,
             String index, final String statePrefix) throws GeneralSecurityException, IOException {
         if (challengeMessage.length < CHALLENGE_MESSAGE_LENGTH) {
@@ -1002,7 +1006,7 @@ class AttestationProtocol {
             builder.setKeyValidityEnd(new Date(startTime.getTime() + EXPIRE_OFFSET_MS));
         }
         if (useStrongBox) {
-            builder.setIsStrongBoxBacked(useStrongBox);
+            enableStrongBox(builder);
         }
         generateKeyPair(KEY_ALGORITHM_EC, builder.build());
 

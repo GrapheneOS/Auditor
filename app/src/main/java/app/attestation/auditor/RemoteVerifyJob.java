@@ -1,5 +1,6 @@
 package app.attestation.auditor;
 
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -26,6 +27,7 @@ import java.security.GeneralSecurityException;
 
 import app.attestation.auditor.AttestationProtocol.AttestationResult;
 
+@TargetApi(26)
 public class RemoteVerifyJob extends JobService {
     private static final String TAG = "RemoteVerifyJob";
     private static final int PERIODIC_JOB_ID = 0;

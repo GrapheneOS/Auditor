@@ -30,10 +30,4 @@
         <ignore path="src/main/java/app/attestation/auditor/RemoteVerifyJob.java"/>
         <ignore path="src/main/java/app/attestation/auditor/SubmitSampleJob.java"/>
     </issue>
-
-    <!-- Jobs are only run on Android Oreo and later, but lint doesn't realize that -->
-    <issue id="NewApi">
-        <ignore path="src/main/java/app/attestation/auditor/RemoteVerifyJob.java"/>
-        <ignore path="src/main/java/app/attestation/auditor/SubmitSampleJob.java"/>
-    </issue>
 </lint>
