@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -466,10 +467,26 @@ public class AttestationActivity extends AppCompatActivity {
             }
             case R.id.action_disable_remote_verify: {
                 RemoteVerifyJob.cancel(this);
-                PreferenceManager.getDefaultSharedPreferences(this).edit()
+
+                final SharedPreferences preferences =
+                        PreferenceManager.getDefaultSharedPreferences(this);
+
+                final long userId = preferences.getLong(RemoteVerifyJob.KEY_USER_ID, -1);
+                if (userId != -1) {
+                    final Intent intent = new Intent(this, GenerateAttestationService.class);
+                    intent.putExtra(GenerateAttestationService.EXTRA_CLEAR, true);
+                    intent.putExtra(GenerateAttestationService.EXTRA_CLEAR_STATE_PREFIX,
+                            RemoteVerifyJob.STATE_PREFIX);
+                    intent.putExtra(GenerateAttestationService.EXTRA_CLEAR_INDEX,
+                            Long.toString(userId));
+                    startService(intent);
+                }
+
+                preferences.edit()
                         .remove(RemoteVerifyJob.KEY_USER_ID)
                         .remove(RemoteVerifyJob.KEY_SUBSCRIBE_KEY)
                         .apply();
+
                 snackbar.setText(R.string.disable_remote_verify).show();
                 return true;
             }

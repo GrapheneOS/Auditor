@@ -18,6 +18,8 @@ public class GenerateAttestationService extends IntentService {
     static final String EXTRA_ATTESTATION = "app.attestation.auditor.ATTESTATION";
     static final String EXTRA_ATTESTATION_ERROR = "app.attestation.auditor.ATTESTATION_ERROR";
     static final String EXTRA_CLEAR = "app.attestation.auditor.CLEAR";
+    static final String EXTRA_CLEAR_STATE_PREFIX = "app.attestation.auditor.CLEAR_STATE_PREFIX";
+    static final String EXTRA_CLEAR_INDEX = "app.attestation.auditor.CLEAR_INDEX";
 
     static final int RESULT_CODE = 0;
 
@@ -31,7 +33,13 @@ public class GenerateAttestationService extends IntentService {
 
         if (intent.getBooleanExtra(EXTRA_CLEAR, false)) {
             try {
-                AttestationProtocol.clearAuditee();
+                final String statePrefix = intent.getStringExtra(EXTRA_CLEAR_STATE_PREFIX);
+                if (statePrefix != null) {
+                    final String index = intent.getStringExtra(EXTRA_CLEAR_INDEX);
+                    AttestationProtocol.clearAuditee(statePrefix, index);
+                } else {
+                    AttestationProtocol.clearAuditee();
+                }
             } catch (final GeneralSecurityException | IOException e) {
                 Log.e(TAG, "clearAuditee", e);
             }

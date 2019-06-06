@@ -38,7 +38,7 @@ public class RemoteVerifyJob extends JobService {
     private static final int MIN_INTERVAL = 60 * 60;
     private static final int MAX_INTERVAL = 7 * 24 * 60 * 60;
     private static final int OVERRIDE_OFFSET_MS = 10 * 60 * 1000;
-    private static final String STATE_PREFIX = "remote_";
+    static final String STATE_PREFIX = "remote_";
     static final String KEY_USER_ID = "remote_user_id";
     static final String KEY_SUBSCRIBE_KEY = "remote_subscribe_key";
     private static final int NOTIFICATION_ID = 1;
