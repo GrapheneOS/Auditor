@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -942,6 +941,13 @@ class AttestationProtocol {
         }
     }
 
+    // Need FingerprintManager until BiometricManager is available in API 29+
+    @SuppressWarnings("deprecation")
+    static boolean hasEnrolledFingerprints(final Context context) {
+        return context.getSystemService(android.hardware.fingerprint.FingerprintManager.class)
+                .hasEnrolledFingerprints();
+    }
+
     @SuppressLint("NewApi")
     static AttestationResult generateSerialized(final Context context, final byte[] challengeMessage,
             String index, final String statePrefix) throws GeneralSecurityException, IOException {
@@ -1047,8 +1053,7 @@ class AttestationProtocol {
             if (userProfileSecure && !keyguard.isKeyguardSecure()) {
                 throw new GeneralSecurityException("keyguard state inconsistent");
             }
-            final FingerprintManager fingerprintManager = context.getSystemService(FingerprintManager.class);
-            final boolean enrolledFingerprints = fingerprintManager.hasEnrolledFingerprints();
+            final boolean enrolledFingerprints = hasEnrolledFingerprints(context);
 
             final AccessibilityManager am = context.getSystemService(AccessibilityManager.class);
             final boolean accessibility = am.isEnabled();
