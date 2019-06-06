@@ -276,18 +276,18 @@ class AttestationProtocol {
             .put("B6851E9B9C0EBB7185420BD0E79D20A84CB15AB0B018505EFFAA4A72B9D9DAC7",
                     new DeviceInfo(R.string.device_pixel_2_xl, 2, 3, true, true, R.string.os_graphene))
             .put("213AA4392BF7CABB9676C2680E134FB5FD3E5937D7E607B4EB907CB0A9D9E400", // v1
-                    new DeviceInfo(R.string.device_pixel_3, 3, 3, false /* uses new API */, true, R.string.os_graphene))
+                    new DeviceInfo(R.string.device_pixel_3, 3, 4, false /* uses new API */, true, R.string.os_graphene))
             .put("0F9A9CC8ADE73064A54A35C5509E77994E3AA37B6FB889DD53AF82C3C570C5CF", // v2
-                    new DeviceInfo(R.string.device_pixel_3, 3, 3, false /* uses new API */, true, R.string.os_graphene))
+                    new DeviceInfo(R.string.device_pixel_3, 3, 4, false /* uses new API */, true, R.string.os_graphene))
             .put("60D551860CC7FD32A9DC65FB3BCEB87A5E5C1F88928026F454A234D69B385580", // v1
-                    new DeviceInfo(R.string.device_pixel_3_xl, 3, 3, false /* uses new API */, true, R.string.os_graphene))
+                    new DeviceInfo(R.string.device_pixel_3_xl, 3, 4, false /* uses new API */, true, R.string.os_graphene))
             .put("06DD526EE9B1CB92AA19D9835B68B4FF1A48A3AD31D813F27C9A7D6C271E9451", // v2
-                    new DeviceInfo(R.string.device_pixel_3_xl, 3, 3, false /* uses new API */, true, R.string.os_graphene))
+                    new DeviceInfo(R.string.device_pixel_3_xl, 3, 4, false /* uses new API */, true, R.string.os_graphene))
             // CalyxOS
             .put("BCEBF6844F6B0FA2ABE8E62A9D0D57A324D0C02CEFDFA019FD49832F9ED39105",
                     new DeviceInfo(R.string.device_pixel_2_generic, 2, 3, true, true, R.string.os_calyx))
             .put("B4DE537A5F4B8FDAB6789EB2C06EC6E065E48A79EDD493A91F635004DD89F3E2",
-                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 3, false /* uses new API */, true, R.string.os_calyx))
+                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 4, false /* uses new API */, true, R.string.os_calyx))
             .build();
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStock = ImmutableMap
             .<String, DeviceInfo>builder()
@@ -300,19 +300,19 @@ class AttestationProtocol {
             .put("6101853DFF451FAE5B137DF914D5E6C15C659337F2C405AC50B513A159071958",
                     new DeviceInfo(R.string.device_oneplus_6_a6003, 2, 3, true, true, R.string.os_stock))
             .put("1B90B7D1449D697FB2732A7D2DFA405D587254593F5137F7B6E64F7A0CE03BFD",
-                    new DeviceInfo(R.string.device_oneplus_6t_a6013, 3, 3, false /* uses new API */, true, R.string.os_stock))
+                    new DeviceInfo(R.string.device_oneplus_6t_a6013, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("4B9201B11685BE6710E2B2BA8482F444E237E0C8A3D1F7F447FE29C37CECC559",
-                    new DeviceInfo(R.string.device_oneplus_7_pro_gm1913, 3, 3, false /* uses new API */, true, R.string.os_stock))
+                    new DeviceInfo(R.string.device_oneplus_7_pro_gm1913, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("1962B0538579FFCE9AC9F507C46AFE3B92055BAC7146462283C85C500BE78D82",
                     new DeviceInfo(R.string.device_pixel_2, 2, 3, true, true, R.string.os_stock))
             .put("171616EAEF26009FC46DC6D89F3D24217E926C81A67CE65D2E3A9DC27040C7AB",
                     new DeviceInfo(R.string.device_pixel_2_xl, 2, 3, true, true, R.string.os_stock))
             .put("B799391AFAE3B35522D1EDC5C70A3746B097BDD1CABD59F72BB049705C7A03EF", // v1
-                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 3, false /* uses new API */, true, R.string.os_stock))
+                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("61FDA12B32ED84214A9CF13D1AFFB7AA80BD8A268A861ED4BB7A15170F1AB00C", // v2
-                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 3, false /* uses new API */, true, R.string.os_stock))
+                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("E75B86C52C7496255A95FB1E2B1C044BFA9D5FE34DD1E4EEBD752EEF0EA89875",
-                    new DeviceInfo(R.string.device_pixel_3a_generic, 3, 3, false /* uses new API */, true, R.string.os_stock))
+                    new DeviceInfo(R.string.device_pixel_3a_generic, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("33D9484FD512E610BCF00C502827F3D55A415088F276C6506657215E622FA770",
                     new DeviceInfo(R.string.device_sm_g960f, 1, 2, false, false, R.string.os_stock))
             .put("266869F7CF2FB56008EFC4BE8946C8F84190577F9CA688F59C72DD585E696488",
@@ -342,7 +342,7 @@ class AttestationProtocol {
             .put("6FA710B639848C9D47378937A1AFB1B6A52DDA738BEB6657E2AE70A15B40541A",
                     new DeviceInfo(R.string.device_xiaomi_mi_a2_lite, 2, 3, true, false, R.string.os_stock))
             .put("84BC8445A29B5444A2D1629C9774C8626DAFF3574D865EC5067A78FAEC96B013",
-                    new DeviceInfo(R.string.device_xiaomi_mi_9, 3, 3, false /* uses new API */, false, R.string.os_stock))
+                    new DeviceInfo(R.string.device_xiaomi_mi_9, 3, 4, false /* uses new API */, false, R.string.os_stock))
             .put("1CC39488D2F85DEE0A8E0903CDC4124CFDF2BE2531ED6060B678057ED2CB89B4",
                     new DeviceInfo(R.string.device_htc, 2, 3, true, false, R.string.os_stock))
             .build();
@@ -351,19 +351,19 @@ class AttestationProtocol {
             .<String, DeviceInfo>builder()
             // GrapheneOS
             .put("0F9A9CC8ADE73064A54A35C5509E77994E3AA37B6FB889DD53AF82C3C570C5CF",
-                    new DeviceInfo(R.string.device_pixel_3, 3, 3, false /* uses new API */, true, R.string.os_graphene))
+                    new DeviceInfo(R.string.device_pixel_3, 3, 4, false /* uses new API */, true, R.string.os_graphene))
             .put("06DD526EE9B1CB92AA19D9835B68B4FF1A48A3AD31D813F27C9A7D6C271E9451",
-                    new DeviceInfo(R.string.device_pixel_3_xl, 3, 3, false /* uses new API */, true, R.string.os_graphene))
+                    new DeviceInfo(R.string.device_pixel_3_xl, 3, 4, false /* uses new API */, true, R.string.os_graphene))
             // CalyxOS
             .put("B4DE537A5F4B8FDAB6789EB2C06EC6E065E48A79EDD493A91F635004DD89F3E2",
-                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 3, false /* uses new API */, true, R.string.os_calyx))
+                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 4, false /* uses new API */, true, R.string.os_calyx))
             .build();
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxStock = ImmutableMap
             .<String, DeviceInfo>builder()
             .put("61FDA12B32ED84214A9CF13D1AFFB7AA80BD8A268A861ED4BB7A15170F1AB00C",
-                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 3, false /* uses new API */, true, R.string.os_stock))
+                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("8CA89AF1A6DAA74B00810849356DE929CFC4498EF36AF964757BDE8A113BF46D",
-                    new DeviceInfo(R.string.device_pixel_3a_generic, 3, 3, false /* uses new API */, true, R.string.os_stock))
+                    new DeviceInfo(R.string.device_pixel_3a_generic, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .build();
 
     private static byte[] getChallengeIndex(final Context context) {
