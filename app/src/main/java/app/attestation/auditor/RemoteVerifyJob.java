@@ -60,23 +60,17 @@ public class RemoteVerifyJob extends JobService {
     static void restore(final Context context) {
         if (isEnabled(context) && !isScheduled(context)) {
             Log.d(TAG, "remote attestation is enabled but job was not scheduled, rescheduling it");
-            try {
-                schedule(context, DEFAULT_INTERVAL);
-            } catch (final InvalidInterval e) {
-                throw new RuntimeException(e);
-            }
+            schedule(context, DEFAULT_INTERVAL);
         }
     }
 
-    static class InvalidInterval extends Exception {
-        InvalidInterval() {
-            super("invalid interval");
-        }
-    }
-
-    static void schedule(final Context context, final int interval) throws InvalidInterval {
-        if (interval < MIN_INTERVAL || interval > MAX_INTERVAL) {
-            throw new InvalidInterval();
+    static void schedule(final Context context, int interval) {
+        if (interval < MIN_INTERVAL) {
+            interval = MIN_INTERVAL;
+            Log.e(TAG, "invalid interval " + interval + " clamped to MIN_INTERVAL " + MIN_INTERVAL);
+        } else if (interval > MAX_INTERVAL) {
+            interval = MAX_INTERVAL;
+            Log.e(TAG, "invalid interval " + interval + " clamped to MAX_INTERVAL " + MAX_INTERVAL);
         }
         final JobScheduler scheduler = context.getSystemService(JobScheduler.class);
         final JobInfo jobInfo = scheduler.getPendingJob(PERIODIC_JOB_ID);
@@ -184,8 +178,7 @@ public class RemoteVerifyJob extends JobService {
                     }
                     throw new IOException("response code: " + responseCode);
                 }
-            } catch (final GeneralSecurityException | IOException | InvalidInterval |
-                    NumberFormatException e) {
+            } catch (final GeneralSecurityException | IOException | NumberFormatException e) {
                 Log.e(TAG, "remote verify failure", e);
                 failure = true;
             } finally {
