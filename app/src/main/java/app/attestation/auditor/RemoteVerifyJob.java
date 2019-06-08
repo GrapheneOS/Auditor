@@ -37,6 +37,7 @@ public class RemoteVerifyJob extends JobService {
     private static final String VERIFY_URL = "https://" + DOMAIN + "/verify";
     private static final int CONNECT_TIMEOUT = 60000;
     private static final int READ_TIMEOUT = 60000;
+    private static final int DEFAULT_INTERVAL = 4 * 60 * 60;
     private static final int MIN_INTERVAL = 60 * 60;
     private static final int MAX_INTERVAL = 7 * 24 * 60 * 60;
     private static final int OVERRIDE_OFFSET_MS = 10 * 60 * 1000;
@@ -50,6 +51,20 @@ public class RemoteVerifyJob extends JobService {
 
     static boolean isScheduled(final Context context) {
         return context.getSystemService(JobScheduler.class).getPendingJob(PERIODIC_JOB_ID) != null;
+    }
+
+    static void restore(final Context context) {
+        if (!PreferenceManager.getDefaultSharedPreferences(context).contains(KEY_USER_ID)) {
+            return;
+        }
+        if (!isScheduled(context)) {
+            Log.d(TAG, "remote attestation is enabled but job was not scheduled, rescheduling it");
+            try {
+                schedule(context, DEFAULT_INTERVAL);
+            } catch (final InvalidInterval e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     static class InvalidInterval extends Exception {

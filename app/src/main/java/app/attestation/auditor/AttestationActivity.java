@@ -141,6 +141,7 @@ public class AttestationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_attestation);
         setSupportActionBar(findViewById(R.id.toolbar));
 
@@ -195,6 +196,8 @@ public class AttestationActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        RemoteVerifyJob.restore(this);
     }
 
     @Override
