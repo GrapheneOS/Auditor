@@ -32,12 +32,13 @@ import org.bouncycastle.asn1.DEROctetString;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateParsingException;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Set;
 
-public class Asn1Utils {
+class Asn1Utils {
 
     public static int getIntegerFromAsn1(ASN1Encodable asn1Value)
             throws CertificateParsingException {
@@ -127,7 +128,7 @@ public class Asn1Utils {
         }
 
         ASN1OctetString octetString = (ASN1OctetString) encodable;
-        return new String(octetString.getOctets(), "UTF-8");
+        return new String(octetString.getOctets(), StandardCharsets.UTF_8);
     }
 
     public static Date getDateFromAsn1(ASN1Primitive value) throws CertificateParsingException {

@@ -319,7 +319,7 @@ public class AttestationActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[],
+                                           @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSIONS_REQUEST_CAMERA: {
@@ -383,11 +383,7 @@ public class AttestationActivity extends AppCompatActivity {
                     return;
                 }
                 final byte[] contentsBytes;
-                try {
-                    contentsBytes = contents.getBytes("ISO-8859-1");
-                } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException("ISO-8859-1 not supported", e);
-                }
+                contentsBytes = contents.getBytes(StandardCharsets.ISO_8859_1);
                 if (stage == Stage.Auditee) {
                     stage = Stage.AuditeeGenerate;
                     buttons.setVisibility(View.GONE);

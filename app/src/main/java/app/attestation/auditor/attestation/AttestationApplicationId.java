@@ -108,7 +108,7 @@ public class AttestationApplicationId implements java.lang.Comparable<Attestatio
         }
 
         ASN1Set set = (ASN1Set) asn1Encodable;
-        List<AttestationPackageInfo> result = new ArrayList<AttestationPackageInfo>();
+        List<AttestationPackageInfo> result = new ArrayList<>();
         for (ASN1Encodable e : set) {
             result.add(new AttestationPackageInfo(e));
         }
@@ -123,7 +123,7 @@ public class AttestationApplicationId implements java.lang.Comparable<Attestatio
         }
 
         ASN1Set set = (ASN1Set) asn1Encodable;
-        List<byte[]> result = new ArrayList<byte[]>();
+        List<byte[]> result = new ArrayList<>();
 
         for (ASN1Encodable e : set) {
             result.add(Asn1Utils.getByteArrayFromAsn1(e));

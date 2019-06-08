@@ -389,11 +389,9 @@ public class AuthorizationList {
     }
 
     private static String joinStrings(Collection<String> collection) {
-        return new StringBuilder()
-                .append("[")
-                .append(Joiner.on(", ").join(collection))
-                .append("]")
-                .toString();
+        return "[" +
+                Joiner.on(", ").join(collection) +
+                "]";
     }
 
     private static String formatDate(Date date) {
@@ -581,27 +579,27 @@ public class AuthorizationList {
 
     public String getSerialNumber() {
         return serialNumber;
-    };
+    }
 
     public String getImei() {
         return imei;
-    };
+    }
 
     public String getMeid() {
         return meid;
-    };
+    }
 
     public String getProduct() {
         return product;
-    };
+    }
 
     public String getManufacturer() {
         return manufacturer;
-    };
+    }
 
     public String getModel() {
         return model;
-    };
+    }
 
     public boolean isUserPresenceRequired() {
         return userPresenceRequired;
