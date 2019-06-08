@@ -435,10 +435,10 @@ public class AttestationActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(final Menu menu) {
-        final boolean isRemoteVerifyScheduled = RemoteVerifyJob.isScheduled(this);
+        final boolean isRemoteVerifyEnabled = RemoteVerifyJob.isEnabled(this);
         menu.findItem(R.id.action_enable_remote_verify)
-                .setEnabled(isSupportedAuditee && !isRemoteVerifyScheduled);
-        menu.findItem(R.id.action_disable_remote_verify).setEnabled(isRemoteVerifyScheduled);
+                .setEnabled(isSupportedAuditee && !isRemoteVerifyEnabled);
+        menu.findItem(R.id.action_disable_remote_verify).setEnabled(isRemoteVerifyEnabled);
         menu.findItem(R.id.action_submit_sample).setEnabled(canSubmitSample &&
                 !SubmitSampleJob.isScheduled(this));
         return true;
