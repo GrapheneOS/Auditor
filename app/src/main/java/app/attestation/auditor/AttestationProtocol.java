@@ -10,6 +10,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Build;
+import android.os.UserManager;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.security.keystore.KeyGenParameterSpec;
@@ -205,6 +206,7 @@ class AttestationProtocol {
     private static final int OS_ENFORCED_FLAGS_DENY_NEW_USB = 1 << 6;
     private static final int OS_ENFORCED_FLAGS_DEVICE_ADMIN_NON_SYSTEM = 1 << 7;
     private static final int OS_ENFORCED_FLAGS_OEM_UNLOCK_ALLOWED = 1 << 8;
+    private static final int OS_ENFORCED_FLAGS_SYSTEM_USER = 1 << 9;
     private static final int OS_ENFORCED_FLAGS_ALL =
             OS_ENFORCED_FLAGS_USER_PROFILE_SECURE |
             OS_ENFORCED_FLAGS_ACCESSIBILITY |
@@ -214,7 +216,8 @@ class AttestationProtocol {
             OS_ENFORCED_FLAGS_ENROLLED_FINGERPRINTS |
             OS_ENFORCED_FLAGS_DENY_NEW_USB |
             OS_ENFORCED_FLAGS_DEVICE_ADMIN_NON_SYSTEM |
-            OS_ENFORCED_FLAGS_OEM_UNLOCK_ALLOWED;
+            OS_ENFORCED_FLAGS_OEM_UNLOCK_ALLOWED |
+            OS_ENFORCED_FLAGS_SYSTEM_USER;
 
     private static final String ATTESTATION_APP_PACKAGE_NAME = "app.attestation.auditor";
     private static final int ATTESTATION_APP_MINIMUM_VERSION = 1;
@@ -701,7 +704,7 @@ class AttestationProtocol {
             final boolean accessibility, final boolean deviceAdmin,
             final boolean deviceAdminNonSystem, final boolean adbEnabled,
             final boolean addUsersWhenLocked, final boolean enrolledFingerprints,
-            final boolean denyNewUsb, final boolean oemUnlockAllowed)
+            final boolean denyNewUsb, final boolean oemUnlockAllowed, final boolean systemUser)
             throws GeneralSecurityException, IOException {
         final String fingerprintHex = BaseEncoding.base16().encode(fingerprint);
         final byte[] currentFingerprint = getFingerprint(attestationCertificates[0]);
@@ -851,7 +854,11 @@ class AttestationProtocol {
         osEnforced.append(context.getString(R.string.deny_new_usb,
                 toYesNoString(context, denyNewUsb)));
         osEnforced.append(context.getString(R.string.oem_unlock_allowed,
-                    toYesNoString(context, oemUnlockAllowed)));
+                toYesNoString(context, oemUnlockAllowed)));
+        if (verified.appVersion >= 14) {
+            osEnforced.append(context.getString(R.string.system_user,
+                    toYesNoString(context, systemUser)));
+        }
 
         return new VerificationResult(hasPersistentKey, teeEnforced.toString(), osEnforced.toString());
     }
@@ -911,6 +918,7 @@ class AttestationProtocol {
         final boolean enrolledFingerprints = (osEnforcedFlags & OS_ENFORCED_FLAGS_ENROLLED_FINGERPRINTS) != 0;
         final boolean denyNewUsb = (osEnforcedFlags & OS_ENFORCED_FLAGS_DENY_NEW_USB) != 0;
         final boolean oemUnlockAllowed = (osEnforcedFlags & OS_ENFORCED_FLAGS_OEM_UNLOCK_ALLOWED) != 0;
+        final boolean systemUser = (osEnforcedFlags & OS_ENFORCED_FLAGS_SYSTEM_USER) != 0;
 
         if (deviceAdminNonSystem && !deviceAdmin) {
             throw new GeneralSecurityException("invalid device administrator state");
@@ -928,7 +936,8 @@ class AttestationProtocol {
         final byte[] challenge = Arrays.copyOfRange(challengeMessage, 1 + CHALLENGE_LENGTH, 1 + CHALLENGE_LENGTH * 2);
         return verify(context, fingerprint, challenge, deserializer.asReadOnlyBuffer(), signature,
                 certificates, userProfileSecure, accessibility, deviceAdmin, deviceAdminNonSystem,
-                adbEnabled, addUsersWhenLocked, enrolledFingerprints, denyNewUsb, oemUnlockAllowed);
+                adbEnabled, addUsersWhenLocked, enrolledFingerprints, denyNewUsb, oemUnlockAllowed,
+                systemUser);
     }
 
     static class AttestationResult {
@@ -1074,6 +1083,9 @@ class AttestationProtocol {
             final String oemUnlockAllowedValue = SystemProperties.get("sys.oem_unlock_allowed", "0");
             final boolean oemUnlockAllowed = oemUnlockAllowedValue.equals("1");
 
+            final UserManager userManager = context.getSystemService(UserManager.class);
+            final boolean systemUser = userManager.isSystemUser();
+
             // Serialization
 
             final ByteBuffer serializer = ByteBuffer.allocate(MAX_MESSAGE_SIZE);
@@ -1149,6 +1161,9 @@ class AttestationProtocol {
             }
             if (oemUnlockAllowed) {
                 osEnforcedFlags |= OS_ENFORCED_FLAGS_OEM_UNLOCK_ALLOWED;
+            }
+            if (systemUser) {
+                osEnforcedFlags |= OS_ENFORCED_FLAGS_SYSTEM_USER;
             }
             serializer.putInt(osEnforcedFlags);
 

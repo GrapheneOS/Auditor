@@ -68,6 +68,7 @@
     <string name="add_users_when_locked">Add users from lock screen: %s\n</string>
     <string name="deny_new_usb">Disallow new USB peripherals when locked: %s\n</string>
     <string name="oem_unlock_allowed">OEM unlocking allowed: %s\n</string>
+    <string name="system_user">Main user account: %s\n</string>
     <string name="no">no</string>
     <string name="yes">yes</string>
     <string name="device_huawei">Huawei Honor 10 / View 10 / Mate 10 / Mate 20 Pro / P20 Pro</string>
