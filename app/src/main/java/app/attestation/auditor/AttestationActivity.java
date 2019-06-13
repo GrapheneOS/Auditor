@@ -127,7 +127,8 @@ public class AttestationActivity extends AppCompatActivity {
             "SM-G965U1",
             "SM-G965W",
             "SM-N960F",
-            "SM-N960U").contains(Build.MODEL);
+            "SM-N960U",
+            "vivo 1807").contains(Build.MODEL);
 
     private static int getFirstApiLevel() {
         return Integer.parseInt(SystemProperties.get("ro.product.first_api_level",
