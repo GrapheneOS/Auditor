@@ -106,6 +106,7 @@ public class AttestationActivity extends AppCompatActivity {
             "Mi A2",
             "Mi A2 Lite",
             "MI 9",
+            "moto g(7)",
             "Nokia 6.1",
             "Nokia 7 plus",
             "ONEPLUS A6003",

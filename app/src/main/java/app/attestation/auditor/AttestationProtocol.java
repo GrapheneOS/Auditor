@@ -350,6 +350,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_xiaomi_mi_9, 3, 4, false /* uses new API */, false, R.string.os_stock))
             .put("1CC39488D2F85DEE0A8E0903CDC4124CFDF2BE2531ED6060B678057ED2CB89B4",
                     new DeviceInfo(R.string.device_htc, 2, 3, true, false, R.string.os_stock))
+            .put("80BAB060807CFFA45D4747DF1AD706FEE3AE3F645F80CF14871DDBE27E14C30B",
+                    new DeviceInfo(R.string.device_moto_g7, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .build();
 
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxCustomOS = ImmutableMap
