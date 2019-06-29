@@ -38,12 +38,10 @@
     <string name="generating_attestation">Generating attestation…</string>
     <string name="verify_strong"><b>Successfully performed strong paired verification and identity confirmation.</b>\n\n</string>
     <string name="verify_basic"><b>Successfully performed basic initial verification and pairing.</b>\n\n</string>
+
     <string name="device_information"><b>Verified device information:</b>\n\n</string>
     <string name="device">Device: %s\n</string>
     <string name="os">OS: %s (unmodified official release)\n</string>
-    <string name="os_stock">Stock</string>
-    <string name="os_graphene">GrapheneOS</string>
-    <string name="os_calyx">CalyxOS</string>
     <string name="os_version">OS version: %s\n</string>
     <string name="os_version_developer_preview">not a production release</string>
     <string name="os_patch_level">OS patch level: %s\n</string>
@@ -56,6 +54,7 @@
     <string name="identity">Identity: %s\n</string>
     <string name="first_verified">First verified: %s\n</string>
     <string name="last_verified">Last verified: %s\n</string>
+
     <string name="os_enforced">\n<b>Information provided by the verified OS:</b>\n\n</string>
     <string name="auditor_app_version">Auditor app version: %d\n</string>
     <string name="user_profile_secure">User profile secure: %s\n</string>
@@ -69,8 +68,10 @@
     <string name="deny_new_usb">Disallow new USB peripherals when locked: %s\n</string>
     <string name="oem_unlock_allowed">OEM unlocking allowed: %s\n</string>
     <string name="system_user">Main user account: %s\n</string>
+
     <string name="no">no</string>
     <string name="yes">yes</string>
+
     <string name="device_huawei">Huawei Honor 10 / View 10 / Mate 10 / Mate 20 Pro / P20 Pro / Y9 2019</string>
     <string name="device_huawei_honor_7a_pro">Huawei Honor 7A Pro</string>
     <string name="device_nokia">Nokia (6.1, 7 Plus)</string>
@@ -108,4 +109,8 @@
     <string name="device_moto_g7">Motorola moto g⁷</string>
     <string name="device_vivo_1807">Vivo 1807</string>
     <string name="device_revvl_2">T-Mobile REVVL 2</string>
+
+    <string name="os_stock">Stock</string>
+    <string name="os_graphene">GrapheneOS</string>
+    <string name="os_calyx">CalyxOS</string>
 </resources>
