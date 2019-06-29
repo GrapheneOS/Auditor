@@ -107,4 +107,5 @@
     <string name="device_htc">HTC EXODUS 1 / U12+</string>
     <string name="device_moto_g7">Motorola moto g⁷</string>
     <string name="device_vivo_1807">Vivo 1807</string>
+    <string name="device_revvl_2">T-Mobile REVVL 2</string>
 </resources>
