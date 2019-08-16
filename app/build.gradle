@@ -7,7 +7,7 @@ android {
         applicationId "app.attestation.auditor"
         minSdkVersion 24
         targetSdkVersion 28
-        versionCode 15
+        versionCode 16
         versionName versionCode.toString()
         resConfigs "en"
     }
