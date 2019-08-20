@@ -258,6 +258,10 @@ class AttestationProtocol {
             "Pixel 3a",
             "Pixel 3a XL").contains(Build.MODEL);
 
+    private static final ImmutableSet<Integer> extraPatchLevelMissing = ImmutableSet.of(
+            R.string.device_sm_g975f,
+            R.string.device_sm_t510);
+
     private static final ImmutableMap<String, String> fingerprintsMigration = ImmutableMap
             .<String, String>builder()
             // GrapheneOS Pixel 3
@@ -328,6 +332,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_sm_g965f, 1, 2, false, false, R.string.os_stock))
             .put("A4A544C2CFBAEAA88C12360C2E4B44C29722FC8DBB81392A6C1FAEDB7BF63010",
                     new DeviceInfo(R.string.device_sm_g965_msm, 1, 2, false, false, R.string.os_stock))
+            .put("08B2B5C6EC8F54C00C505756E1EF516BB4537B2F02D640410D287A43FCF92E3F",
+                    new DeviceInfo(R.string.device_sm_g975f, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("4E0570011025D01386D057B2B382969F804DCD19E001344535CF0CFDB8AD7CFE",
                     new DeviceInfo(R.string.device_sm_m205f, 1, 2, false, false, R.string.os_stock))
             .put("2A7E4954C9F703F3AC805AC660EA1727B981DB39B1E0F41E4013FA2586D3DF7F",
@@ -565,7 +571,7 @@ class AttestationProtocol {
             vendorPatchLevel = 0;
         } else {
             vendorPatchLevel = teeEnforced.getVendorPatchLevel();
-            if (vendorPatchLevel < VENDOR_PATCH_LEVEL_MINIMUM && device.name != R.string.device_sm_t510) {
+            if (vendorPatchLevel < VENDOR_PATCH_LEVEL_MINIMUM && !extraPatchLevelMissing.contains(device.name)) {
                 throw new GeneralSecurityException("Vendor patch level too old");
             }
         }
@@ -574,7 +580,7 @@ class AttestationProtocol {
             bootPatchLevel = 0;
         } else {
             bootPatchLevel = teeEnforced.getBootPatchLevel();
-            if (bootPatchLevel < BOOT_PATCH_LEVEL_MINIMUM && device.name != R.string.device_sm_t510) {
+            if (bootPatchLevel < BOOT_PATCH_LEVEL_MINIMUM && !extraPatchLevelMissing.contains(device.name)) {
                 throw new GeneralSecurityException("Boot patch level too old");
             }
         }
