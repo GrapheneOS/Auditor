@@ -127,6 +127,7 @@ public class AttestationActivity extends AppCompatActivity {
             "SM-G960U",
             "SM-G960U1",
             "SM-G960W",
+            "SM-G9600",
             "SM-G965F",
             "SM-G965U",
             "SM-G965U1",
