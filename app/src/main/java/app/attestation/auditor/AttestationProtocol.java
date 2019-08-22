@@ -292,6 +292,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_3_xl, 3, 4, false /* uses new API */, true, R.string.os_graphene))
             .put("8FF8B9B4F831114963669E04EA4F849F33F3744686A0B33B833682746645ABC8",
                     new DeviceInfo(R.string.device_pixel_3a, 3, 4, false /* uses new API */, true, R.string.os_graphene))
+            .put("91943FAA75DCB6392AE87DA18CA57D072BFFB80BC30F8FAFC7FFE13D76C5736E",
+                    new DeviceInfo(R.string.device_pixel_3a_xl, 3, 4, false /* uses new API */, true, R.string.os_graphene))
             // CalyxOS
             .put("BCEBF6844F6B0FA2ABE8E62A9D0D57A324D0C02CEFDFA019FD49832F9ED39105",
                     new DeviceInfo(R.string.device_pixel_2_generic, 2, 3, true, true, R.string.os_calyx))
