@@ -370,6 +370,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_vivo_1807, 2, 3, true, false, R.string.os_stock))
             .put("C55635636999E9D0A0588D24402256B7F9F3AEE07B4F7E4E003F09FF0190AFAE",
                     new DeviceInfo(R.string.device_revvl_2, 2, 3, false, false, R.string.os_stock))
+            .put("41BF0A26BB3AFDCCCC40F7B685083522EB5BF1C492F0EC4847F351265313CB07",
+                    new DeviceInfo(R.string.device_oppo_cph1903, 2, 3, true, false, R.string.os_stock))
             .build();
 
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxCustomOS = ImmutableMap
