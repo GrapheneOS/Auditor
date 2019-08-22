@@ -91,6 +91,7 @@ public class AttestationActivity extends AppCompatActivity {
             "CLT-L29",
             "COL-L29",
             "CPH1903",
+            "EML-L09",
             "EXODUS 1",
             "G8341",
             "G8342",
