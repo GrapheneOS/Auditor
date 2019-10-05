@@ -27,4 +27,9 @@
         <ignore path="src/main/java/app/attestation/auditor/RemoteVerifyJob.java"/>
         <ignore path="src/main/java/app/attestation/auditor/SubmitSampleJob.java"/>
     </issue>
+
+    <!-- android:useEmbeddedDex unused with API level < 29 -->
+    <issue id="UnusedAttribute">
+        <ignore path="src/main/AndroidManifest.xml"/>
+    </issue>
 </lint>
