@@ -360,6 +360,8 @@ public class AttestationActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+
         Log.d(TAG, "onActivityResult " + requestCode + " " + resultCode);
 
         if (requestCode == GENERATE_REQUEST_CODE) {
