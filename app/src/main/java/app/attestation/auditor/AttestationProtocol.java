@@ -257,13 +257,15 @@ class AttestationProtocol {
             "Pixel 3",
             "Pixel 3 XL",
             "Pixel 3a",
-            "Pixel 3a XL").contains(Build.MODEL);
+            "Pixel 3a XL",
+            "SM-N975U").contains(Build.MODEL);
 
     private static final ImmutableSet<Integer> extraPatchLevelMissing = ImmutableSet.of(
             R.string.device_sm_a705fn,
             R.string.device_sm_g970f,
             R.string.device_sm_g975f,
             R.string.device_sm_n970f,
+            R.string.device_sm_n975u,
             R.string.device_sm_t510);
 
     private static final ImmutableMap<String, String> fingerprintsMigration = ImmutableMap
@@ -370,6 +372,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_sm_n960u, 1, 2, false, false, R.string.os_stock))
             .put("E94BC43B97F98CD10C22CD9D8469DBE621116ECFA624FE291A1D53CF3CD685D1",
                     new DeviceInfo(R.string.device_sm_n970f, 3, 4, false /* uses new API */, true, R.string.os_stock))
+            .put("52946676088007755EB586B3E3F3E8D3821BE5DF73513E6C13640507976420E6",
+                    new DeviceInfo(R.string.device_sm_n975u, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("F3688C02D9676DEDB6909CADE364C271901FD66EA4F691AEB8B8921195E469C5",
                     new DeviceInfo(R.string.device_sm_s367vl, 1, 2, false, false, R.string.os_stock))
             .put("106592D051E54388C6E601DFD61D59EB1674A8B93216C65C5B3E1830B73D3B82",
@@ -439,6 +443,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_3_generic, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("8CA89AF1A6DAA74B00810849356DE929CFC4498EF36AF964757BDE8A113BF46D",
                     new DeviceInfo(R.string.device_pixel_3a_generic, 3, 4, false /* uses new API */, true, R.string.os_stock))
+            .put("9AC63842137D92C119A1B1BE2C9270B9EBB6083BBE6350B7823571942B5869F0",
+                    new DeviceInfo(R.string.device_sm_n975u, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .build();
 
     private static byte[] getChallengeIndex(final Context context) {
