@@ -619,10 +619,11 @@ class AttestationProtocol {
         // version sanity checks
         final int attestationVersion = attestation.getAttestationVersion();
         if (attestationVersion < device.attestationVersion) {
-            throw new GeneralSecurityException("attestation version below " + device.attestationVersion);
+            throw new GeneralSecurityException("attestation version " + attestationVersion + " below " + device.attestationVersion);
         }
-        if (attestation.getKeymasterVersion() < device.keymasterVersion) {
-            throw new GeneralSecurityException("keymaster version below " + device.keymasterVersion);
+        final int keymasterVersion = attestation.getKeymasterVersion();
+        if (keymasterVersion < device.keymasterVersion) {
+            throw new GeneralSecurityException("keymaster version " + keymasterVersion + " below " + device.keymasterVersion);
         }
 
         final byte[] verifiedBootHash = rootOfTrust.getVerifiedBootHash();
