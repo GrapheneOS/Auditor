@@ -375,6 +375,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_htc, 2, 3, true, false, R.string.os_stock))
             .put("80BAB060807CFFA45D4747DF1AD706FEE3AE3F645F80CF14871DDBE27E14C30B",
                     new DeviceInfo(R.string.device_moto_g7, 3, 4, false /* uses new API */, true, R.string.os_stock))
+            .put("C2224571C9CD5C89200A7311B1E37AA9CF751E2E19753E8D3702BCA00BE1D42C",
+                    new DeviceInfo(R.string.device_motorola_one_vision, 2, 3, false, true, R.string.os_stock))
             .put("1F6D98D1B0E1F1CE1C872BD36C668F9DFDBE0D47594789E1540DF4E6198F657D",
                     new DeviceInfo(R.string.device_vivo_1807, 2, 3, true, false, R.string.os_stock))
             .put("C55635636999E9D0A0588D24402256B7F9F3AEE07B4F7E4E003F09FF0190AFAE",

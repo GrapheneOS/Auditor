@@ -111,6 +111,7 @@ public class AttestationActivity extends AppCompatActivity {
             "Mi A2 Lite",
             "MI 9",
             "moto g(7)",
+            "motorola one vision",
             "Nokia 6.1",
             "Nokia 6.1 Plus",
             "Nokia 7.1",
