@@ -263,6 +263,7 @@ class AttestationProtocol {
             R.string.device_sm_a705fn,
             R.string.device_sm_g970f,
             R.string.device_sm_g975f,
+            R.string.device_sm_n970f,
             R.string.device_sm_t510);
 
     private static final ImmutableMap<String, String> fingerprintsMigration = ImmutableMap
@@ -365,6 +366,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_sm_j260a, 1, 2, false, false, R.string.os_stock))
             .put("BB053A5F64D3E3F17C4611340FF2BBE2F605B832A9FA412B2C87F2A163ECE2FB",
                     new DeviceInfo(R.string.device_sm_j737t1, 1, 2, false, false, R.string.os_stock))
+            .put("E94BC43B97F98CD10C22CD9D8469DBE621116ECFA624FE291A1D53CF3CD685D1",
+                    new DeviceInfo(R.string.device_sm_n970f, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("4285AD64745CC79B4499817F264DC16BF2AF5163AF6C328964F39E61EC84693E",
                     new DeviceInfo(R.string.device_sony_xperia_xa2, 2, 3, true, true, R.string.os_stock))
             .put("54A9F21E9CFAD3A2D028517EF333A658302417DB7FB75E0A109A019646CC5F39",

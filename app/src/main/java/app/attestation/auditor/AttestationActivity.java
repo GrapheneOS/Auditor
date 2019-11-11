@@ -150,6 +150,7 @@ public class AttestationActivity extends AppCompatActivity {
             "SM-M205F",
             "SM-N960F",
             "SM-N960U",
+            "SM-N970F",
             "SM-T510",
             "SM-T835",
             "vivo 1807").contains(Build.MODEL);
