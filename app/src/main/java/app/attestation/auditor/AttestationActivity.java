@@ -84,6 +84,7 @@ public class AttestationActivity extends AppCompatActivity {
             "ALP-L29",
             "AUM-L29",
             "Aquaris X2 Pro",
+            "BBF100-1",
             "BBF100-6",
             "BKL-L04",
             "BKL-L09",
