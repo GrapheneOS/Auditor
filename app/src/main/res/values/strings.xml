@@ -104,6 +104,7 @@
     <string name="device_sm_n960f">Samsung Galaxy Note 9 (SM-N960F)</string>
     <string name="device_sm_n960u">Samsung Galaxy Note 9 (SM-N960U)</string>
     <string name="device_sm_n970f">Samsung Galaxy Note 10 (SM-N970F)</string>
+    <string name="device_sm_n970u">Samsung Galaxy Note 10 (SM-N970U)</string>
     <string name="device_sm_n975u">Samsung Galaxy Note 10+ (SM-N975U)</string>
     <string name="device_sm_t510">Samsung Galaxy Tab A 10.1 (2019)</string>
     <string name="device_sm_t835">Samsung Galaxy Tab S4</string>
