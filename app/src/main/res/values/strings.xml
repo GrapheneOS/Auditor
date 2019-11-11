@@ -128,7 +128,8 @@
     <string name="device_oppo_cph1831">Oppo R15 Pro (CPH1831)</string>
     <string name="device_oppo_cph1903">Oppo A7 (CPH1903)</string>
     <string name="device_oppo_cph1909">Oppo A5s (CPH1909)</string>
-    <string name="device_lm_q720">LG Style 5 (Q720)</string>
+    <string name="device_lm_q720">LG Stylo 5 (LM-Q720)</string>
+    <string name="device_lg_q710al">LG Q Stylo 4 (LG-Q710AL)</string>
     <string name="device_rmx1941">Realme C2 (RMX1941)</string>
 
     <string name="os_stock">Stock</string>

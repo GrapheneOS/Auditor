@@ -410,6 +410,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_oppo_cph1903, 2, 3, true, false, R.string.os_stock))
             .put("7E19E217072BE6CB7A4C6F673FD3FB62DC51B3E204E7475838747947A3920DD8",
                     new DeviceInfo(R.string.device_oppo_cph1909, 2, 3, false, false, R.string.os_stock))
+            .put("0D5F986943D0CE0D4F9783C27EEBE175BE359927DB8B6546B667279A81133C3C",
+                    new DeviceInfo(R.string.device_lg_q710al, 2, 3, false, false, R.string.os_stock))
             .put("D20078F2AF2A7D3ECA3064018CB8BD47FBCA6EE61ABB41BA909D3C529CB802F4",
                     new DeviceInfo(R.string.device_lm_q720, 3, 4, false /* uses new API */, false, R.string.os_stock))
             .put("54EC644C21FD8229E3B0066513337A8E2C8EF3098A3F974B6A1CFE456A683DAE",

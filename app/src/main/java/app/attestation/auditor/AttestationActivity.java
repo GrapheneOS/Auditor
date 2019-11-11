@@ -109,6 +109,7 @@ public class AttestationActivity extends AppCompatActivity {
             "HTC 2Q55100",
             "JKM-LX3",
             "LLD-L31",
+            "LG-Q710AL",
             "LM-Q720",
             "LYA-L29",
             "Mi A2",
