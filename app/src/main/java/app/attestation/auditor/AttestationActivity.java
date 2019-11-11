@@ -157,6 +157,7 @@ public class AttestationActivity extends AppCompatActivity {
             "SM-S367VL",
             "SM-T510",
             "SM-T835",
+            "SNE-LX1",
             "vivo 1807").contains(Build.MODEL);
 
     private static int getFirstApiLevel() {
