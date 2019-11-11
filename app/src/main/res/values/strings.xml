@@ -90,6 +90,7 @@
     <string name="device_sm_g9600">Samsung Galaxy S9 China (G9600)</string>
     <string name="device_sm_g965f">Samsung Galaxy S9+ (SM-G965F)</string>
     <string name="device_sm_g965_msm">Samsung Galaxy S9+ (Snapdragon)</string>
+    <string name="device_sm_g970f">Samsung Galaxy S10e (SM-G970F)</string>
     <string name="device_sm_g975f">Samsung Galaxy S10+ (SM-G975F)</string>
     <string name="device_sm_j337a">Samsung Galaxy J3 2018 (SM-J337A) / Galaxy Amp Prime 3 (SM-J337AZ)</string>
     <string name="device_sm_j720f">Samsung Galaxy J7 Duo (SM-J720F)</string>

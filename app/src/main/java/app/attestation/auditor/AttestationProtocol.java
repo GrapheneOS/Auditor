@@ -260,6 +260,7 @@ class AttestationProtocol {
             "Pixel 3a XL").contains(Build.MODEL);
 
     private static final ImmutableSet<Integer> extraPatchLevelMissing = ImmutableSet.of(
+            R.string.device_sm_g970f,
             R.string.device_sm_g975f,
             R.string.device_sm_t510);
 
@@ -337,6 +338,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_sm_g965f, 1, 2, false, false, R.string.os_stock))
             .put("A4A544C2CFBAEAA88C12360C2E4B44C29722FC8DBB81392A6C1FAEDB7BF63010",
                     new DeviceInfo(R.string.device_sm_g965_msm, 1, 2, false, false, R.string.os_stock))
+            .put("9D77474FA4FEA6F0B28636222FBCEE2BB1E6FF9856C736C85B8EA6E3467F2BBA",
+                    new DeviceInfo(R.string.device_sm_g970f, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("08B2B5C6EC8F54C00C505756E1EF516BB4537B2F02D640410D287A43FCF92E3F",
                     new DeviceInfo(R.string.device_sm_g975f, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("4558C1AFB30D1B46CB93F85462BC7D7FCF70B0103B9DBB0FE96DD828F43F29FC",
@@ -577,11 +580,11 @@ class AttestationProtocol {
                 throw new GeneralSecurityException("OS version is not a production release");
             }
         } else if (osVersion < OS_VERSION_MINIMUM) {
-            throw new GeneralSecurityException("OS version too old");
+            throw new GeneralSecurityException("OS version too old: " + osVersion);
         }
         final int osPatchLevel = teeEnforced.getOsPatchLevel();
         if (osPatchLevel < OS_PATCH_LEVEL_MINIMUM) {
-            throw new GeneralSecurityException("OS patch level too old");
+            throw new GeneralSecurityException("OS patch level too old: " + osPatchLevel);
         }
         final int vendorPatchLevel;
         if (teeEnforced.getVendorPatchLevel() == null) {
@@ -589,7 +592,7 @@ class AttestationProtocol {
         } else {
             vendorPatchLevel = teeEnforced.getVendorPatchLevel();
             if (vendorPatchLevel < VENDOR_PATCH_LEVEL_MINIMUM && !extraPatchLevelMissing.contains(device.name)) {
-                throw new GeneralSecurityException("Vendor patch level too old");
+                throw new GeneralSecurityException("Vendor patch level too old: " + vendorPatchLevel);
             }
         }
         final int bootPatchLevel;
@@ -598,7 +601,7 @@ class AttestationProtocol {
         } else {
             bootPatchLevel = teeEnforced.getBootPatchLevel();
             if (bootPatchLevel < BOOT_PATCH_LEVEL_MINIMUM && !extraPatchLevelMissing.contains(device.name)) {
-                throw new GeneralSecurityException("Boot patch level too old");
+                throw new GeneralSecurityException("Boot patch level too old: " + bootPatchLevel);
             }
         }
 
