@@ -90,6 +90,7 @@ public class AttestationActivity extends AppCompatActivity {
             "BKL-L09",
             "CLT-L29",
             "COL-L29",
+            "DUB-LX3",
             "CPH1831",
             "CPH1903",
             "CPH1909",
