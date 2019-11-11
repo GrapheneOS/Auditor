@@ -260,6 +260,7 @@ class AttestationProtocol {
             "Pixel 3a XL").contains(Build.MODEL);
 
     private static final ImmutableSet<Integer> extraPatchLevelMissing = ImmutableSet.of(
+            R.string.device_sm_a705fn,
             R.string.device_sm_g970f,
             R.string.device_sm_g975f,
             R.string.device_sm_t510);
@@ -356,6 +357,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_sm_t510, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("87790149AED63553B768456AAB6DAAD5678CD87BDEB2BF3649467085349C34E0",
                     new DeviceInfo(R.string.device_sm_t835, 1, 2, false, false, R.string.os_stock))
+            .put("72376CAACF11726D4922585732429FB97D0D1DD69F0D2E0770B9E61D14ADDE65",
+                    new DeviceInfo(R.string.device_sm_a705fn, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("4285AD64745CC79B4499817F264DC16BF2AF5163AF6C328964F39E61EC84693E",
                     new DeviceInfo(R.string.device_sony_xperia_xa2, 2, 3, true, true, R.string.os_stock))
             .put("54A9F21E9CFAD3A2D028517EF333A658302417DB7FB75E0A109A019646CC5F39",
