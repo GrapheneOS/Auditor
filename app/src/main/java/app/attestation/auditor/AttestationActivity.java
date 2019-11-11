@@ -131,6 +131,7 @@ public class AttestationActivity extends AppCompatActivity {
             "POCOPHONE F1",
             "POT-LX3",
             "REVVL 2",
+            "RMX1941",
             "SM-A705FN",
             "SM-G960F",
             "SM-G960U",
