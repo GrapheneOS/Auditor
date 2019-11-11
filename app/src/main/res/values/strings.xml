@@ -102,6 +102,7 @@
     <string name="device_sm_n960u">Samsung Galaxy Note 9 (SM-N960U)</string>
     <string name="device_sm_t510">Samsung Galaxy Tab A 10.1 (2019)</string>
     <string name="device_sm_t835">Samsung Galaxy Tab S4</string>
+    <string name="device_sm_j737t1">Samsung Galaxy J7 (SM-J737T1)</string>
     <string name="device_sony_xperia_xa2">Sony Xperia XA2</string>
     <string name="device_sony_xperia_xz1">Sony Xperia XZ1 / Xperia XZ1 Compact</string>
     <string name="device_sony_xperia_xz2">Sony Xperia XZ2 (H8216)</string>
