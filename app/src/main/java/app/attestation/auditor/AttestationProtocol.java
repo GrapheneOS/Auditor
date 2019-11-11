@@ -384,6 +384,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_vivo_1807, 2, 3, true, false, R.string.os_stock))
             .put("C55635636999E9D0A0588D24402256B7F9F3AEE07B4F7E4E003F09FF0190AFAE",
                     new DeviceInfo(R.string.device_revvl_2, 2, 3, false, false, R.string.os_stock))
+            .put("341C50D577DC5F3D5B46E8BFA22C22D1E5FC7D86D4D860E70B89222A7CBFC893",
+                    new DeviceInfo(R.string.device_oppo_cph1831, 2, 3, true, false, R.string.os_stock))
             .put("41BF0A26BB3AFDCCCC40F7B685083522EB5BF1C492F0EC4847F351265313CB07",
                     new DeviceInfo(R.string.device_oppo_cph1903, 2, 3, true, false, R.string.os_stock))
             .put("D20078F2AF2A7D3ECA3064018CB8BD47FBCA6EE61ABB41BA909D3C529CB802F4",
