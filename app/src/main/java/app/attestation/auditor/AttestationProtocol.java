@@ -364,6 +364,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_sm_j260t1, 1, 2, false, false, R.string.os_stock))
             .put("F0FC0AF47D3FE4F27D79CF629AD6AC42AA1EEDE0A29C0AE109A91BBD1E7CD76D",
                     new DeviceInfo(R.string.device_sm_j260a, 1, 2, false, false, R.string.os_stock))
+            .put("410102030405060708090001020304050607080900010203040506070809005A",
+                    new DeviceInfo(R.string.device_sm_j260f, 1, 2, false, false, R.string.os_stock))
             .put("BB053A5F64D3E3F17C4611340FF2BBE2F605B832A9FA412B2C87F2A163ECE2FB",
                     new DeviceInfo(R.string.device_sm_j737t1, 1, 2, false, false, R.string.os_stock))
             .put("E94BC43B97F98CD10C22CD9D8469DBE621116ECFA624FE291A1D53CF3CD685D1",
