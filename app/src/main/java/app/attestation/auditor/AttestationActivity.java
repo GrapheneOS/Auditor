@@ -116,6 +116,7 @@ public class AttestationActivity extends AppCompatActivity {
             "MI 9",
             "moto g(7)",
             "motorola one vision",
+            "Nokia 3.1",
             "Nokia 6.1",
             "Nokia 6.1 Plus",
             "Nokia 7.1",
