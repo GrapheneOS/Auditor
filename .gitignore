@@ -8,5 +8,5 @@
 /captures
 .externalNativeBuild
 signing.properties
-*.jks
+*.keystore
 /.idea
