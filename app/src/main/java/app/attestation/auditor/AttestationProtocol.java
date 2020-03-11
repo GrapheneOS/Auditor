@@ -153,10 +153,10 @@ class AttestationProtocol {
     // For each audit, the Auditee generates a fresh hardware-backed key with key attestation
     // using the provided challenge. It reports back the certificate chain to be verified by the
     // Auditor. The public key certificate of the generated key is signed by a key provisioned on
-    // the device (not usable by the OS) chaining up to a known Pixel 2 (XL) intermediate and the
-    // Google root. The certificate contains the key attestation metadata including the important
-    // fields with the lock state, verified boot state, the verified boot public key fingerprint
-    // and the OS version / patch level:
+    // the device (not usable by the OS) chaining up to an intermediate and the Google root. The
+    // certificate contains the key attestation metadata including the important fields with the
+    // lock state, verified boot state, the verified boot public key fingerprint and the OS
+    // version / patch level:
     //
     // https://developer.android.com/training/articles/security-key-attestation.html#certificate_schema
     //
