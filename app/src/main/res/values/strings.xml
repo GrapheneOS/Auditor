@@ -103,6 +103,7 @@
     <string name="device_sm_m205f">Samsung Galaxy M20 (SM-M205F)</string>
     <string name="device_sm_n960f">Samsung Galaxy Note 9 (SM-N960F)</string>
     <string name="device_sm_n960u">Samsung Galaxy Note 9 (SM-N960U)</string>
+    <string name="device_sm_n960u1">Samsung Galaxy Note 9 (SM-N960U1)</string>
     <string name="device_sm_n970f">Samsung Galaxy Note 10 (SM-N970F)</string>
     <string name="device_sm_n970u">Samsung Galaxy Note 10 (SM-N970U)</string>
     <string name="device_sm_n975u">Samsung Galaxy Note 10+ (SM-N975U)</string>
