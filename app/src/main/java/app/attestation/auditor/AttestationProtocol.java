@@ -1043,9 +1043,17 @@ class AttestationProtocol {
 
     // Need FingerprintManager until BiometricManager is available in API 29+
     @SuppressWarnings("deprecation")
-    static boolean hasEnrolledFingerprints(final Context context) {
-        return context.getSystemService(android.hardware.fingerprint.FingerprintManager.class)
-                .hasEnrolledFingerprints();
+    static boolean hasEnrolledFingerprints(final Context context) throws GeneralSecurityException {
+        final android.hardware.fingerprint.FingerprintManager manager =
+                context.getSystemService(android.hardware.fingerprint.FingerprintManager.class);
+        // buggy devices don't always set FEATURE_FINGERPRINT so it can't be checked directly
+        if (manager == null) {
+            if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
+                throw new GeneralSecurityException("expected non-null FingerprintManager");
+            }
+            return false;
+        }
+        return manager.hasEnrolledFingerprints();
     }
 
     static AttestationResult generateSerialized(final Context context, final byte[] challengeMessage,
