@@ -10,3 +10,4 @@
 signing.properties
 *.keystore
 /.idea
+/releases
