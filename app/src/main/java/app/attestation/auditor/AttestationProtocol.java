@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.hardware.biometrics.BiometricManager;
 import android.os.Build;
 import android.os.UserManager;
 import android.provider.Settings;
@@ -203,7 +204,7 @@ class AttestationProtocol {
     private static final int OS_ENFORCED_FLAGS_DEVICE_ADMIN = 1 << 2;
     private static final int OS_ENFORCED_FLAGS_ADB_ENABLED = 1 << 3;
     private static final int OS_ENFORCED_FLAGS_ADD_USERS_WHEN_LOCKED = 1 << 4;
-    private static final int OS_ENFORCED_FLAGS_ENROLLED_FINGERPRINTS = 1 << 5;
+    private static final int OS_ENFORCED_FLAGS_ENROLLED_BIOMETRICS = 1 << 5;
     private static final int OS_ENFORCED_FLAGS_DENY_NEW_USB = 1 << 6;
     private static final int OS_ENFORCED_FLAGS_DEVICE_ADMIN_NON_SYSTEM = 1 << 7;
     private static final int OS_ENFORCED_FLAGS_OEM_UNLOCK_ALLOWED = 1 << 8;
@@ -214,7 +215,7 @@ class AttestationProtocol {
             OS_ENFORCED_FLAGS_DEVICE_ADMIN |
             OS_ENFORCED_FLAGS_ADB_ENABLED |
             OS_ENFORCED_FLAGS_ADD_USERS_WHEN_LOCKED |
-            OS_ENFORCED_FLAGS_ENROLLED_FINGERPRINTS |
+            OS_ENFORCED_FLAGS_ENROLLED_BIOMETRICS |
             OS_ENFORCED_FLAGS_DENY_NEW_USB |
             OS_ENFORCED_FLAGS_DEVICE_ADMIN_NON_SYSTEM |
             OS_ENFORCED_FLAGS_OEM_UNLOCK_ALLOWED |
@@ -789,7 +790,7 @@ class AttestationProtocol {
             final Certificate[] attestationCertificates, final boolean userProfileSecure,
             final boolean accessibility, final boolean deviceAdmin,
             final boolean deviceAdminNonSystem, final boolean adbEnabled,
-            final boolean addUsersWhenLocked, final boolean enrolledFingerprints,
+            final boolean addUsersWhenLocked, final boolean enrolledBiometrics,
             final boolean denyNewUsb, final boolean oemUnlockAllowed, final boolean systemUser)
             throws GeneralSecurityException, IOException {
         final String fingerprintHex = BaseEncoding.base16().encode(fingerprint);
@@ -918,8 +919,8 @@ class AttestationProtocol {
         osEnforced.append(context.getString(R.string.auditor_app_version, verified.appVersion));
         osEnforced.append(context.getString(R.string.user_profile_secure,
                 toYesNoString(context, userProfileSecure)));
-        osEnforced.append(context.getString(R.string.enrolled_fingerprints,
-                toYesNoString(context, enrolledFingerprints)));
+        osEnforced.append(context.getString(R.string.enrolled_biometrics,
+                toYesNoString(context, enrolledBiometrics)));
         osEnforced.append(context.getString(R.string.accessibility,
                 toYesNoString(context, accessibility)));
 
@@ -1001,7 +1002,7 @@ class AttestationProtocol {
         final boolean deviceAdminNonSystem = (osEnforcedFlags & OS_ENFORCED_FLAGS_DEVICE_ADMIN_NON_SYSTEM) != 0;
         final boolean adbEnabled = (osEnforcedFlags & OS_ENFORCED_FLAGS_ADB_ENABLED) != 0;
         final boolean addUsersWhenLocked = (osEnforcedFlags & OS_ENFORCED_FLAGS_ADD_USERS_WHEN_LOCKED) != 0;
-        final boolean enrolledFingerprints = (osEnforcedFlags & OS_ENFORCED_FLAGS_ENROLLED_FINGERPRINTS) != 0;
+        final boolean enrolledBiometrics = (osEnforcedFlags & OS_ENFORCED_FLAGS_ENROLLED_BIOMETRICS) != 0;
         final boolean denyNewUsb = (osEnforcedFlags & OS_ENFORCED_FLAGS_DENY_NEW_USB) != 0;
         final boolean oemUnlockAllowed = (osEnforcedFlags & OS_ENFORCED_FLAGS_OEM_UNLOCK_ALLOWED) != 0;
         final boolean systemUser = (osEnforcedFlags & OS_ENFORCED_FLAGS_SYSTEM_USER) != 0;
@@ -1022,7 +1023,7 @@ class AttestationProtocol {
         final byte[] challenge = Arrays.copyOfRange(challengeMessage, 1 + CHALLENGE_LENGTH, 1 + CHALLENGE_LENGTH * 2);
         return verify(context, fingerprint, challenge, deserializer.asReadOnlyBuffer(), signature,
                 certificates, userProfileSecure, accessibility, deviceAdmin, deviceAdminNonSystem,
-                adbEnabled, addUsersWhenLocked, enrolledFingerprints, denyNewUsb, oemUnlockAllowed,
+                adbEnabled, addUsersWhenLocked, enrolledBiometrics, denyNewUsb, oemUnlockAllowed,
                 systemUser);
     }
 
@@ -1041,19 +1042,22 @@ class AttestationProtocol {
         builder.setIsStrongBoxBacked(true);
     }
 
-    // Need FingerprintManager until BiometricManager is available in API 29+
-    @SuppressWarnings("deprecation")
-    static boolean hasEnrolledFingerprints(final Context context) throws GeneralSecurityException {
-        final android.hardware.fingerprint.FingerprintManager manager =
-                context.getSystemService(android.hardware.fingerprint.FingerprintManager.class);
-        // buggy devices don't always set FEATURE_FINGERPRINT so it can't be checked directly
+    @TargetApi(30)
+    static boolean hasEnrolledBiometrics(final Context context) throws GeneralSecurityException {
+        final android.hardware.biometrics.BiometricManager manager =
+                context.getSystemService(android.hardware.biometrics.BiometricManager.class);
+        // buggy devices don't always set biometric FEATURE_* so it can't be checked directly
         if (manager == null) {
-            if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
-                throw new GeneralSecurityException("expected non-null FingerprintManager");
+            if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)
+                    || context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_FACE)
+                    || context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_IRIS)) {
+
+                throw new GeneralSecurityException("expected non-null BiometricManager");
             }
             return false;
         }
-        return manager.hasEnrolledFingerprints();
+        return (manager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG
+                | BiometricManager.Authenticators.BIOMETRIC_WEAK)) == BiometricManager.BIOMETRIC_SUCCESS;
     }
 
     static AttestationResult generateSerialized(final Context context, final byte[] challengeMessage,
@@ -1160,7 +1164,7 @@ class AttestationProtocol {
             if (userProfileSecure && !keyguard.isKeyguardSecure()) {
                 throw new GeneralSecurityException("keyguard state inconsistent");
             }
-            final boolean enrolledFingerprints = hasEnrolledFingerprints(context);
+            final boolean enrolledBiometrics = hasEnrolledBiometrics(context);
 
             final AccessibilityManager am = context.getSystemService(AccessibilityManager.class);
             final boolean accessibility = am.isEnabled();
@@ -1247,8 +1251,8 @@ class AttestationProtocol {
             if (addUsersWhenLocked) {
                 osEnforcedFlags |= OS_ENFORCED_FLAGS_ADD_USERS_WHEN_LOCKED;
             }
-            if (enrolledFingerprints) {
-                osEnforcedFlags |= OS_ENFORCED_FLAGS_ENROLLED_FINGERPRINTS;
+            if (enrolledBiometrics) {
+                osEnforcedFlags |= OS_ENFORCED_FLAGS_ENROLLED_BIOMETRICS;
             }
             if (denyNewUsb) {
                 osEnforcedFlags |= OS_ENFORCED_FLAGS_DENY_NEW_USB;
