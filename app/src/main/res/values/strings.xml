@@ -68,6 +68,7 @@
     <string name="deny_new_usb">Disallow new USB peripherals when locked: %s\n</string>
     <string name="oem_unlock_allowed">OEM unlocking allowed: %s\n</string>
     <string name="system_user">Main user account: %s\n</string>
+    <string name="user_count">User count:&#160;</string>
 
     <string name="no">no</string>
     <string name="yes">yes</string>

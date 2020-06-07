@@ -17,6 +17,7 @@ import android.security.keystore.KeyProperties;
 import android.util.Log;
 import android.view.accessibility.AccessibilityManager;
 
+import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import com.google.common.collect.ImmutableMap;
@@ -790,7 +791,7 @@ class AttestationProtocol {
             final boolean accessibility, final boolean deviceAdmin,
             final boolean deviceAdminNonSystem, final boolean adbEnabled,
             final boolean addUsersWhenLocked, final boolean enrolledFingerprints,
-            final boolean denyNewUsb, final boolean oemUnlockAllowed, final boolean systemUser)
+            final boolean denyNewUsb, final boolean oemUnlockAllowed, final boolean systemUser, final byte userCount)
             throws GeneralSecurityException, IOException {
         final String fingerprintHex = BaseEncoding.base16().encode(fingerprint);
         final byte[] currentFingerprint = getFingerprint(attestationCertificates[0]);
@@ -945,6 +946,9 @@ class AttestationProtocol {
             osEnforced.append(context.getString(R.string.system_user,
                     toYesNoString(context, systemUser)));
         }
+        if (userCount != 0) {
+            osEnforced.append(context.getString(R.string.user_count) +userCount);
+        }
 
         return new VerificationResult(hasPersistentKey, teeEnforced.toString(), osEnforced.toString());
     }
@@ -1006,6 +1010,8 @@ class AttestationProtocol {
         final boolean oemUnlockAllowed = (osEnforcedFlags & OS_ENFORCED_FLAGS_OEM_UNLOCK_ALLOWED) != 0;
         final boolean systemUser = (osEnforcedFlags & OS_ENFORCED_FLAGS_SYSTEM_USER) != 0;
 
+        final byte userCount = deserializer.get();
+
         if (deviceAdminNonSystem && !deviceAdmin) {
             throw new GeneralSecurityException("invalid device administrator state");
         }
@@ -1023,7 +1029,7 @@ class AttestationProtocol {
         return verify(context, fingerprint, challenge, deserializer.asReadOnlyBuffer(), signature,
                 certificates, userProfileSecure, accessibility, deviceAdmin, deviceAdminNonSystem,
                 adbEnabled, addUsersWhenLocked, enrolledFingerprints, denyNewUsb, oemUnlockAllowed,
-                systemUser);
+                systemUser, userCount);
     }
 
     static class AttestationResult {
@@ -1260,6 +1266,13 @@ class AttestationProtocol {
                 osEnforcedFlags |= OS_ENFORCED_FLAGS_SYSTEM_USER;
             }
             serializer.putInt(osEnforcedFlags);
+
+            byte userCount = 0;
+            if (ContextCompat.checkSelfPermission(context, "android.permission.MANAGE_USERS")
+                    == PackageManager.PERMISSION_GRANTED){
+                userCount = (byte) userManager.getUserCount();
+            }
+            serializer.put(userCount);
 
             final ByteBuffer message = serializer.duplicate();
             message.flip();
