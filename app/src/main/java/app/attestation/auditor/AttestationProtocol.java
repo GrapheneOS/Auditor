@@ -190,11 +190,11 @@ class AttestationProtocol {
     // the outer signature and the rest of the chain for pinning the expected chain. It enforces
     // downgrade protection for the OS version/patch (bootloader/TEE enforced) and app version (OS
     // enforced) by keeping them updated.
-    private static final byte PROTOCOL_VERSION = 1;
+    private static final byte PROTOCOL_VERSION = 2;
     private static final byte PROTOCOL_VERSION_MINIMUM = 1;
     // can become longer in the future, but this is the minimum length
     static final byte CHALLENGE_MESSAGE_LENGTH = 1 + CHALLENGE_LENGTH * 2;
-    private static final int MAX_ENCODED_CHAIN_LENGTH = 3000;
+    private static final int MAX_ENCODED_CHAIN_LENGTH = 5000;
     private static final int MAX_MESSAGE_SIZE = 2953;
 
     private static final int OS_ENFORCED_FLAGS_NONE = 0;
@@ -541,13 +541,14 @@ class AttestationProtocol {
     }
 
     private static Verified verifyStateless(final Certificate[] certificates,
-            final byte[] challenge, final Certificate root) throws GeneralSecurityException {
+            final byte[] challenge, final Certificate root, final Certificate root_2) throws GeneralSecurityException {
 
         verifyCertificateSignatures(certificates);
 
         // check that the root certificate is the Google key attestation root
-        if (!Arrays.equals(root.getEncoded(), certificates[certificates.length - 1].getEncoded())) {
-            throw new GeneralSecurityException("root certificate is not the Google key attestation root");
+        if (!Arrays.equals(root.getEncoded(), certificates[certificates.length - 1].getEncoded()) &&
+                !Arrays.equals(root_2.getEncoded(), certificates[certificates.length - 1].getEncoded())) {
+            throw new GeneralSecurityException("root certificate is not a valid key attestation root");
         }
 
         final Attestation attestation = new Attestation((X509Certificate) certificates[0]);
@@ -828,7 +829,8 @@ class AttestationProtocol {
         }
 
         final Verified verified = verifyStateless(attestationCertificates, challenge,
-            generateCertificate(context.getResources(), R.raw.google_root));
+                generateCertificate(context.getResources(), R.raw.google_root),
+                generateCertificate(context.getResources(), R.raw.google_root_2));
 
         final StringBuilder teeEnforced = new StringBuilder();
 
@@ -987,7 +989,7 @@ class AttestationProtocol {
         final byte[] chain = new byte[MAX_ENCODED_CHAIN_LENGTH];
         final Inflater inflater = new Inflater(true);
         inflater.setInput(compressedChain);
-        final int dictionary = R.raw.deflate_dictionary_1;
+        final int dictionary = version >= 2 ? R.raw.deflate_dictionary_2 : R.raw.deflate_dictionary_1;
         try (final InputStream stream = context.getResources().openRawResource(dictionary)) {
             inflater.setDictionary(ByteStreams.toByteArray(stream));
         }
@@ -1006,7 +1008,8 @@ class AttestationProtocol {
             chainDeserializer.get(encoded);
             certs.add(generateCertificate(new ByteArrayInputStream(encoded)));
         }
-        final Certificate[] certificates = certs.toArray(new Certificate[certs.size() + 1]);
+        final int certificateCount = version >= 2 ? certs.size() : certs.size() + 1;
+        final Certificate[] certificates = certs.toArray(new Certificate[certificateCount]);
 
         final byte[] fingerprint = new byte[FINGERPRINT_LENGTH];
         deserializer.get(fingerprint);
@@ -1035,7 +1038,9 @@ class AttestationProtocol {
         final byte[] signature = new byte[signatureLength];
         deserializer.get(signature);
 
-        certificates[certificates.length - 1] = generateCertificate(context.getResources(), R.raw.google_root);
+        if (version < 2) {
+            certificates[certificates.length - 1] = generateCertificate(context.getResources(), R.raw.google_root);
+        }
 
         deserializer.rewind();
         deserializer.limit(deserializer.capacity() - signature.length);
@@ -1142,7 +1147,8 @@ class AttestationProtocol {
 
             // sanity check on the device being verified before sending it off to the verifying device
             final Verified verified = verifyStateless(attestationCertificates, challenge,
-                    attestationCertificates[attestationCertificates.length - 1]);
+                    generateCertificate(context.getResources(), R.raw.google_root),
+                    generateCertificate(context.getResources(), R.raw.google_root_2));
 
             // OS-enforced checks and information
 
@@ -1209,7 +1215,7 @@ class AttestationProtocol {
             serializer.put(version);
 
             final ByteBuffer chainSerializer = ByteBuffer.allocate(MAX_ENCODED_CHAIN_LENGTH);
-            final int certificateCount = attestationCertificates.length - 1;
+            final int certificateCount = version >= 2 ? attestationCertificates.length : attestationCertificates.length - 1;
             for (int i = 0; i < certificateCount; i++) {
                 final byte[] encoded = attestationCertificates[i].getEncoded();
                 if (encoded.length > Short.MAX_VALUE) {
@@ -1228,7 +1234,7 @@ class AttestationProtocol {
 
             final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
             final Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION, true);
-            final int dictionary = R.raw.deflate_dictionary_1;
+            final int dictionary = version >= 2 ? R.raw.deflate_dictionary_2 : R.raw.deflate_dictionary_1;
             try (final InputStream stream = context.getResources().openRawResource(dictionary)) {
                 deflater.setDictionary(ByteStreams.toByteArray(stream));
             }
