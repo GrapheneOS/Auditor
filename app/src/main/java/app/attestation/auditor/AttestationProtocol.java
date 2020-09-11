@@ -1119,7 +1119,9 @@ class AttestationProtocol {
                 .setDigests(KEY_DIGEST)
                 .setAttestationChallenge(challenge)
                 .setKeyValidityStart(startTime);
-        if (hasPersistentKey) {
+        // Setting validity dates does not work properly with StrongBox on Android 11. Disable it
+        // for the time being to avoid breakage.
+        if (hasPersistentKey && android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.R) {
             builder.setKeyValidityEnd(new Date(startTime.getTime() + EXPIRE_OFFSET_MS));
         }
         if (useStrongBox) {
