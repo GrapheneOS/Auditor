@@ -260,6 +260,7 @@ class AttestationProtocol {
             "Pixel 3a XL",
             "Pixel 4",
             "Pixel 4 XL",
+            "Pixel 4a",
             "SM-N970U",
             "SM-N975U").contains(Build.MODEL);
 
@@ -308,6 +309,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_4, 3, 4, false /* uses new API */, true, R.string.os_graphene))
             .put("3F15FDCB82847FED97427CE00563B8F9FF34627070DE5FDB17ACA7849AB98CC8",
                     new DeviceInfo(R.string.device_pixel_4_xl, 3, 4, false /* uses new API */, true, R.string.os_graphene))
+            .put("9F2454A1657B1B5AD7F2336B39A2611F7A40B2E0DDFD0D6553A359605928DF29",
+                    new DeviceInfo(R.string.device_pixel_4a, 3, 4, false /* uses new API */, true, R.string.os_graphene))
             // CalyxOS
             .put("BCEBF6844F6B0FA2ABE8E62A9D0D57A324D0C02CEFDFA019FD49832F9ED39105",
                     new DeviceInfo(R.string.device_pixel_2_generic, 2, 3, true, true, R.string.os_calyx))
@@ -344,6 +347,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_3a_generic, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("AE6316B4753C61F5855B95B9B98484AF784F2E83648D0FCC8107FCA752CAEA34",
                     new DeviceInfo(R.string.device_pixel_4_generic, 3, 4, false /* uses new API */, true, R.string.os_stock))
+            .put("879CD3F18EA76E244D4D4AC3BCB9C337C13B4667190B19035AFE2536550050F1",
+                    new DeviceInfo(R.string.device_pixel_4a, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("72376CAACF11726D4922585732429FB97D0D1DD69F0D2E0770B9E61D14ADDE65",
                     new DeviceInfo(R.string.device_sm_a705fn, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("33D9484FD512E610BCF00C502827F3D55A415088F276C6506657215E622FA770",
@@ -449,6 +454,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_4, 3, 4, false /* uses new API */, true, R.string.os_graphene))
             .put("3F15FDCB82847FED97427CE00563B8F9FF34627070DE5FDB17ACA7849AB98CC8",
                     new DeviceInfo(R.string.device_pixel_4_xl, 3, 4, false /* uses new API */, true, R.string.os_graphene))
+            .put("9F2454A1657B1B5AD7F2336B39A2611F7A40B2E0DDFD0D6553A359605928DF29",
+                    new DeviceInfo(R.string.device_pixel_4a, 3, 4, false /* uses new API */, true, R.string.os_graphene))
             // CalyxOS
             .put("B4DE537A5F4B8FDAB6789EB2C06EC6E065E48A79EDD493A91F635004DD89F3E2",
                     new DeviceInfo(R.string.device_pixel_3_generic, 3, 4, false /* uses new API */, true, R.string.os_calyx))
@@ -461,6 +468,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_3a_generic, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("AE6316B4753C61F5855B95B9B98484AF784F2E83648D0FCC8107FCA752CAEA34",
                     new DeviceInfo(R.string.device_pixel_4_generic, 3, 4, false /* uses new API */, true, R.string.os_stock))
+            .put("879CD3F18EA76E244D4D4AC3BCB9C337C13B4667190B19035AFE2536550050F1",
+                    new DeviceInfo(R.string.device_pixel_4a, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("3D3DEB132A89551D0A700D230BABAE4E3E80E3C7926ACDD7BAEDF9B57AD316D0",
                     new DeviceInfo(R.string.device_sm_n970u, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("9AC63842137D92C119A1B1BE2C9270B9EBB6083BBE6350B7823571942B5869F0",
