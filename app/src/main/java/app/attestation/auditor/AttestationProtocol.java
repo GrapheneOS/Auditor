@@ -1023,8 +1023,7 @@ class AttestationProtocol {
         final byte[] fingerprint = new byte[FINGERPRINT_LENGTH];
         deserializer.get(fingerprint);
 
-        final int osEnforcedFlags;
-        osEnforcedFlags = deserializer.getInt();
+        final int osEnforcedFlags = deserializer.getInt();
         if ((osEnforcedFlags & ~OS_ENFORCED_FLAGS_ALL) != 0) {
             Log.w(TAG, "unknown OS enforced flag set (flags: " + Integer.toBinaryString(osEnforcedFlags) + ")");
         }
