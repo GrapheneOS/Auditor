@@ -9,11 +9,6 @@
         <ignore path="src/main/AndroidManifest.xml"/>
     </issue>
 
-    <!-- Google app indexing doesn't make any sense for this app -->
-    <issue id="GoogleAppIndexingWarning">
-        <ignore path="src/main/AndroidManifest.xml"/>
-    </issue>
-
     <!-- LinearLayout is used programmatically -->
     <issue id="UseCompoundDrawables">
         <ignore path="src/main/res/layout/content_attestation.xml"/>
