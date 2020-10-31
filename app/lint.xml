@@ -1,8 +1,5 @@
 <lint>
-    <!-- ignore false positive lints for dependencies -->
-    <issue id="InvalidPackage">
-        <ignore regexp="org.bouncycastle.cert.dane.fetcher.JndiDANEFetcherFactory"/>
-    </issue>
+    <!-- ignore false positive lint for Bouncy Castle -->
     <issue id="TrustAllX509TrustManager">
         <ignore regexp="JcaJceUtils"/>
     </issue>
