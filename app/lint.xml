@@ -1,7 +1,7 @@
 <lint>
     <!-- ignore false positive lint for Bouncy Castle -->
     <issue id="TrustAllX509TrustManager">
-        <ignore regexp="JcaJceUtils"/>
+        <ignore regexp="org/bouncycastle/est/jcajce/JcaJceUtils\$.\.class"/>
     </issue>
 
     <!-- full backups are desired -->
