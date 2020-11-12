@@ -1,0 +1,8 @@
+The <i>Auditor</i> app uses hardware-based security features to validate the identity of a device along with authenticity and integrity of the operating system. It will verify that the device is running the stock operating system with the bootloader locked and that no tampering with the operating system has occurred. A downgrade to a previous version will also be detected. It builds upon the hardware-based verification of the operating system by chaining verification to the app to perform software-based sanity checks and gather additional information about device state and configuration beyond what the hardware can attest to directly.
+
+Two devices are needed to perform the verification:
+
+* the device to be verified (Auditee) which needs to be one of the [https://attestation.app/about#device-support supported devices] launched with Android 8.0+
+* an Android 7.0+ device to perform the verification (Auditor)
+
+The verification process requires sending data between the devices by scanning QR codes. A detailed <a href='https://attestation.app/tutorial' target='_blank'>Tutorial</a> is available at the project’s website.
