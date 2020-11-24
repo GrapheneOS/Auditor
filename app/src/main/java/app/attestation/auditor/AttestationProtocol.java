@@ -570,7 +570,7 @@ class AttestationProtocol {
             throw new GeneralSecurityException("attestation security level is not valid");
         }
         if (attestation.getKeymasterSecurityLevel() != attestationSecurityLevel) {
-            throw new GeneralSecurityException("keymaster security level is not valid");
+            throw new GeneralSecurityException("keymaster security level does not match attestation security level");
         }
 
         // prevent replay attacks
