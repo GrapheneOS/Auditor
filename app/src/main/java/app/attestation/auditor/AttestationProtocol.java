@@ -587,11 +587,11 @@ class AttestationProtocol {
         }
         final AttestationPackageInfo info = infos.get(0);
         if (!ATTESTATION_APP_PACKAGE_NAME.equals(info.getPackageName())) {
-            throw new GeneralSecurityException("wrong attestation app package name");
+            throw new GeneralSecurityException("wrong attestation app package name: " + info.getPackageName());
         }
         final int appVersion = Math.toIntExact(info.getVersion()); // int for compatibility
         if (appVersion < ATTESTATION_APP_MINIMUM_VERSION) {
-            throw new GeneralSecurityException("attestation app is too old");
+            throw new GeneralSecurityException("attestation app is too old: " + appVersion);
         }
         final List<byte[]> signatureDigests = attestationApplicationId.getSignatureDigests();
         if (signatureDigests.size() != 1) {
