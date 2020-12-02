@@ -29,9 +29,6 @@
             <!-- Let's Encrypt E2 -->
             <pin digest="SHA-256">vZNucrIS7293MQLGt304+UKXMi78JTlrwyeUIuDIknA=</pin>
 
-            <!-- RSA 2048 backup key -->
-            <pin digest="SHA-256">mABt36m6Z2G6pnosx0K3dhXY+nUrZeZVWZlSW4GBZGs=</pin>
-
             <!-- RSA 3072 backup key -->
             <pin digest="SHA-256">v/9edLATMEdwyTJp0eXTft119lGXjZThpGSeX7t5Jv8=</pin>
 
