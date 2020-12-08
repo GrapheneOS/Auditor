@@ -79,7 +79,6 @@
     <string name="device_nokia_7_1">Nokia 7.1</string>
     <string name="device_pixel_2">Google Pixel 2</string>
     <string name="device_pixel_2_xl">Google Pixel 2 XL</string>
-    <string name="device_pixel_2_generic">Google Pixel 2 / Pixel 2 XL</string>
     <string name="device_pixel_3_generic">Google Pixel 3 / Pixel 3 XL</string>
     <string name="device_pixel_3">Google Pixel 3</string>
     <string name="device_pixel_3_xl">Google Pixel 3 XL</string>
@@ -140,5 +139,4 @@
 
     <string name="os_stock">Stock</string>
     <string name="os_graphene">GrapheneOS</string>
-    <string name="os_calyx">CalyxOS</string>
 </resources>

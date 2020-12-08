@@ -311,11 +311,6 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_4_xl, 3, 4, false /* uses new API */, true, R.string.os_graphene))
             .put("9F2454A1657B1B5AD7F2336B39A2611F7A40B2E0DDFD0D6553A359605928DF29",
                     new DeviceInfo(R.string.device_pixel_4a, 3, 4, false /* uses new API */, true, R.string.os_graphene))
-            // CalyxOS
-            .put("BCEBF6844F6B0FA2ABE8E62A9D0D57A324D0C02CEFDFA019FD49832F9ED39105",
-                    new DeviceInfo(R.string.device_pixel_2_generic, 2, 3, true, true, R.string.os_calyx))
-            .put("B4DE537A5F4B8FDAB6789EB2C06EC6E065E48A79EDD493A91F635004DD89F3E2",
-                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 4, false /* uses new API */, true, R.string.os_calyx))
             .build();
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStock = ImmutableMap
             .<String, DeviceInfo>builder()
@@ -456,9 +451,6 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_4_xl, 3, 4, false /* uses new API */, true, R.string.os_graphene))
             .put("9F2454A1657B1B5AD7F2336B39A2611F7A40B2E0DDFD0D6553A359605928DF29",
                     new DeviceInfo(R.string.device_pixel_4a, 3, 4, false /* uses new API */, true, R.string.os_graphene))
-            // CalyxOS
-            .put("B4DE537A5F4B8FDAB6789EB2C06EC6E065E48A79EDD493A91F635004DD89F3E2",
-                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 4, false /* uses new API */, true, R.string.os_calyx))
             .build();
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxStock = ImmutableMap
             .<String, DeviceInfo>builder()
