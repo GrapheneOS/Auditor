@@ -24,4 +24,8 @@
     <issue id="UnusedAttribute">
         <ignore path="src/main/AndroidManifest.xml"/>
     </issue>
+
+    <issue id="QueryAllPackagesPermission">
+        <ignore path="src/main/AndroidManifest.xml"/>
+    </issue>
 </lint>
