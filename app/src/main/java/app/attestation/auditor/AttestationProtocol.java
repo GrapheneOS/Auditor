@@ -135,8 +135,8 @@ class AttestationProtocol {
     //
     // Attestation message:
     //
-    // The Auditor will eventually start trying to be backwards compatible with older Auditee app
-    // versions but not the other way around.
+    // For backwards compatibility the Auditor device sends its maximum supported version, and
+    // the Auditee uses the highest version it supports.
     //
     // Compression is done with raw DEFLATE (no zlib wrapper) with a preset dictionary generated from
     // sample certificates.
