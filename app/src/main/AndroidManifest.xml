@@ -27,8 +27,13 @@
         </activity>
         <activity android:name=".QRScannerActivity" />
 
-        <service android:name=".GenerateAttestationService" />
-        <service android:name=".VerifyAttestationService" />
+        <service android:name=".GenerateAttestationService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="false" />
+
+        <service android:name=".VerifyAttestationService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="false" />
 
         <service android:name=".RemoteVerifyJob"
                 android:permission="android.permission.BIND_JOB_SERVICE"
