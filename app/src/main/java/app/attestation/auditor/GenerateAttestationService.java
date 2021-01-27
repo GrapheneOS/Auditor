@@ -1,14 +1,17 @@
 package app.attestation.auditor;
 
-import android.app.IntentService;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.JobIntentService;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
-public class GenerateAttestationService extends IntentService {
+public class GenerateAttestationService extends JobIntentService {
     private static final String TAG = "GenerateAttestationService";
 
     static final String EXTRA_CHALLENGE_MESSAGE = "app.attestation.auditor.CHALLENGE_MESSAGE";
@@ -23,12 +26,13 @@ public class GenerateAttestationService extends IntentService {
 
     static final int RESULT_CODE = 0;
 
-    public GenerateAttestationService() {
-        super(TAG);
-    }
+    static final int JOB_ID = 1001;
 
+    static void enqueueWork(Context context, Intent work) {
+        enqueueWork(context, GenerateAttestationService.class, JOB_ID, work);
+    }
     @Override
-    protected void onHandleIntent(final Intent intent) {
+    protected void onHandleWork(@NonNull Intent intent) {
         Log.d(TAG, "intent service started");
 
         if (intent.getBooleanExtra(EXTRA_CLEAR, false)) {
@@ -73,4 +77,9 @@ public class GenerateAttestationService extends IntentService {
             Log.e(TAG, "pending intent cancelled", e);
         }
     }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
 }

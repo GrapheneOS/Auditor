@@ -301,7 +301,7 @@ public class AttestationActivity extends AppCompatActivity {
         intent.putExtra(VerifyAttestationService.EXTRA_CHALLENGE_MESSAGE, auditorChallenge);
         intent.putExtra(VerifyAttestationService.EXTRA_SERIALIZED, serialized);
         intent.putExtra(VerifyAttestationService.EXTRA_PENDING_RESULT, pending);
-        startService(intent);
+        VerifyAttestationService.enqueueWork(this, intent);
     }
 
     private void generateAttestation(final byte[] challenge) {
@@ -311,7 +311,7 @@ public class AttestationActivity extends AppCompatActivity {
         final Intent intent = new Intent(this, GenerateAttestationService.class);
         intent.putExtra(GenerateAttestationService.EXTRA_CHALLENGE_MESSAGE, challenge);
         intent.putExtra(GenerateAttestationService.EXTRA_PENDING_RESULT, pending);
-        startService(intent);
+        GenerateAttestationService.enqueueWork(this, intent);
     }
 
     private void auditeeShowAttestation(final byte[] serialized) {

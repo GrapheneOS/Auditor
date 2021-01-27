@@ -33,6 +33,8 @@ import java.security.cert.Certificate;
 import java.security.spec.ECGenParameterSpec;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static android.security.keystore.KeyProperties.KEY_ALGORITHM_EC;
 
@@ -48,7 +50,7 @@ public class SubmitSampleJob extends JobService {
 
     private static final String KEYSTORE_ALIAS_SAMPLE = "sample_attestation_key";
 
-    private SubmitTask task;
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     static boolean isScheduled(final Context context) {
         return context.getSystemService(JobScheduler.class).getPendingJob(JOB_ID) != null;
@@ -65,20 +67,9 @@ public class SubmitSampleJob extends JobService {
         }
     }
 
-    private class SubmitTask extends AsyncTask<Void, Void, Boolean> {
-        final JobParameters params;
-
-        SubmitTask(final JobParameters params) {
-            this.params = params;
-        }
-
+    private class SubmitTask implements Runnable {
         @Override
-        protected void onPostExecute(final Boolean success) {
-            jobFinished(params, success);
-        }
-
-        @Override
-        protected Boolean doInBackground(final Void... params) {
+        public void run() {
             HttpURLConnection connection = null;
             try {
                 connection = (HttpURLConnection) new URL(SUBMIT_URL).openConnection();
@@ -116,7 +107,7 @@ public class SubmitSampleJob extends JobService {
 
                 final Process process = new ProcessBuilder("getprop").start();
                 try (final InputStream propertyStream = process.getInputStream();
-                        final OutputStream output = connection.getOutputStream()) {
+                     final OutputStream output = connection.getOutputStream()) {
                     for (final Certificate cert : certs) {
                         output.write(BaseEncoding.base64().encode(cert.getEncoded()).getBytes());
                         output.write("\n".getBytes());
@@ -154,7 +145,7 @@ public class SubmitSampleJob extends JobService {
                 }
             } catch (final GeneralSecurityException | IOException e) {
                 Log.e(TAG, "submit failure", e);
-                return true;
+                //return true;
             } finally {
                 if (connection != null) {
                     connection.disconnect();
@@ -174,20 +165,25 @@ public class SubmitSampleJob extends JobService {
                     .setSmallIcon(R.drawable.baseline_cloud_upload_white_24)
                     .build());
 
-            return false;
+            //return false;
         }
     }
 
+
     @Override
     public boolean onStartJob(final JobParameters params) {
-        task = new SubmitTask(params);
-        task.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+        executor.submit(new SubmitTask());
         return true;
     }
 
     @Override
     public boolean onStopJob(final JobParameters params) {
-        task.cancel(true);
-        return true;
+        if (executor.isTerminated()) {
+            executor.shutdown();
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 }

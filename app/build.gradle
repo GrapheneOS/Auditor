@@ -5,7 +5,7 @@ android {
     buildToolsVersion "30.0.2"
     defaultConfig {
         applicationId "app.attestation.auditor"
-        minSdkVersion 24
+        minSdkVersion 26
         targetSdkVersion 30
         versionCode 24
         versionName versionCode.toString()
