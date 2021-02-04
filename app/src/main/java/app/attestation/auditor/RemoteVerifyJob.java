@@ -25,6 +25,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.GeneralSecurityException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import app.attestation.auditor.AttestationProtocol.AttestationResult;
 
@@ -48,7 +50,7 @@ public class RemoteVerifyJob extends JobService {
     private static final int NOTIFICATION_ID = 1;
     private static final String NOTIFICATION_CHANNEL_ID = "remote_verification";
 
-    private RemoteVerifyTask task;
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     static boolean isEnabled(final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).contains(KEY_USER_ID);
@@ -108,20 +110,10 @@ public class RemoteVerifyJob extends JobService {
         scheduler.cancel(FIRST_RUN_JOB_ID);
     }
 
-    private class RemoteVerifyTask extends AsyncTask<Void, Void, Boolean> {
-        final JobParameters params;
-
-        RemoteVerifyTask(final JobParameters params) {
-            this.params = params;
-        }
+    private class RemoteVerifyTask implements Runnable {
 
         @Override
-        protected void onPostExecute(final Boolean failure) {
-            jobFinished(params, failure);
-        }
-
-        @Override
-        protected Boolean doInBackground(final Void... params) {
+        public void run() {
             final Context context = RemoteVerifyJob.this;
             boolean failure = false;
             HttpURLConnection connection = null;
@@ -203,7 +195,8 @@ public class RemoteVerifyJob extends JobService {
                     .setSmallIcon(R.drawable.baseline_security_white_24)
                     .build());
 
-            return failure;
+            //return failure;
+
         }
     }
 
@@ -213,14 +206,13 @@ public class RemoteVerifyJob extends JobService {
             Log.d(TAG, "override deadline expired");
             return false;
         }
-        task = new RemoteVerifyTask(params);
-        task.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+        executor.submit(new RemoteVerifyTask());
         return true;
     }
 
     @Override
     public boolean onStopJob(final JobParameters params) {
-        task.cancel(true);
+        executor.shutdown();
         return true;
     }
 }
