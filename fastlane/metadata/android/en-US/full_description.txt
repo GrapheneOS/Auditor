@@ -3,6 +3,6 @@ The <i>Auditor</i> app uses hardware-based security features to validate the ide
 Two devices are needed to perform the verification:
 
 * the device to be verified (Auditee) which needs to be one of the <a href='https://attestation.app/about#device-support' target='_blank'>supported devices</a> launched with Android 8.0+
-* an Android 7.0+ device to perform the verification (Auditor)
+* an Android 8.0+ device to perform the verification (Auditor)
 
 The verification process requires sending data between the devices by scanning QR codes. A detailed <a href='https://attestation.app/tutorial' target='_blank'>Tutorial</a> is available at the project’s website.
