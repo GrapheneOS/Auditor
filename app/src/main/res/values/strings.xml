@@ -90,6 +90,7 @@
     <string name="device_pixel_4_xl">Google Pixel 4 XL</string>
     <string name="device_pixel_4a">Google Pixel 4a</string>
     <string name="device_pixel_4a_5g">Google Pixel 4a (5G)</string>
+    <string name="device_pixel_5">Google Pixel 5</string>
     <string name="device_pixel_5_generic">Google Pixel 4a (5G) / Pixel 5</string>
     <string name="device_sm_a705fn">Samsung Galaxy A70 (SM-A705FN)</string>
     <string name="device_sm_g960f">Samsung Galaxy S9 (SM-G960F)</string>
