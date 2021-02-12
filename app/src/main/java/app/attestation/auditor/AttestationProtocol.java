@@ -674,10 +674,12 @@ class AttestationProtocol {
 
         // version sanity checks
         final int attestationVersion = attestation.getAttestationVersion();
+        Log.d(TAG, "attestationVersion: " + attestationVersion);
         if (attestationVersion < device.attestationVersion) {
             throw new GeneralSecurityException("attestation version " + attestationVersion + " below " + device.attestationVersion);
         }
         final int keymasterVersion = attestation.getKeymasterVersion();
+        Log.d(TAG, "keymasterVersion: " + keymasterVersion);
         if (keymasterVersion < device.keymasterVersion) {
             throw new GeneralSecurityException("keymaster version " + keymasterVersion + " below " + device.keymasterVersion);
         }
