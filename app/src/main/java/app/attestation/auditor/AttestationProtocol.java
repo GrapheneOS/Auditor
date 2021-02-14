@@ -740,6 +740,12 @@ class AttestationProtocol {
         }
     }
 
+    private static String formatPatchLevel(final int patchLevel) {
+        final String s = Integer.toString(patchLevel);
+        return s.substring(0, 4) + "-" + s.substring(4, 6) +
+                (s.length() >= 8 ? "-" + s.substring(6, 8) : "");
+    }
+
     private static void appendVerifiedInformation(final Context context,
             final StringBuilder builder, final Verified verified, final String fingerprint) {
         builder.append(context.getString(R.string.device, context.getString(verified.device)));
@@ -756,20 +762,14 @@ class AttestationProtocol {
                         Integer.parseInt(osVersion.substring(4, 6))));
         }
 
-        final String osPatchLevel = Integer.toString(verified.osPatchLevel);
-        builder.append(context.getString(R.string.os_patch_level,
-                osPatchLevel.substring(0, 4) + "-" + osPatchLevel.substring(4, 6)));
+        builder.append(context.getString(R.string.os_patch_level, formatPatchLevel(verified.osPatchLevel)));
 
-        final String vendorPatchLevel = Integer.toString(verified.vendorPatchLevel);
         if (verified.vendorPatchLevel != 0) {
-            builder.append(context.getString(R.string.vendor_patch_level,
-                    vendorPatchLevel.substring(0, 4) + "-" + vendorPatchLevel.substring(4, 6)));
+            builder.append(context.getString(R.string.vendor_patch_level, formatPatchLevel(verified.vendorPatchLevel)));
         }
 
-        final String bootPatchLevel = Integer.toString(verified.bootPatchLevel);
         if (verified.bootPatchLevel != 0) {
-            builder.append(context.getString(R.string.boot_patch_level,
-                    bootPatchLevel.substring(0, 4) + "-" + bootPatchLevel.substring(4, 6)));
+            builder.append(context.getString(R.string.boot_patch_level, formatPatchLevel(verified.bootPatchLevel)));
         }
 
         if (verified.verifiedBootHash != null) {
