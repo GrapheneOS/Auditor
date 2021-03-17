@@ -191,7 +191,7 @@ class AttestationProtocol {
     // downgrade protection for the OS version/patch (bootloader/TEE enforced) and app version (OS
     // enforced) by keeping them updated.
     private static final byte PROTOCOL_VERSION = 2;
-    private static final byte PROTOCOL_VERSION_MINIMUM = 1;
+    private static final byte PROTOCOL_VERSION_MINIMUM = 2;
     // can become longer in the future, but this is the minimum length
     static final byte CHALLENGE_MESSAGE_LENGTH = 1 + CHALLENGE_LENGTH * 2;
     private static final int MAX_ENCODED_CHAIN_LENGTH = 5000;
@@ -221,7 +221,7 @@ class AttestationProtocol {
             OS_ENFORCED_FLAGS_SYSTEM_USER;
 
     private static final String ATTESTATION_APP_PACKAGE_NAME = "app.attestation.auditor";
-    private static final int ATTESTATION_APP_MINIMUM_VERSION = 5;
+    private static final int ATTESTATION_APP_MINIMUM_VERSION = 22;
     private static final String ATTESTATION_APP_SIGNATURE_DIGEST_DEBUG =
             "17727D8B61D55A864936B1A7B4A2554A15151F32EBCF44CDAA6E6C3258231890";
     private static final String ATTESTATION_APP_SIGNATURE_DIGEST_RELEASE =
@@ -1006,7 +1006,7 @@ class AttestationProtocol {
         final byte[] chain = new byte[MAX_ENCODED_CHAIN_LENGTH];
         final Inflater inflater = new Inflater(true);
         inflater.setInput(compressedChain);
-        final int dictionary = version >= 2 ? R.raw.deflate_dictionary_2 : R.raw.deflate_dictionary_1;
+        final int dictionary = R.raw.deflate_dictionary_2;
         try (final InputStream stream = context.getResources().openRawResource(dictionary)) {
             inflater.setDictionary(ByteStreams.toByteArray(stream));
         }
@@ -1025,8 +1025,7 @@ class AttestationProtocol {
             chainDeserializer.get(encoded);
             certs.add(generateCertificate(new ByteArrayInputStream(encoded)));
         }
-        final int certificateCount = version >= 2 ? certs.size() : certs.size() + 1;
-        final Certificate[] certificates = certs.toArray(new Certificate[certificateCount]);
+        final Certificate[] certificates = certs.toArray(new Certificate[certs.size()]);
 
         final byte[] fingerprint = new byte[FINGERPRINT_LENGTH];
         deserializer.get(fingerprint);
@@ -1053,10 +1052,6 @@ class AttestationProtocol {
         final int signatureLength = deserializer.remaining();
         final byte[] signature = new byte[signatureLength];
         deserializer.get(signature);
-
-        if (version < 2) {
-            certificates[certificates.length - 1] = generateCertificate(context.getResources(), R.raw.google_root);
-        }
 
         deserializer.rewind();
         deserializer.limit(deserializer.capacity() - signature.length);
@@ -1231,8 +1226,7 @@ class AttestationProtocol {
             serializer.put(version);
 
             final ByteBuffer chainSerializer = ByteBuffer.allocate(MAX_ENCODED_CHAIN_LENGTH);
-            final int certificateCount = version >= 2 ? attestationCertificates.length : attestationCertificates.length - 1;
-            for (int i = 0; i < certificateCount; i++) {
+            for (int i = 0; i < attestationCertificates.length; i++) {
                 final byte[] encoded = attestationCertificates[i].getEncoded();
                 if (encoded.length > Short.MAX_VALUE) {
                     throw new RuntimeException("encoded certificate too long");
@@ -1250,7 +1244,7 @@ class AttestationProtocol {
 
             final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
             final Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION, true);
-            final int dictionary = version >= 2 ? R.raw.deflate_dictionary_2 : R.raw.deflate_dictionary_1;
+            final int dictionary = R.raw.deflate_dictionary_2;
             try (final InputStream stream = context.getResources().openRawResource(dictionary)) {
                 deflater.setDictionary(ByteStreams.toByteArray(stream));
             }
