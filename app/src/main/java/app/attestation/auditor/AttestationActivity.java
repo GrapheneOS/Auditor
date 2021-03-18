@@ -367,15 +367,12 @@ public class AttestationActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_CAMERA: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    snackbar.dismiss();
-                    startActivityForResult(new Intent(this, QRScannerActivity.class), SCAN_REQUEST_CODE);
-                } else {
-                    snackbar.setText(R.string.camera_permission_denied).show();
-                }
+        if (requestCode == PERMISSIONS_REQUEST_CAMERA) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                snackbar.dismiss();
+                startActivityForResult(new Intent(this, QRScannerActivity.class), SCAN_REQUEST_CODE);
+            } else {
+                snackbar.setText(R.string.camera_permission_denied).show();
             }
         }
     }
