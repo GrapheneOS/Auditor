@@ -491,58 +491,52 @@ public class AttestationActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_clear_auditee: {
+        final int itemId = item.getItemId();
+        if (itemId == R.id.action_clear_auditee) {
+            final Intent intent = new Intent(this, GenerateAttestationService.class);
+            intent.putExtra(GenerateAttestationService.EXTRA_CLEAR, true);
+            startService(intent);
+            return true;
+        } else if (itemId == R.id.action_clear_auditor) {
+            final Intent intent = new Intent(this, VerifyAttestationService.class);
+            intent.putExtra(VerifyAttestationService.EXTRA_CLEAR, true);
+            startService(intent);
+            return true;
+        } else if (itemId == R.id.action_enable_remote_verify) {
+            stage = Stage.EnableRemoteVerify;
+            startQrScanner();
+            return true;
+        } else if (itemId == R.id.action_disable_remote_verify) {
+            RemoteVerifyJob.cancel(this);
+
+            final SharedPreferences preferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+
+            final long userId = preferences.getLong(RemoteVerifyJob.KEY_USER_ID, -1);
+            if (userId != -1) {
                 final Intent intent = new Intent(this, GenerateAttestationService.class);
                 intent.putExtra(GenerateAttestationService.EXTRA_CLEAR, true);
+                intent.putExtra(GenerateAttestationService.EXTRA_CLEAR_STATE_PREFIX,
+                        RemoteVerifyJob.STATE_PREFIX);
+                intent.putExtra(GenerateAttestationService.EXTRA_CLEAR_INDEX,
+                        Long.toString(userId));
                 startService(intent);
-                return true;
             }
-            case R.id.action_clear_auditor: {
-                final Intent intent = new Intent(this, VerifyAttestationService.class);
-                intent.putExtra(VerifyAttestationService.EXTRA_CLEAR, true);
-                startService(intent);
-                return true;
-            }
-            case R.id.action_enable_remote_verify: {
-                stage = Stage.EnableRemoteVerify;
-                startQrScanner();
-                return true;
-            }
-            case R.id.action_disable_remote_verify: {
-                RemoteVerifyJob.cancel(this);
 
-                final SharedPreferences preferences =
-                        PreferenceManager.getDefaultSharedPreferences(this);
+            preferences.edit()
+                .remove(RemoteVerifyJob.KEY_USER_ID)
+                .remove(RemoteVerifyJob.KEY_SUBSCRIBE_KEY)
+                .apply();
 
-                final long userId = preferences.getLong(RemoteVerifyJob.KEY_USER_ID, -1);
-                if (userId != -1) {
-                    final Intent intent = new Intent(this, GenerateAttestationService.class);
-                    intent.putExtra(GenerateAttestationService.EXTRA_CLEAR, true);
-                    intent.putExtra(GenerateAttestationService.EXTRA_CLEAR_STATE_PREFIX,
-                            RemoteVerifyJob.STATE_PREFIX);
-                    intent.putExtra(GenerateAttestationService.EXTRA_CLEAR_INDEX,
-                            Long.toString(userId));
-                    startService(intent);
-                }
-
-                preferences.edit()
-                        .remove(RemoteVerifyJob.KEY_USER_ID)
-                        .remove(RemoteVerifyJob.KEY_SUBSCRIBE_KEY)
-                        .apply();
-
-                snackbar.setText(R.string.disable_remote_verify).show();
-                return true;
-            }
-            case R.id.action_submit_sample: {
-                SubmitSampleJob.schedule(this);
-                snackbar.setText(R.string.schedule_submit_sample).show();
-                return true;
-            }
-            case R.id.action_help: {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(TUTORIAL_URL)));
-                return true;
-            }
+            snackbar.setText(R.string.disable_remote_verify).show();
+            return true;
+        } else if (itemId == R.id.action_submit_sample) {
+            SubmitSampleJob.schedule(this);
+            snackbar.setText(R.string.schedule_submit_sample).show();
+            return true;
+        } else if (itemId == R.id.action_help) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(TUTORIAL_URL)));
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
