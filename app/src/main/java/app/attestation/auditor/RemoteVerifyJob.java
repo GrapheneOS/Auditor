@@ -11,7 +11,6 @@ import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.preference.PreferenceManager;
@@ -25,6 +24,9 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.GeneralSecurityException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import app.attestation.auditor.AttestationProtocol.AttestationResult;
 
@@ -48,7 +50,8 @@ public class RemoteVerifyJob extends JobService {
     private static final int NOTIFICATION_ID = 1;
     private static final String NOTIFICATION_CHANNEL_ID = "remote_verification";
 
-    private RemoteVerifyTask task;
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private Future<?> task;
 
     static boolean isEnabled(final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).contains(KEY_USER_ID);
@@ -108,20 +111,14 @@ public class RemoteVerifyJob extends JobService {
         scheduler.cancel(FIRST_RUN_JOB_ID);
     }
 
-    private class RemoteVerifyTask extends AsyncTask<Void, Void, Boolean> {
-        final JobParameters params;
-
-        RemoteVerifyTask(final JobParameters params) {
-            this.params = params;
+    @Override
+    public boolean onStartJob(final JobParameters params) {
+        if (params.getJobId() == FIRST_RUN_JOB_ID && params.isOverrideDeadlineExpired()) {
+            Log.d(TAG, "override deadline expired");
+            return false;
         }
 
-        @Override
-        protected void onPostExecute(final Boolean failure) {
-            jobFinished(params, failure);
-        }
-
-        @Override
-        protected Boolean doInBackground(final Void... params) {
+        task = executor.submit(() -> {
             final Context context = RemoteVerifyJob.this;
             boolean failure = false;
             HttpURLConnection connection = null;
@@ -203,18 +200,8 @@ public class RemoteVerifyJob extends JobService {
                     .setSmallIcon(R.drawable.baseline_security_white_24)
                     .build());
 
-            return failure;
-        }
-    }
-
-    @Override
-    public boolean onStartJob(final JobParameters params) {
-        if (params.getJobId() == FIRST_RUN_JOB_ID && params.isOverrideDeadlineExpired()) {
-            Log.d(TAG, "override deadline expired");
-            return false;
-        }
-        task = new RemoteVerifyTask(params);
-        task.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+            jobFinished(params, failure);
+        });
         return true;
     }
 

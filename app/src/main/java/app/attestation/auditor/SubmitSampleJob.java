@@ -10,7 +10,6 @@ import android.app.job.JobScheduler;
 import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
@@ -31,6 +30,9 @@ import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.spec.ECGenParameterSpec;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -48,7 +50,8 @@ public class SubmitSampleJob extends JobService {
 
     private static final String KEYSTORE_ALIAS_SAMPLE = "sample_attestation_key";
 
-    private SubmitTask task;
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private Future<?> task;
 
     static boolean isScheduled(final Context context) {
         return context.getSystemService(JobScheduler.class).getPendingJob(JOB_ID) != null;
@@ -65,20 +68,9 @@ public class SubmitSampleJob extends JobService {
         }
     }
 
-    private class SubmitTask extends AsyncTask<Void, Void, Boolean> {
-        final JobParameters params;
-
-        SubmitTask(final JobParameters params) {
-            this.params = params;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            jobFinished(params, success);
-        }
-
-        @Override
-        protected Boolean doInBackground(final Void... params) {
+    @Override
+    public boolean onStartJob(final JobParameters params) {
+        task = executor.submit(() -> {
             HttpURLConnection connection = null;
             try {
                 connection = (HttpURLConnection) new URL(SUBMIT_URL).openConnection();
@@ -154,7 +146,8 @@ public class SubmitSampleJob extends JobService {
                 }
             } catch (final GeneralSecurityException | IOException e) {
                 Log.e(TAG, "submit failure", e);
-                return true;
+                jobFinished(params, true);
+                return;
             } finally {
                 if (connection != null) {
                     connection.disconnect();
@@ -174,14 +167,8 @@ public class SubmitSampleJob extends JobService {
                     .setSmallIcon(R.drawable.baseline_cloud_upload_white_24)
                     .build());
 
-            return false;
-        }
-    }
-
-    @Override
-    public boolean onStartJob(final JobParameters params) {
-        task = new SubmitTask(params);
-        task.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+            jobFinished(params, false);
+        });
         return true;
     }
 
