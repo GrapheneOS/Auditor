@@ -188,6 +188,10 @@ public class AttestationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_attestation);
         setSupportActionBar(findViewById(R.id.toolbar));
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            getWindow().setDecorFitsSystemWindows(false);
+        }
+
         buttons = findViewById(R.id.buttons);
         snackbar = Snackbar.make(findViewById(R.id.content_attestation), "", Snackbar.LENGTH_LONG);
 
