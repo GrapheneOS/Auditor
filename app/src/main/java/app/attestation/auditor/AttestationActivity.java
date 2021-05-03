@@ -23,6 +23,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.OnApplyWindowInsetsListener;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -39,6 +42,8 @@ import java.util.Map;
 
 import static android.graphics.Color.BLACK;
 import static android.graphics.Color.WHITE;
+
+import app.attestation.auditor.databinding.ActivityAttestationBinding;
 
 public class AttestationActivity extends AppCompatActivity {
     private static final String TAG = "AttestationActivity";
@@ -181,18 +186,31 @@ public class AttestationActivity extends AppCompatActivity {
                 getFirstApiLevel() >= Build.VERSION_CODES.O;
     }
 
+    private ActivityAttestationBinding binding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_attestation);
-        setSupportActionBar(findViewById(R.id.toolbar));
+        binding = ActivityAttestationBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        setSupportActionBar(binding.toolbar);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             getWindow().setDecorFitsSystemWindows(false);
         }
 
-        buttons = findViewById(R.id.buttons);
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
+            v.setPadding(
+                    insets.getSystemWindowInsetLeft(),
+                    insets.getSystemWindowInsetTop(),
+                    insets.getSystemWindowInsetRight(),
+                    insets.getSystemWindowInsetBottom()
+            );
+            return insets;
+        });
+
+        buttons = binding.contentAttestation.buttons;
         snackbar = Snackbar.make(findViewById(R.id.content_attestation), "", Snackbar.LENGTH_LONG);
 
         findViewById(R.id.auditee).setOnClickListener((final View view) -> {
@@ -211,10 +229,10 @@ public class AttestationActivity extends AppCompatActivity {
             runAuditor();
         });
 
-        textView = findViewById(R.id.textview);
+        textView = binding.contentAttestation.textview;
         textView.setMovementMethod(new ScrollingMovementMethod());
 
-        imageView = findViewById(R.id.imageview);
+        imageView = binding.contentAttestation.imageview;
 
         if (savedInstanceState != null) {
             auditeePairing = savedInstanceState.getBoolean(STATE_AUDITEE_PAIRING);
