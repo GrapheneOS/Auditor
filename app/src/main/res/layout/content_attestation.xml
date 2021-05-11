@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
-            <com.google.android.material.textview.MaterialTextView
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -36,7 +36,7 @@
                 android:scrollbars="vertical"
                 android:text="@string/introduction" />
 
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:id="@+id/auditee"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -49,7 +49,7 @@
                 android:text="@string/auditee_button"
                 android:textAllCaps="false" />
 
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:id="@+id/auditor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-        <com.google.android.material.textview.MaterialTextView
+        <TextView
             android:id="@+id/textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
             android:scrollbarAlwaysDrawHorizontalTrack="false"
             android:scrollHorizontally="false" />
 
-        <com.google.android.material.imageview.ShapeableImageView
+        <ImageView
             android:id="@+id/imageview"
             android:contentDescription="@string/qrcode_content_description"
             android:layout_width="match_parent"
