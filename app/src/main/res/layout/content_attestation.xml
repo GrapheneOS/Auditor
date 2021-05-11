@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -36,10 +36,12 @@
                 android:scrollbars="vertical"
                 android:text="@string/introduction" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/auditee"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:cornerRadius="8dp"
+                android:textColor="@color/white_a90"
                 android:layout_marginTop="16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
@@ -47,10 +49,12 @@
                 android:text="@string/auditee_button"
                 android:textAllCaps="false" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/auditor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:cornerRadius="8dp"
+                android:textColor="@color/white_a90"
                 android:layout_marginTop="16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
@@ -67,7 +71,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -82,7 +86,7 @@
             android:scrollbarAlwaysDrawHorizontalTrack="false"
             android:scrollHorizontally="false" />
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/imageview"
             android:contentDescription="@string/qrcode_content_description"
             android:layout_width="match_parent"
