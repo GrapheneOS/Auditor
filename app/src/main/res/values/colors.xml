@@ -1,7 +1,10 @@
 <resources>
     <color name="green200">#A5D6A7</color>
+    <color name="green900">#591B5E20</color>
     <color name="orange200">#FFCC80</color>
+    <color name="orange900">#80F57F17</color>
     <color name="red200">#EF9A9A</color>
+    <color name="red900">#80B71C1C</color>
 
     <color name="white_a90">#E6FFFFFF</color>
 </resources>

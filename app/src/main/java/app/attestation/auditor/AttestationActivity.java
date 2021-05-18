@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -394,7 +395,14 @@ public class AttestationActivity extends AppCompatActivity {
                 throw new RuntimeException("unexpected result code");
             }
             if (intent.hasExtra(GenerateAttestationService.EXTRA_ATTESTATION_ERROR)) {
-                setBackgroundResource(R.color.red200);
+                switch (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
+                    case Configuration.UI_MODE_NIGHT_YES:
+                        setBackgroundResource(R.color.red900);
+                        break;
+                    case Configuration.UI_MODE_NIGHT_NO:
+                        setBackgroundResource(R.color.red200);
+                        break;
+                }
                 textView.setText(R.string.generate_error);
                 textView.append(intent.getStringExtra(GenerateAttestationService.EXTRA_ATTESTATION_ERROR));
                 return;
@@ -406,13 +414,27 @@ public class AttestationActivity extends AppCompatActivity {
                 throw new RuntimeException("unexpected result code");
             }
             if (intent.hasExtra(VerifyAttestationService.EXTRA_ERROR)) {
-                setBackgroundResource(R.color.red200);
+                switch (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
+                    case Configuration.UI_MODE_NIGHT_YES:
+                        setBackgroundResource(R.color.red900);
+                        break;
+                    case Configuration.UI_MODE_NIGHT_NO:
+                        setBackgroundResource(R.color.red200);
+                        break;
+                }
                 textView.setText(R.string.verify_error);
                 textView.append(intent.getStringExtra(VerifyAttestationService.EXTRA_ERROR));
                 return;
             }
             final boolean strong = intent.getBooleanExtra(VerifyAttestationService.EXTRA_STRONG, false);
-            setBackgroundResource(strong ? R.color.green200 : R.color.orange200);
+            switch (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
+                case Configuration.UI_MODE_NIGHT_YES:
+                    setBackgroundResource(strong ? R.color.green900 : R.color.orange900);
+                    break;
+                case Configuration.UI_MODE_NIGHT_NO:
+                    setBackgroundResource(strong ? R.color.green200 : R.color.orange200);
+                    break;
+            }
             textView.setText(strong ? R.string.verify_strong : R.string.verify_basic);
             textView.append(getText(R.string.device_information));
             textView.append(intent.getStringExtra(VerifyAttestationService.EXTRA_TEE_ENFORCED));
