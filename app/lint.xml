@@ -28,4 +28,8 @@
     <issue id="QueryAllPackagesPermission">
         <ignore path="src/main/AndroidManifest.xml"/>
     </issue>
+
+    <issue id="Typos">
+        <ignore path="src/main/res/values/strings.xml"/>
+    </issue>
 </lint>
