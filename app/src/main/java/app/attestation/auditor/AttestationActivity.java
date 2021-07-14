@@ -1,6 +1,7 @@
 package app.attestation.auditor;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,6 +23,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
@@ -55,7 +58,6 @@ public class AttestationActivity extends AppCompatActivity {
 
     private static final int GENERATE_REQUEST_CODE = 0;
     private static final int VERIFY_REQUEST_CODE = 1;
-    private static final int SCAN_REQUEST_CODE = 2;
 
     private static final int PERMISSIONS_REQUEST_CAMERA = 0;
 
@@ -80,6 +82,58 @@ public class AttestationActivity extends AppCompatActivity {
     private byte[] auditorChallenge;
     private int backgroundResource;
     private boolean canSubmitSample;
+
+    ActivityResultLauncher<Intent> QRScannerActivityLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent intent = result.getData();
+                    if (intent != null) {
+                        final String contents = intent.getStringExtra(QRScannerActivity.EXTRA_SCAN_RESULT);
+                        if (contents == null) {
+                            if (stage == Stage.Auditee) {
+                                stage = Stage.None;
+                            }
+                            return;
+                        }
+                        final byte[] contentsBytes;
+                        contentsBytes = contents.getBytes(StandardCharsets.ISO_8859_1);
+                        if (stage == Stage.Auditee) {
+                            stage = Stage.AuditeeGenerate;
+                            buttons.setVisibility(View.GONE);
+                            generateAttestation(contentsBytes);
+                        } else if (stage == Stage.Auditor) {
+                            stage = Stage.AuditorResults;
+                            imageView.setVisibility(View.GONE);
+                            handleAttestation(contentsBytes);
+                        } else if (stage == Stage.EnableRemoteVerify) {
+                            stage = Stage.None;
+                            Log.d(TAG, "account: " + contents);
+                            final String[] values = contents.split(" ");
+                            if (values.length < 4 || !RemoteVerifyJob.DOMAIN.equals(values[0])) {
+                                snackbar.setText(R.string.scanned_invalid_account_qr_code).show();
+                                return;
+                            }
+                            PreferenceManager.getDefaultSharedPreferences(this).edit()
+                                    .putLong(RemoteVerifyJob.KEY_USER_ID, Long.parseLong(values[1]))
+                                    .putString(RemoteVerifyJob.KEY_SUBSCRIBE_KEY, values[2])
+                                    .apply();
+                            try {
+                                RemoteVerifyJob.schedule(this, Integer.parseInt(values[3]));
+                                snackbar.setText(R.string.enable_remote_verify).show();
+                            } catch (final NumberFormatException e) {
+                                snackbar.setText(R.string.scanned_invalid_account_qr_code).show();
+                            }
+                        } else {
+                            throw new RuntimeException("received unexpected scan result");
+                        }
+                    } else {
+                        if (stage == Stage.Auditee) {
+                            stage = Stage.None;
+                        }
+                    }
+                }
+            });
 
     private static final boolean isSupportedAuditee = ImmutableSet.of(
             "ALP-L29",
@@ -360,7 +414,7 @@ public class AttestationActivity extends AppCompatActivity {
             requestPermissions(new String[]{Manifest.permission.CAMERA},
                     PERMISSIONS_REQUEST_CAMERA);
         } else {
-            startActivityForResult(new Intent(this, QRScannerActivity.class), SCAN_REQUEST_CODE);
+            QRScannerActivityLauncher.launch(new Intent(this, QRScannerActivity.class));
         }
     }
 
@@ -372,7 +426,7 @@ public class AttestationActivity extends AppCompatActivity {
         if (requestCode == PERMISSIONS_REQUEST_CAMERA) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 snackbar.dismiss();
-                startActivityForResult(new Intent(this, QRScannerActivity.class), SCAN_REQUEST_CODE);
+                QRScannerActivityLauncher.launch(new Intent(this, QRScannerActivity.class));
             } else {
                 snackbar.setText(R.string.camera_permission_denied).show();
             }
@@ -429,51 +483,6 @@ public class AttestationActivity extends AppCompatActivity {
             textView.append(intent.getStringExtra(VerifyAttestationService.EXTRA_TEE_ENFORCED));
             textView.append(getText(R.string.os_enforced));
             textView.append(intent.getStringExtra(VerifyAttestationService.EXTRA_OS_ENFORCED));
-        } else if (requestCode == SCAN_REQUEST_CODE) {
-            if (intent != null) {
-                final String contents = intent.getStringExtra(QRScannerActivity.EXTRA_SCAN_RESULT);
-                if (contents == null) {
-                    if (stage == Stage.Auditee) {
-                        stage = Stage.None;
-                    }
-                    return;
-                }
-                final byte[] contentsBytes;
-                contentsBytes = contents.getBytes(StandardCharsets.ISO_8859_1);
-                if (stage == Stage.Auditee) {
-                    stage = Stage.AuditeeGenerate;
-                    buttons.setVisibility(View.GONE);
-                    generateAttestation(contentsBytes);
-                } else if (stage == Stage.Auditor) {
-                    stage = Stage.AuditorResults;
-                    imageView.setVisibility(View.GONE);
-                    handleAttestation(contentsBytes);
-                } else if (stage == Stage.EnableRemoteVerify) {
-                    stage = Stage.None;
-                    Log.d(TAG, "account: " + contents);
-                    final String[] values = contents.split(" ");
-                    if (values.length < 4 || !RemoteVerifyJob.DOMAIN.equals(values[0])) {
-                        snackbar.setText(R.string.scanned_invalid_account_qr_code).show();
-                        return;
-                    }
-                    PreferenceManager.getDefaultSharedPreferences(this).edit()
-                            .putLong(RemoteVerifyJob.KEY_USER_ID, Long.parseLong(values[1]))
-                            .putString(RemoteVerifyJob.KEY_SUBSCRIBE_KEY, values[2])
-                            .apply();
-                    try {
-                        RemoteVerifyJob.schedule(this, Integer.parseInt(values[3]));
-                        snackbar.setText(R.string.enable_remote_verify).show();
-                    } catch (final NumberFormatException e) {
-                        snackbar.setText(R.string.scanned_invalid_account_qr_code).show();
-                    }
-                } else {
-                    throw new RuntimeException("received unexpected scan result");
-                }
-            } else {
-                if (stage == Stage.Auditee) {
-                    stage = Stage.None;
-                }
-            }
         }
     }
 
