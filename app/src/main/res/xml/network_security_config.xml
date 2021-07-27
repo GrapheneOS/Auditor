@@ -23,12 +23,6 @@
             <!-- Let's Encrypt E2 -->
             <pin digest="SHA-256">vZNucrIS7293MQLGt304+UKXMi78JTlrwyeUIuDIknA=</pin>
 
-            <!-- RSA 3072 backup key -->
-            <pin digest="SHA-256">v/9edLATMEdwyTJp0eXTft119lGXjZThpGSeX7t5Jv8=</pin>
-
-            <!-- RSA 4096 backup key -->
-            <pin digest="SHA-256">+f4CIotdnI56+v8CTfQvN88mYlQ1saQ1U68YvAwlotU=</pin>
-
             <!-- ECDSA secp256r1 backup key -->
             <pin digest="SHA-256">q3TMLLQkHOLGnFXKL1RytMd1Vr906gdK/ymgcBnk144=</pin>
 
