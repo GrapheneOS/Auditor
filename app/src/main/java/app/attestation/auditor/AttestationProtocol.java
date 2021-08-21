@@ -1082,6 +1082,24 @@ class AttestationProtocol {
         builder.setIsStrongBoxBacked(true);
     }
 
+    static Certificate getCertificate(final KeyStore keyStore, final String alias)
+            throws GeneralSecurityException {
+        final Certificate result = keyStore.getCertificate(alias);
+        if (result == null) {
+            throw new GeneralSecurityException("invalid hardware keystore state");
+        }
+        return result;
+    }
+
+    static Certificate[] getCertificateChain(final KeyStore keyStore, final String alias)
+            throws GeneralSecurityException {
+        final Certificate[] result = keyStore.getCertificateChain(alias);
+        if (result == null) {
+            throw new GeneralSecurityException("invalid hardware keystore state");
+        }
+        return result;
+    }
+
     static AttestationResult generateSerialized(final Context context, final byte[] challengeMessage,
             String index, final String statePrefix) throws GeneralSecurityException, IOException {
         if (challengeMessage.length < CHALLENGE_MESSAGE_LENGTH) {
@@ -1116,7 +1134,7 @@ class AttestationProtocol {
         if (hasPersistentKey) {
             attestationKeystoreAlias = statePrefix + KEYSTORE_ALIAS_FRESH;
             final X509Certificate persistent =
-                (X509Certificate) keyStore.getCertificate(persistentKeystoreAlias);
+                (X509Certificate) getCertificate(keyStore, persistentKeystoreAlias);
             final String dn = persistent.getIssuerX500Principal().getName(X500Principal.RFC1779);
             useStrongBox = dn.contains("StrongBox");
         } else {
@@ -1141,9 +1159,9 @@ class AttestationProtocol {
 
         try {
             final byte[] fingerprint =
-                    getFingerprint(keyStore.getCertificate(persistentKeystoreAlias));
+                    getFingerprint(getCertificate(keyStore, persistentKeystoreAlias));
 
-            final Certificate[] attestationCertificates = keyStore.getCertificateChain(attestationKeystoreAlias);
+            final Certificate[] attestationCertificates = getCertificateChain(keyStore, attestationKeystoreAlias);
 
             // sanity check on the device being verified before sending it off to the verifying device
             final Verified verified = verifyStateless(attestationCertificates, challenge,
