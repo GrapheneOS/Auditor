@@ -178,8 +178,7 @@ public class AttestationActivity extends AppCompatActivity {
     }
 
     private static boolean potentialSupportedAuditee() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-                getFirstApiLevel() >= Build.VERSION_CODES.O;
+        return getFirstApiLevel() >= Build.VERSION_CODES.O;
     }
 
     @Override
