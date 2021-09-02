@@ -60,18 +60,9 @@ class QRScannerActivity : AppCompatActivity() {
                         }
                     }
                 )
-                try {
-                    cameraProvider.unbindAll()
-                    cameraProvider.bindToLifecycle(
-                        this,
-                        cameraSelector,
-                        preview,
-                        imageAnalysis
-                    )
 
-                } catch (exc: Exception) {
-                }
-
+                cameraProvider.unbindAll()
+                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis)
             },
             ContextCompat.getMainExecutor(this)
         )
