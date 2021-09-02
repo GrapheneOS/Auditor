@@ -21,7 +21,6 @@ class QRScannerActivity : AppCompatActivity() {
         startCamera()
     }
 
-
     private fun startCamera() {
         val contentFrame = findViewById<PreviewView>(R.id.content_frame)
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
