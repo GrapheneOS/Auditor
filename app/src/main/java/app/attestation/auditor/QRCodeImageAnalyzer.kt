@@ -50,7 +50,7 @@ class QRCodeImageAnalyzer(private val listener: (qrCode: String?) -> Unit) : Ana
                 e.fillInStackTrace()
             } catch (e: NotFoundException) {
                 e.fillInStackTrace()
-            }catch (e : ArrayIndexOutOfBoundsException) {
+            } catch (e : ArrayIndexOutOfBoundsException) {
                 e.fillInStackTrace()
             }
         }
