@@ -12,13 +12,21 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
+import java.util.concurrent.Executors
 
 class QRScannerActivity : AppCompatActivity() {
+
+    private val executor = Executors.newSingleThreadExecutor()
 
     public override fun onCreate(state: Bundle?) {
         super.onCreate(state)
         setContentView(R.layout.activity_qrscanner)
         startCamera()
+    }
+
+    public override fun onDestroy() {
+        super.onDestroy()
+        executor.shutdown()
     }
 
     private fun startCamera() {
@@ -46,7 +54,7 @@ class QRScannerActivity : AppCompatActivity() {
                     .build()
 
                 imageAnalysis.setAnalyzer(
-                    ContextCompat.getMainExecutor(this),
+                    executor,
                     QRCodeImageAnalyzer { response ->
                         if (response != null) {
                             handleResult(response)
