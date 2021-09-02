@@ -70,7 +70,6 @@ class QRScannerActivity : AppCompatActivity() {
         )
     }
 
-
     private fun handleResult(rawResult : String) {
         val result = Intent()
         result.putExtra(EXTRA_SCAN_RESULT, rawResult)

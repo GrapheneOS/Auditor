@@ -17,12 +17,10 @@ import java.util.EnumMap
 class QRCodeImageAnalyzer(private val listener: (qrCode: String?) -> Unit) : Analyzer {
 
     override fun analyze(image: ImageProxy) {
-
         if (image.format == ImageFormat.YUV_420_888
             || image.format == ImageFormat.YUV_422_888
             || image.format == ImageFormat.YUV_444_888
         ) {
-
             val byteBuffer = image.planes[0].buffer
             val imageData = ByteArray(byteBuffer.capacity())
             byteBuffer[imageData]
