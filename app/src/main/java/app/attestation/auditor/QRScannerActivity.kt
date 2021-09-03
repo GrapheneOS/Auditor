@@ -50,7 +50,7 @@ class QRScannerActivity : AppCompatActivity() {
                     }
 
                 val imageAnalysis = ImageAnalysis.Builder()
-                    .setTargetResolution(Size(1280, 720))
+                    .setTargetResolution(Size(960, 960))
                     .build()
 
                 imageAnalysis.setAnalyzer(
