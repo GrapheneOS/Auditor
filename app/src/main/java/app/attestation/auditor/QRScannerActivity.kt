@@ -11,12 +11,12 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
-import androidx.core.content.ContextCompat
 import java.util.concurrent.Executors
 
 class QRScannerActivity : AppCompatActivity() {
 
     private val executor = Executors.newSingleThreadExecutor()
+    private val cameraExecutor = Executors.newSingleThreadExecutor()
 
     public override fun onCreate(state: Bundle?) {
         super.onCreate(state)
@@ -27,11 +27,12 @@ class QRScannerActivity : AppCompatActivity() {
     public override fun onDestroy() {
         super.onDestroy()
         executor.shutdown()
+        cameraExecutor.shutdown()
     }
 
     private fun startCamera() {
         val contentFrame = findViewById<PreviewView>(R.id.content_frame)
-        contentFrame.setScaleType(PreviewView.ScaleType.FIT_CENTER)
+        contentFrame.scaleType = PreviewView.ScaleType.FIT_CENTER
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
@@ -44,13 +45,17 @@ class QRScannerActivity : AppCompatActivity() {
                 val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
                 val preview = Preview.Builder()
+                    .setTargetResolution(Size(720,1280))
                     .build()
                     .also {
-                        it.setSurfaceProvider(contentFrame.surfaceProvider)
+                        runOnUiThread {
+                            it.setSurfaceProvider(contentFrame.surfaceProvider)
+                        }
+
                     }
 
                 val imageAnalysis = ImageAnalysis.Builder()
-                    .setTargetResolution(Size(960, 960))
+                    .setTargetResolution(Size(720, 1280))
                     .build()
 
                 imageAnalysis.setAnalyzer(
@@ -62,10 +67,12 @@ class QRScannerActivity : AppCompatActivity() {
                     }
                 )
 
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis)
+                runOnUiThread {
+                    cameraProvider.unbindAll()
+                    cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis)
+                }
             },
-            ContextCompat.getMainExecutor(this)
+            cameraExecutor
         )
     }
 
