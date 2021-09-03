@@ -1,5 +1,6 @@
 package app.attestation.auditor
 
+import android.util.Log
 import androidx.camera.core.ImageAnalysis.Analyzer
 import androidx.camera.core.ImageProxy
 import com.google.zxing.BarcodeFormat
@@ -12,6 +13,11 @@ import com.google.zxing.common.HybridBinarizer
 import java.util.EnumMap
 
 class QRCodeImageAnalyzer(private val mActivity: QRScannerActivity, private val listener: (qrCode: String?) -> Unit): Analyzer {
+
+    private val TAG = "QRCodeImageAnalyzer"
+
+    private var frameCounter = 0
+    private var lastFpsTimestamp = System.currentTimeMillis()
 
     private val reader = MultiFormatReader()
     private var imageData = ByteArray(0)
@@ -52,6 +58,17 @@ class QRCodeImageAnalyzer(private val mActivity: QRScannerActivity, private val 
         } catch (e: ReaderException) {
         } finally {
             reader.reset()
+        }
+
+        // Compute the FPS of the entire pipeline
+        val frameCount = 10
+        if (++frameCounter % frameCount == 0) {
+            frameCounter = 0
+            val now = System.currentTimeMillis()
+            val delta = now - lastFpsTimestamp
+            val fps = 1000 * frameCount.toFloat() / delta
+            Log.d(TAG, "Analysis FPS: ${"%.02f".format(fps)}")
+            lastFpsTimestamp = now
         }
 
         image.close()
