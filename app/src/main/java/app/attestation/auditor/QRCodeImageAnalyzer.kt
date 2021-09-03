@@ -1,6 +1,5 @@
 package app.attestation.auditor
 
-import android.graphics.ImageFormat
 import androidx.camera.core.ImageAnalysis.Analyzer
 import androidx.camera.core.ImageProxy
 import com.google.zxing.BarcodeFormat
