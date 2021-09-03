@@ -9,6 +9,7 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import java.util.concurrent.Executors
@@ -32,13 +33,14 @@ class QRScannerActivity : AppCompatActivity() {
 
     private fun startCamera() {
         val contentFrame = findViewById<PreviewView>(R.id.content_frame)
-        contentFrame.scaleType = PreviewView.ScaleType.FIT_CENTER
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
         val cameraController = LifecycleCameraController(this)
         cameraController.bindToLifecycle(this)
         cameraController.cameraSelector = cameraSelector
+        cameraController.setEnabledUseCases(CameraController.IMAGE_ANALYSIS)
+        cameraController.imageAnalysisBackgroundExecutor = cameraExecutor
 
         cameraProviderFuture.addListener(
             {
