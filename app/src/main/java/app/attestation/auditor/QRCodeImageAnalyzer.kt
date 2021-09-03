@@ -40,7 +40,6 @@ class QRCodeImageAnalyzer(private val listener: (qrCode: String?) -> Unit) : Ana
             val result = reader.decodeWithState(binaryBitmap)
             listener.invoke(result.text)
         } catch (e: ReaderException) {
-        } catch (e: ArrayIndexOutOfBoundsException) {
         } finally {
             reader.reset()
         }
