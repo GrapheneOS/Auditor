@@ -9,6 +9,7 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
@@ -38,6 +39,7 @@ class QRScannerActivity : AppCompatActivity() {
         val cameraController = LifecycleCameraController(this)
         cameraController.bindToLifecycle(this)
         cameraController.cameraSelector = cameraSelector
+        cameraController.setEnabledUseCases(CameraController.IMAGE_ANALYSIS)
 
         cameraProviderFuture.addListener(
             {
