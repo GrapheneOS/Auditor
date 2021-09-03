@@ -16,6 +16,16 @@ import java.util.EnumMap
 
 class QRCodeImageAnalyzer(private val listener: (qrCode: String?) -> Unit) : Analyzer {
 
+    private val reader = MultiFormatReader()
+
+    init {
+        val supportedHints: MutableMap<DecodeHintType, Any> = EnumMap(
+            DecodeHintType::class.java
+        )
+        supportedHints[DecodeHintType.POSSIBLE_FORMATS] = listOf(BarcodeFormat.QR_CODE)
+        reader.setHints(supportedHints)
+    }
+
     override fun analyze(image: ImageProxy) {
         val byteBuffer = image.planes[0].buffer
         val imageData = ByteArray(byteBuffer.capacity())
@@ -29,20 +39,16 @@ class QRCodeImageAnalyzer(private val listener: (qrCode: String?) -> Unit) : Ana
         )
         val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
         try {
-            val supportedHints: MutableMap<DecodeHintType, Any> = EnumMap(
-                DecodeHintType::class.java
-            )
-            supportedHints[DecodeHintType.POSSIBLE_FORMATS] = listOf(BarcodeFormat.QR_CODE)
-            val result = MultiFormatReader().decode(
-                binaryBitmap,
-                supportedHints
-            )
+            val result = reader.decodeWithState(binaryBitmap)
             listener.invoke(result.text)
         } catch (e: FormatException) {
         } catch (e: ChecksumException) {
         } catch (e: NotFoundException) {
         } catch (e: ArrayIndexOutOfBoundsException) {
+        } finally {
+            reader.reset()
         }
+
         image.close()
     }
 }
