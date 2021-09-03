@@ -6,9 +6,7 @@ import androidx.camera.core.ImageProxy
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.BinaryBitmap
 import com.google.zxing.DecodeHintType
-import com.google.zxing.FormatException
-import com.google.zxing.ChecksumException
-import com.google.zxing.NotFoundException
+import com.google.zxing.ReaderException
 import com.google.zxing.MultiFormatReader
 import com.google.zxing.PlanarYUVLuminanceSource
 import com.google.zxing.common.HybridBinarizer
@@ -41,9 +39,7 @@ class QRCodeImageAnalyzer(private val listener: (qrCode: String?) -> Unit) : Ana
         try {
             val result = reader.decodeWithState(binaryBitmap)
             listener.invoke(result.text)
-        } catch (e: FormatException) {
-        } catch (e: ChecksumException) {
-        } catch (e: NotFoundException) {
+        } catch (e: ReaderException) {
         } catch (e: ArrayIndexOutOfBoundsException) {
         } finally {
             reader.reset()
