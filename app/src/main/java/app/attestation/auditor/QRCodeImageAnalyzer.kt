@@ -15,6 +15,7 @@ import java.util.EnumMap
 class QRCodeImageAnalyzer(private val listener: (qrCode: String?) -> Unit) : Analyzer {
 
     private val reader = MultiFormatReader()
+    private var imageData = ByteArray(0)
 
     init {
         val supportedHints: MutableMap<DecodeHintType, Any> = EnumMap(
@@ -26,7 +27,9 @@ class QRCodeImageAnalyzer(private val listener: (qrCode: String?) -> Unit) : Ana
 
     override fun analyze(image: ImageProxy) {
         val byteBuffer = image.planes[0].buffer
-        val imageData = ByteArray(byteBuffer.capacity())
+        if (imageData.size != byteBuffer.capacity()) {
+            imageData = ByteArray(byteBuffer.capacity())
+        }
         byteBuffer[imageData]
         val source = PlanarYUVLuminanceSource(
             imageData,
