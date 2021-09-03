@@ -25,13 +25,13 @@ class QRScannerActivity : AppCompatActivity() {
     }
 
     public override fun onDestroy() {
-        super.onDestroy();
-        executor.shutdown();
+        super.onDestroy()
+        executor.shutdown()
     }
 
     private fun startCamera() {
         val contentFrame = findViewById<PreviewView>(R.id.content_frame)
-        contentFrame.setScaleType(PreviewView.ScaleType.FIT_CENTER);
+        contentFrame.setScaleType(PreviewView.ScaleType.FIT_CENTER)
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
