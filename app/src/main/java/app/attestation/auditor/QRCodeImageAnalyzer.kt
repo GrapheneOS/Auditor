@@ -39,13 +39,9 @@ class QRCodeImageAnalyzer(private val listener: (qrCode: String?) -> Unit) : Ana
             )
             listener.invoke(result.text)
         } catch (e: FormatException) {
-            e.fillInStackTrace()
         } catch (e: ChecksumException) {
-            e.fillInStackTrace()
         } catch (e: NotFoundException) {
-            e.fillInStackTrace()
         } catch (e: ArrayIndexOutOfBoundsException) {
-            e.fillInStackTrace()
         }
         image.close()
     }
