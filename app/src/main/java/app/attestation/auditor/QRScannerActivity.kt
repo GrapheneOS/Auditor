@@ -12,12 +12,12 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
+import androidx.core.content.ContextCompat
 import java.util.concurrent.Executors
 
 class QRScannerActivity : AppCompatActivity() {
 
     private val executor = Executors.newSingleThreadExecutor()
-    private val cameraExecutor = Executors.newSingleThreadExecutor()
 
     public override fun onCreate(state: Bundle?) {
         super.onCreate(state)
@@ -28,7 +28,6 @@ class QRScannerActivity : AppCompatActivity() {
     public override fun onDestroy() {
         super.onDestroy()
         executor.shutdown()
-        cameraExecutor.shutdown()
     }
 
     private fun startCamera() {
@@ -40,7 +39,6 @@ class QRScannerActivity : AppCompatActivity() {
         cameraController.bindToLifecycle(this)
         cameraController.cameraSelector = cameraSelector
         cameraController.setEnabledUseCases(CameraController.IMAGE_ANALYSIS)
-        cameraController.imageAnalysisBackgroundExecutor = cameraExecutor
 
         cameraProviderFuture.addListener(
             {
@@ -71,7 +69,7 @@ class QRScannerActivity : AppCompatActivity() {
                     cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis)
                 }
             },
-            cameraExecutor
+            ContextCompat.getMainExecutor(this)
         )
     }
 
