@@ -5,6 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Size
 import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.FocusMeteringAction
+import androidx.camera.core.SurfaceOrientedMeteringPointFactory
+import androidx.camera.core.UseCaseGroup
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
@@ -14,6 +17,7 @@ import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 class QRScannerActivity : AppCompatActivity() {
 
@@ -40,34 +44,47 @@ class QRScannerActivity : AppCompatActivity() {
         cameraController.cameraSelector = cameraSelector
         cameraController.setEnabledUseCases(CameraController.IMAGE_ANALYSIS)
 
+        val imageAnalysis = ImageAnalysis.Builder()
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .setTargetResolution(Size(960,960))
+            .build()
+
+        imageAnalysis.setAnalyzer(executor, QRCodeImageAnalyzer { response ->
+            if (response != null) handleResult(response)
+        })
+
+        val preview = Preview.Builder()
+            .setTargetResolution(Size(960,960))
+            .build()
+            .also {
+                it.setSurfaceProvider(contentFrame.surfaceProvider)
+            }
+
+        val useCaseGroup = UseCaseGroup.Builder()
+            .addUseCase(preview)
+            .addUseCase(imageAnalysis)
+            .build()
+
         cameraProviderFuture.addListener(
             {
                 val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-                val preview = Preview.Builder()
-                    .build()
-                    .also {
-                        runOnUiThread {
-                            it.setSurfaceProvider(contentFrame.surfaceProvider)
-                        }
-
-                    }
-
-                val imageAnalysis = ImageAnalysis.Builder()
-                    .build()
-
-                imageAnalysis.setAnalyzer(
-                    executor,
-                    QRCodeImageAnalyzer { response ->
-                        if (response != null) {
-                            handleResult(response)
-                        }
-                    }
+                cameraProvider.unbindAll()
+                val camera = cameraProvider.bindToLifecycle(this, cameraSelector, useCaseGroup)
+                val factory = SurfaceOrientedMeteringPointFactory(
+                    contentFrame.height.toFloat(),
+                    contentFrame.width.toFloat()
                 )
+                val point = factory.createPoint(
+                    contentFrame.width.toFloat() / 2f,
+                    contentFrame.height.toFloat() / 2f,
+                    0.5f
+                )
+                val action = FocusMeteringAction
+                    .Builder(point)
+                    .setAutoCancelDuration(2, TimeUnit.SECONDS)
+                    .build()
 
-                runOnUiThread {
-                    cameraProvider.unbindAll()
-                    cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis)
-                }
+                camera.cameraControl.startFocusAndMetering(action)
             },
             ContextCompat.getMainExecutor(this)
         )
