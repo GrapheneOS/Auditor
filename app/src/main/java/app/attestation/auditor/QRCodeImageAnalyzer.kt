@@ -11,7 +11,7 @@ import com.google.zxing.PlanarYUVLuminanceSource
 import com.google.zxing.common.HybridBinarizer
 import java.util.EnumMap
 
-class QRCodeImageAnalyzer(private val listener: (qrCode: String?) -> Unit) : Analyzer {
+class QRCodeImageAnalyzer(private val mActivity: QRScannerActivity, private val listener: (qrCode: String?) -> Unit) : Analyzer {
 
     private val reader = MultiFormatReader()
     private var imageData = ByteArray(0)
@@ -25,18 +25,27 @@ class QRCodeImageAnalyzer(private val listener: (qrCode: String?) -> Unit) : Ana
     }
 
     override fun analyze(image: ImageProxy) {
+
+        val size = mActivity.getOverlayView().size
+
         val byteBuffer = image.planes[0].buffer
+
         if (imageData.size != byteBuffer.capacity()) {
             imageData = ByteArray(byteBuffer.capacity())
         }
         byteBuffer[imageData]
+
+        val left = (image.width - size)/2
+        val top = (image.height - size)/2
+
         val source = PlanarYUVLuminanceSource(
             imageData,
             image.width, image.height,
-            0, 0,
-            image.width, image.height,
+            left, top,
+            size, size,
             false
         )
+
         val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
         try {
             val result = reader.decodeWithState(binaryBitmap)

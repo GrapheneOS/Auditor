@@ -18,6 +18,7 @@ import java.util.concurrent.Executors
 class QRScannerActivity : AppCompatActivity() {
 
     private val executor = Executors.newSingleThreadExecutor()
+    private lateinit var overlayView : QROverlay
 
     public override fun onCreate(state: Bundle?) {
         super.onCreate(state)
@@ -30,9 +31,12 @@ class QRScannerActivity : AppCompatActivity() {
         executor.shutdown()
     }
 
+    fun getOverlayView() : QROverlay {
+        return overlayView
+    }
+
     private fun startCamera() {
         val contentFrame = findViewById<PreviewView>(R.id.content_frame)
-        contentFrame.setScaleType(PreviewView.ScaleType.FIT_CENTER)
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
@@ -51,13 +55,15 @@ class QRScannerActivity : AppCompatActivity() {
                         it.setSurfaceProvider(contentFrame.surfaceProvider)
                     }
 
+                overlayView = findViewById(R.id.overlay)
+
                 val imageAnalysis = ImageAnalysis.Builder()
                     .setTargetResolution(Size(960, 960))
                     .build()
 
                 imageAnalysis.setAnalyzer(
                     executor,
-                    QRCodeImageAnalyzer { response ->
+                    QRCodeImageAnalyzer (this) { response ->
                         if (response != null) {
                             handleResult(response)
                         }
