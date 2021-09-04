@@ -45,9 +45,7 @@ class QRScannerActivity : AppCompatActivity() {
         cameraProviderFuture.addListener(
             {
                 val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-
                 val preview = Preview.Builder()
-                    .setTargetResolution(Size(720,1280))
                     .build()
                     .also {
                         runOnUiThread {
@@ -57,7 +55,6 @@ class QRScannerActivity : AppCompatActivity() {
                     }
 
                 val imageAnalysis = ImageAnalysis.Builder()
-                    .setTargetResolution(Size(720, 1280))
                     .build()
 
                 imageAnalysis.setAnalyzer(
