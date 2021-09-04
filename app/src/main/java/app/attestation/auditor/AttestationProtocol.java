@@ -267,6 +267,7 @@ class AttestationProtocol {
             "Pixel 4a",
             "Pixel 4a (5G)",
             "Pixel 5",
+            "Pixel 5a",
             "SM-N970U",
             "SM-N975U").contains(Build.MODEL);
 
@@ -356,6 +357,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_4a, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("88265D85BA9E1E2F6036A259D880D2741031ACA445840137395B6D541C0FC7FC",
                     new DeviceInfo(R.string.device_pixel_5_generic, 3, 4, false /* uses new API */, true, R.string.os_stock))
+            .put("1DD694CE00BF131AD61CEB576B7DCC41CF7F9B2C418F4C12B2B8F3E9A1EA911D",
+                    new DeviceInfo(R.string.device_pixel_5a, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("72376CAACF11726D4922585732429FB97D0D1DD69F0D2E0770B9E61D14ADDE65",
                     new DeviceInfo(R.string.device_sm_a705fn, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("33D9484FD512E610BCF00C502827F3D55A415088F276C6506657215E622FA770",
@@ -480,6 +483,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_4a, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("88265D85BA9E1E2F6036A259D880D2741031ACA445840137395B6D541C0FC7FC",
                     new DeviceInfo(R.string.device_pixel_5_generic, 4, 41, false /* uses new API */, true, R.string.os_stock))
+            .put("1DD694CE00BF131AD61CEB576B7DCC41CF7F9B2C418F4C12B2B8F3E9A1EA911D",
+                    new DeviceInfo(R.string.device_pixel_5a, 4, 41, false /* uses new API */, true, R.string.os_stock))
             .put("3D3DEB132A89551D0A700D230BABAE4E3E80E3C7926ACDD7BAEDF9B57AD316D0",
                     new DeviceInfo(R.string.device_sm_n970u, 3, 4, false /* uses new API */, true, R.string.os_stock))
             .put("9AC63842137D92C119A1B1BE2C9270B9EBB6083BBE6350B7823571942B5869F0",
