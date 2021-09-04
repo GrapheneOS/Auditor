@@ -1,11 +1,13 @@
 package app.attestation.auditor
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.View
 
 class FocusView : View {
@@ -33,19 +35,29 @@ class FocusView : View {
         mSemiBlackPaint.strokeWidth = 10f
     }
 
+    private val Number.dpToPx get() = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        this.toFloat(),
+        Resources.getSystem().displayMetrics)
+
+    private val Int.half : Number get() {
+        return this / 2
+    }
+
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        val left = width / 2 - 450
-        val top = height / 2 - 450
-        val right = left + 900
-        val bottom = top + 900
+        //this value decide how big the size should be
+        val sizeInDp = 280
+
+        val left = width / 2 - sizeInDp.half.dpToPx
+        val top = height / 2 - sizeInDp.half.dpToPx
+        val right = left + sizeInDp.dpToPx
+        val bottom = top + sizeInDp.dpToPx
+
         path.reset()
         path.fillType = Path.FillType.INVERSE_EVEN_ODD
-        path.addRect(
-            left.toFloat(), top.toFloat(), right.toFloat(),
-            bottom.toFloat(), Path.Direction.CW
-        )
+        path.addRect(left, top, right, bottom, Path.Direction.CW)
         canvas.drawPath(path, mSemiBlackPaint)
         canvas.clipPath(path)
         canvas.drawColor(color)
