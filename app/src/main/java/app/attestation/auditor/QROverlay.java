@@ -42,7 +42,7 @@ public class QROverlay extends View {
         tPaint.setTextSize(tSize);
 
         fPaint = new Paint();
-        fPaint.setColor(Color.parseColor("#00FF00"));
+        fPaint.setColor(Color.parseColor("#8BC34A")); // green500
         fPaint.setStrokeWidth(frameSideSize);
     }
 
