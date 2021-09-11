@@ -13,6 +13,8 @@ import android.view.View;
 
 public class QROverlay extends View {
 
+    private static final String TAG = "QROverlay";
+
     private Paint bPaint;
     private TextPaint tPaint;
     private Paint fPaint;
@@ -53,8 +55,8 @@ public class QROverlay extends View {
         final int width = getWidth();
         final int height = getHeight();
 
-        Log.i("123width123", width+"");
-        Log.i("123height123", height+"");
+        Log.d(TAG, "width: " + width);
+        Log.d(TAG, "height: " + height);
 
         final int verticalHeight = (height - size) / 2;
         final int horizontalWidth = (width - size) / 2;
