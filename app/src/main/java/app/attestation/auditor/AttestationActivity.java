@@ -27,6 +27,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -242,6 +245,24 @@ public class AttestationActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_attestation);
         setSupportActionBar(findViewById(R.id.toolbar));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            getWindow().setDecorFitsSystemWindows(false);
+            ViewCompat.setOnApplyWindowInsetsListener(
+                    findViewById(R.id.rootLayout),
+                    (v, insets) -> {
+
+                        Insets insetsCompat = insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars());
+                        v.setPadding(
+                                insetsCompat.left,
+                                insetsCompat.top,
+                                insetsCompat.right,
+                                0
+                        );
+                        return insets;
+                    }
+            );
+        }
 
         buttons = findViewById(R.id.buttons);
         snackbar = Snackbar.make(findViewById(R.id.content_attestation), "", Snackbar.LENGTH_LONG);
