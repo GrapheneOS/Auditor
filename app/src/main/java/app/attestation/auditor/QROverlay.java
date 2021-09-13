@@ -62,17 +62,17 @@ public class QROverlay extends View {
         final int horizontalWidth = (width - size) / 2;
 
         // Drawing the background
-        canvas.drawRect(0,0, width, verticalHeight, bPaint);
-        canvas.drawRect(0,0, horizontalWidth, height, bPaint);
+        canvas.drawRect(0, 0, width, verticalHeight, bPaint);
+        canvas.drawRect(0, 0, horizontalWidth, height, bPaint);
         canvas.drawRect(horizontalWidth + size, 0, width, height, bPaint);
-        canvas.drawRect(0,verticalHeight + size, width, height, bPaint);
+        canvas.drawRect(0, verticalHeight + size, width, height, bPaint);
 
         final String text = getContext().getString(R.string.scanner_label);
         final int textX = horizontalWidth + size / 2;
         final int textY = verticalHeight + size + frameSideSize * 4;
 
         int xPos = textX - (int)(tPaint.
-                measureText(text)/2);
+                measureText(text) / 2);
         int yPos = (int) (textY - ((tPaint.descent() + tPaint.ascent()) / 2)) ;
 
         canvas.drawText(text, xPos, yPos, tPaint);
