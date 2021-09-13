@@ -11,6 +11,7 @@ import com.google.zxing.MultiFormatReader
 import com.google.zxing.PlanarYUVLuminanceSource
 import com.google.zxing.common.HybridBinarizer
 import java.util.EnumMap
+import kotlin.math.roundToInt
 
 class QRCodeImageAnalyzer(private val mActivity: QRScannerActivity, private val listener: (qrCode: String?) -> Unit): Analyzer {
 
@@ -31,8 +32,6 @@ class QRCodeImageAnalyzer(private val mActivity: QRScannerActivity, private val 
     }
 
     override fun analyze(image: ImageProxy) {
-        val size = mActivity.getOverlayView().size
-
         val byteBuffer = image.planes[0].buffer
 
         if (imageData.size != byteBuffer.capacity()) {
@@ -40,6 +39,8 @@ class QRCodeImageAnalyzer(private val mActivity: QRScannerActivity, private val 
         }
         byteBuffer[imageData]
 
+        val widthPercent = mActivity.getOverlayView().size.toFloat() / mActivity.getOverlayView().getWidth()
+        val size = (widthPercent * image.width).roundToInt();
         val left = (image.width - size) / 2
         val top = (image.height - size) / 2
 
