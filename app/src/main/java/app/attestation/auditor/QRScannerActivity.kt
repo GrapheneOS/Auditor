@@ -87,6 +87,7 @@ class QRScannerActivity : AppCompatActivity() {
 
     private fun startCamera() {
         contentFrame = findViewById(R.id.content_frame)
+        contentFrame.setScaleType(PreviewView.ScaleType.FIT_CENTER)
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
