@@ -5,25 +5,75 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Size
 import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.FocusMeteringAction
 import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.MeteringPointFactory
 import androidx.camera.core.Preview
+import androidx.camera.core.SurfaceOrientedMeteringPointFactory
+import androidx.camera.core.CameraInfoUnavailableException
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import java.util.concurrent.Executors
+import android.os.Handler
+import android.os.Looper
 
 class QRScannerActivity : AppCompatActivity() {
 
     private val executor = Executors.newSingleThreadExecutor()
     private lateinit var overlayView: QROverlay
+    private lateinit var camera: Camera
+    private lateinit var contentFrame: PreviewView
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val autoCenterFocusDuration = 2000L
+
+    private val runnable = Runnable {
+        val factory: MeteringPointFactory = SurfaceOrientedMeteringPointFactory(
+            contentFrame.width.toFloat(), contentFrame.height.toFloat()
+        )
+
+        val autoFocusPoint = factory.createPoint(contentFrame.width / 2.0f,
+            contentFrame.height / 2.0f, overlayView.size.toFloat())
+
+        camera.cameraControl.startFocusAndMetering(
+            FocusMeteringAction.Builder(
+                autoFocusPoint,
+                FocusMeteringAction.FLAG_AF
+            ).apply {
+                disableAutoCancel()
+            }.build()
+        )
+
+        startTimer()
+    }
+
+    private fun startTimer() {
+        handler.postDelayed(runnable, autoCenterFocusDuration)
+    }
+
+    private fun cancelTimer() {
+        handler.removeCallbacks(runnable)
+    }
 
     public override fun onCreate(state: Bundle?) {
         super.onCreate(state)
         setContentView(R.layout.activity_qrscanner)
         startCamera()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        startTimer()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        cancelTimer()
     }
 
     public override fun onDestroy() {
@@ -36,7 +86,7 @@ class QRScannerActivity : AppCompatActivity() {
     }
 
     private fun startCamera() {
-        val contentFrame = findViewById<PreviewView>(R.id.content_frame)
+        contentFrame = findViewById(R.id.content_frame)
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
@@ -71,13 +121,13 @@ class QRScannerActivity : AppCompatActivity() {
                 )
 
                 cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis)
+                camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis)
             },
             ContextCompat.getMainExecutor(this)
         )
     }
 
-    private fun handleResult(rawResult : String) {
+    private fun handleResult(rawResult: String) {
         val result = Intent()
         result.putExtra(EXTRA_SCAN_RESULT, rawResult)
         setResult(Activity.RESULT_OK, result)
