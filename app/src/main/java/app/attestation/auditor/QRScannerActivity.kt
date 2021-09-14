@@ -44,9 +44,7 @@ class QRScannerActivity : AppCompatActivity() {
             FocusMeteringAction.Builder(
                 autoFocusPoint,
                 FocusMeteringAction.FLAG_AF
-            ).apply {
-                disableAutoCancel()
-            }.build()
+            ).disableAutoCancel().build()
         )
 
         startTimer()
