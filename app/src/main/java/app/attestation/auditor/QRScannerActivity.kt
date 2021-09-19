@@ -41,10 +41,7 @@ class QRScannerActivity : AppCompatActivity() {
             contentFrame.height / 2.0f, overlayView.size.toFloat())
 
         camera.cameraControl.startFocusAndMetering(
-            FocusMeteringAction.Builder(
-                autoFocusPoint,
-                FocusMeteringAction.FLAG_AF
-            ).disableAutoCancel().build()
+            FocusMeteringAction.Builder(autoFocusPoint).disableAutoCancel().build()
         )
 
         startTimer()
