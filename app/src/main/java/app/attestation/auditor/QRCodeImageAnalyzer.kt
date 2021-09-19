@@ -11,7 +11,6 @@ import com.google.zxing.MultiFormatReader
 import com.google.zxing.PlanarYUVLuminanceSource
 import com.google.zxing.common.HybridBinarizer
 import java.util.EnumMap
-import kotlin.math.roundToInt
 
 class QRCodeImageAnalyzer(private val mActivity: QRScannerActivity, private val listener: (qrCode: String?) -> Unit): Analyzer {
 
@@ -39,16 +38,22 @@ class QRCodeImageAnalyzer(private val mActivity: QRScannerActivity, private val 
         }
         byteBuffer[imageData]
 
-        val widthPercent = mActivity.getOverlayView().size.toFloat() / mActivity.getOverlayView().getWidth()
-        val size = (widthPercent * image.width).roundToInt();
+        val iFact : Double = if(mActivity.getOverlayView().width <= mActivity.getOverlayView().height){
+            mActivity.getOverlayView().width.toDouble() / image.width
+        } else {
+            mActivity.getOverlayView().height.toDouble() / image.height
+        }
+
+        val size = mActivity.getOverlayView().size * iFact
+
         val left = (image.width - size) / 2
         val top = (image.height - size) / 2
 
         val source = PlanarYUVLuminanceSource(
             imageData,
             image.width, image.height,
-            left, top,
-            size, size,
+            left.toInt(), top.toInt(),
+            size.toInt(), size.toInt(),
             false
         )
 

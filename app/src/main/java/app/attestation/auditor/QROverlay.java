@@ -8,7 +8,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 public class QROverlay extends View {
@@ -18,10 +17,12 @@ public class QROverlay extends View {
     private Paint bPaint;
     private TextPaint tPaint;
     private Paint fPaint;
-    private float tSize = 16;
+    private float T_SIZE = 24;
     private int size = 256;
     private int frameSideSize = 3;
     private int frameSideLength = 42;
+
+    private final float SIZE_FACTOR = 0.6f;
 
     public QROverlay(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -31,8 +32,6 @@ public class QROverlay extends View {
     private void initPaints() {
         frameSideSize *= getResources().getDisplayMetrics().density;
         frameSideLength *= getResources().getDisplayMetrics().density;
-        size *= getResources().getDisplayMetrics().density;
-        tSize *= getResources().getDisplayMetrics().density;
 
         bPaint = new Paint();
         bPaint.setColor(Color.parseColor("#A6000000"));
@@ -41,7 +40,6 @@ public class QROverlay extends View {
 
         tPaint = new TextPaint();
         tPaint.setColor(Color.parseColor("#ffffff"));
-        tPaint.setTextSize(tSize);
 
         fPaint = new Paint();
         fPaint.setColor(Color.parseColor("#8BC34A")); // green500
@@ -55,8 +53,10 @@ public class QROverlay extends View {
         final int width = getWidth();
         final int height = getHeight();
 
-        Log.d(TAG, "width: " + width);
-        Log.d(TAG, "height: " + height);
+        final int dim = Math.min(width, height);
+
+        size = (int) (dim * SIZE_FACTOR);
+        tPaint.setTextSize(T_SIZE * SIZE_FACTOR * getResources().getDisplayMetrics().density);
 
         final int verticalHeight = (height - size) / 2;
         final int horizontalWidth = (width - size) / 2;
