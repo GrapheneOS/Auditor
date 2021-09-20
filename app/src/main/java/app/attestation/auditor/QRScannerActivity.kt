@@ -28,7 +28,7 @@ class QRScannerActivity : AppCompatActivity() {
     private val executor = Executors.newSingleThreadExecutor()
     private lateinit var overlayView: QROverlay
     private lateinit var camera: Camera
-    private lateinit var contentFrame: PreviewView
+    lateinit var contentFrame: PreviewView
 
     private val handler = Handler(Looper.getMainLooper())
     private val autoCenterFocusDuration = 2000L
