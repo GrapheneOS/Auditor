@@ -3,6 +3,8 @@ package app.attestation.auditor
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Size
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.Camera
@@ -19,8 +21,6 @@ import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import java.util.concurrent.Executors
-import android.os.Handler
-import android.os.Looper
 
 class QRScannerActivity : AppCompatActivity() {
 
