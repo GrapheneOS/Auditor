@@ -31,7 +31,8 @@ class QRCodeImageAnalyzer(private val mActivity: QRScannerActivity, private val 
     }
 
     override fun analyze(image: ImageProxy) {
-        val byteBuffer = image.planes[0].buffer
+        val plane = image.planes[0]
+        val byteBuffer = plane.buffer
 
         if (imageData.size != byteBuffer.capacity()) {
             imageData = ByteArray(byteBuffer.capacity())
@@ -51,7 +52,7 @@ class QRCodeImageAnalyzer(private val mActivity: QRScannerActivity, private val 
 
         val source = PlanarYUVLuminanceSource(
             imageData,
-            image.width, image.height,
+            plane.rowStride, image.height,
             left.toInt(), top.toInt(),
             size.toInt(), size.toInt(),
             false
