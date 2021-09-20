@@ -34,16 +34,28 @@ class QRCodeImageAnalyzer(private val mActivity: QRScannerActivity, private val 
     override fun analyze(image: ImageProxy) {
         val plane = image.planes[0]
         val byteBuffer = plane.buffer
+        val rotationDegrees = image.imageInfo.rotationDegrees
 
         if (imageData.size != byteBuffer.capacity()) {
             imageData = ByteArray(byteBuffer.capacity())
         }
         byteBuffer[imageData]
 
-        val iFact = if (mActivity.contentFrame.width < mActivity.contentFrame.height) {
-            image.width / mActivity.contentFrame.width.toDouble()
+        val previewWidth: Int
+        val previewHeight: Int
+
+        if (rotationDegrees == 0 || rotationDegrees == 180) {
+            previewWidth = mActivity.contentFrame.width
+            previewHeight = mActivity.contentFrame.height
         } else {
-            image.height / mActivity.contentFrame.height.toDouble()
+            previewWidth = mActivity.contentFrame.height
+            previewHeight = mActivity.contentFrame.width
+        }
+
+        val iFact = if (previewWidth < previewHeight) {
+            image.width / previewWidth.toFloat()
+        } else {
+            image.height / previewHeight.toFloat()
         }
 
         val size = mActivity.getOverlayView().size * iFact
