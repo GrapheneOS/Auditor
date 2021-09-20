@@ -17,7 +17,7 @@ class QRCodeImageAnalyzer(private val mActivity: QRScannerActivity, private val 
     private val TAG = "QRCodeImageAnalyzer"
 
     private var frameCounter = 0
-    private var lastFpsTimestamp = System.currentTimeMillis()
+    private var lastFpsTimestamp = System.nanoTime()
 
     private val reader = MultiFormatReader()
     private var imageData = ByteArray(0)
@@ -71,9 +71,9 @@ class QRCodeImageAnalyzer(private val mActivity: QRScannerActivity, private val 
         val frameCount = 10
         if (++frameCounter % frameCount == 0) {
             frameCounter = 0
-            val now = System.currentTimeMillis()
+            val now = System.nanoTime()
             val delta = now - lastFpsTimestamp
-            val fps = 1000 * frameCount.toFloat() / delta
+            val fps = 1_000_000_000 * frameCount.toFloat() / delta
             Log.d(TAG, "Analysis FPS: ${"%.02f".format(fps)}")
             lastFpsTimestamp = now
         }
