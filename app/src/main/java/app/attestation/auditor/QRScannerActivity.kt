@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Size
+import android.view.ViewTreeObserver
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
@@ -58,7 +59,13 @@ class QRScannerActivity : AppCompatActivity() {
     public override fun onCreate(state: Bundle?) {
         super.onCreate(state)
         setContentView(R.layout.activity_qrscanner)
-        startCamera()
+        overlayView = findViewById(R.id.overlay)
+        overlayView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                overlayView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                startCamera()
+            }
+        })
     }
 
     override fun onResume() {
@@ -100,8 +107,6 @@ class QRScannerActivity : AppCompatActivity() {
                     .also {
                         it.setSurfaceProvider(contentFrame.surfaceProvider)
                     }
-
-                overlayView = findViewById(R.id.overlay)
 
                 val imageAnalysis = ImageAnalysis.Builder()
                     .setTargetResolution(Size(960, 960))
