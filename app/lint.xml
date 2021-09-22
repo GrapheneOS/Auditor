@@ -14,12 +14,6 @@
         <ignore path="src/main/res/layout/content_attestation.xml"/>
     </issue>
 
-    <!-- AsyncTask intentionally holds onto the JobService to call jobFinished -->
-    <issue id="StaticFieldLeak">
-        <ignore path="src/main/java/app/attestation/auditor/RemoteVerifyJob.java"/>
-        <ignore path="src/main/java/app/attestation/auditor/SubmitSampleJob.java"/>
-    </issue>
-
     <!-- android:useEmbeddedDex unused with API level < 29 -->
     <issue id="UnusedAttribute">
         <ignore path="src/main/AndroidManifest.xml"/>
