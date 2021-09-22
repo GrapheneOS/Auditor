@@ -33,6 +33,8 @@ class QRScannerActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private val executor = Executors.newSingleThreadExecutor()
 
+    private var focusTimerActive = false
+
     private lateinit var overlayView: QROverlay
     private lateinit var camera: Camera
     lateinit var contentFrame: PreviewView
@@ -53,11 +55,12 @@ class QRScannerActivity : AppCompatActivity() {
     }
 
     private fun startFocusTimer() {
-        handler.postDelayed(runnable, autoCenterFocusDuration)
+        focusTimerActive = handler.postDelayed(runnable, autoCenterFocusDuration)
     }
 
     private fun cancelFocusTimer() {
         handler.removeCallbacks(runnable)
+        focusTimerActive = false
     }
 
     public override fun onCreate(state: Bundle?) {
@@ -83,12 +86,16 @@ class QRScannerActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        startFocusTimer()
+        if (::camera.isInitialized && !focusTimerActive) {
+            startFocusTimer()
+        }
     }
 
     override fun onPause() {
         super.onPause()
-        cancelFocusTimer()
+        if (focusTimerActive) {
+            cancelFocusTimer()
+        }
     }
 
     public override fun onDestroy() {
@@ -128,6 +135,7 @@ class QRScannerActivity : AppCompatActivity() {
 
                 cameraProvider.unbindAll()
                 camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis)
+                startFocusTimer()
             },
             ContextCompat.getMainExecutor(this)
         )
