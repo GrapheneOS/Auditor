@@ -24,8 +24,11 @@ import androidx.core.content.ContextCompat
 import java.util.concurrent.Executors
 
 class QRScannerActivity : AppCompatActivity() {
-    private val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-    private val autoCenterFocusDuration = 2000L
+    companion object {
+        const val EXTRA_SCAN_RESULT = "app.attestation.auditor.SCAN_RESULT"
+        private val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+        private val autoCenterFocusDuration = 2000L
+    }
 
     private val handler = Handler(Looper.getMainLooper())
     private val executor = Executors.newSingleThreadExecutor()
@@ -135,9 +138,5 @@ class QRScannerActivity : AppCompatActivity() {
         result.putExtra(EXTRA_SCAN_RESULT, rawResult)
         setResult(Activity.RESULT_OK, result)
         finish()
-    }
-
-    companion object {
-        const val EXTRA_SCAN_RESULT = "app.attestation.auditor.SCAN_RESULT"
     }
 }

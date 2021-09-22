@@ -14,8 +14,9 @@ import java.util.EnumMap
 import kotlin.math.roundToInt
 
 class QRCodeImageAnalyzer(private val mActivity: QRScannerActivity, private val listener: (qrCode: String?) -> Unit): Analyzer {
-
-    private val TAG = "QRCodeImageAnalyzer"
+    companion object {
+        private const val TAG = "QRCodeImageAnalyzer"
+    }
 
     private var frameCounter = 0
     private var lastFpsTimestamp = System.nanoTime()
