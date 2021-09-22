@@ -59,6 +59,8 @@ class QRScannerActivity : AppCompatActivity() {
     public override fun onCreate(state: Bundle?) {
         super.onCreate(state)
         setContentView(R.layout.activity_qrscanner)
+        contentFrame = findViewById(R.id.content_frame)
+        contentFrame.setScaleType(PreviewView.ScaleType.FIT_CENTER)
         overlayView = findViewById(R.id.overlay)
         overlayView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
@@ -88,8 +90,6 @@ class QRScannerActivity : AppCompatActivity() {
     }
 
     private fun startCamera() {
-        contentFrame = findViewById(R.id.content_frame)
-        contentFrame.setScaleType(PreviewView.ScaleType.FIT_CENTER)
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
