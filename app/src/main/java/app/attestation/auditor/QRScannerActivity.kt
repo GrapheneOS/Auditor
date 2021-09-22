@@ -24,14 +24,15 @@ import androidx.core.content.ContextCompat
 import java.util.concurrent.Executors
 
 class QRScannerActivity : AppCompatActivity() {
+    private val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+    private val autoCenterFocusDuration = 2000L
 
+    private val handler = Handler(Looper.getMainLooper())
     private val executor = Executors.newSingleThreadExecutor()
+
     private lateinit var overlayView: QROverlay
     private lateinit var camera: Camera
     lateinit var contentFrame: PreviewView
-
-    private val handler = Handler(Looper.getMainLooper())
-    private val autoCenterFocusDuration = 2000L
 
     private val runnable = Runnable {
         val factory: MeteringPointFactory = SurfaceOrientedMeteringPointFactory(
@@ -59,8 +60,10 @@ class QRScannerActivity : AppCompatActivity() {
     public override fun onCreate(state: Bundle?) {
         super.onCreate(state)
         setContentView(R.layout.activity_qrscanner)
+
         contentFrame = findViewById(R.id.content_frame)
         contentFrame.setScaleType(PreviewView.ScaleType.FIT_CENTER)
+
         overlayView = findViewById(R.id.overlay)
         overlayView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
@@ -68,6 +71,11 @@ class QRScannerActivity : AppCompatActivity() {
                 startCamera()
             }
         })
+
+        val cameraController = LifecycleCameraController(this)
+        cameraController.bindToLifecycle(this)
+        cameraController.cameraSelector = cameraSelector
+        cameraController.setEnabledUseCases(CameraController.IMAGE_ANALYSIS)
     }
 
     override fun onResume() {
@@ -91,12 +99,6 @@ class QRScannerActivity : AppCompatActivity() {
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-        val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-        val cameraController = LifecycleCameraController(this)
-        cameraController.bindToLifecycle(this)
-        cameraController.cameraSelector = cameraSelector
-        cameraController.setEnabledUseCases(CameraController.IMAGE_ANALYSIS)
 
         cameraProviderFuture.addListener(
             {
