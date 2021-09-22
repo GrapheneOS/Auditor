@@ -45,14 +45,14 @@ class QRScannerActivity : AppCompatActivity() {
             FocusMeteringAction.Builder(autoFocusPoint).disableAutoCancel().build()
         )
 
-        startTimer()
+        startFocusTimer()
     }
 
-    private fun startTimer() {
+    private fun startFocusTimer() {
         handler.postDelayed(runnable, autoCenterFocusDuration)
     }
 
-    private fun cancelTimer() {
+    private fun cancelFocusTimer() {
         handler.removeCallbacks(runnable)
     }
 
@@ -70,12 +70,12 @@ class QRScannerActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        startTimer()
+        startFocusTimer()
     }
 
     override fun onPause() {
         super.onPause()
-        cancelTimer()
+        cancelFocusTimer()
     }
 
     public override fun onDestroy() {
@@ -100,7 +100,7 @@ class QRScannerActivity : AppCompatActivity() {
 
         cameraProviderFuture.addListener(
             {
-                val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+                val cameraProvider = cameraProviderFuture.get()
 
                 val preview = Preview.Builder()
                     .build()
