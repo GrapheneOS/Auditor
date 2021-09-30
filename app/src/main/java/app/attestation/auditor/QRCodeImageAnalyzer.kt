@@ -13,7 +13,7 @@ import com.google.zxing.common.HybridBinarizer
 import java.util.EnumMap
 import kotlin.math.roundToInt
 
-class QRCodeImageAnalyzer(private val mActivity: QRScannerActivity, private val listener: (qrCode: String?) -> Unit): Analyzer {
+class QRCodeImageAnalyzer(private val mActivity: QRScannerActivity, private val listener: (qrCode: String) -> Unit): Analyzer {
     companion object {
         private const val TAG = "QRCodeImageAnalyzer"
     }
@@ -74,8 +74,9 @@ class QRCodeImageAnalyzer(private val mActivity: QRScannerActivity, private val 
 
         val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
         try {
-            val result = reader.decodeWithState(binaryBitmap)
-            listener.invoke(result.text)
+            reader.decodeWithState(binaryBitmap).text?.let {
+                listener.invoke(it)
+            }
         } catch (e: ReaderException) {
         } finally {
             reader.reset()

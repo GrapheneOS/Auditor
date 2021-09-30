@@ -127,9 +127,7 @@ class QRScannerActivity : AppCompatActivity() {
                 imageAnalysis.setAnalyzer(
                     executor,
                     QRCodeImageAnalyzer (this) { response ->
-                        if (response != null) {
-                            handleResult(response)
-                        }
+                        handleResult(response)
                     }
                 )
 
