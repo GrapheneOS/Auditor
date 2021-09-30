@@ -6,6 +6,7 @@ plugins {
 android {
     compileSdkVersion 31
     buildToolsVersion "31.0.0"
+
     defaultConfig {
         applicationId "app.attestation.auditor"
         minSdkVersion 26
@@ -14,9 +15,11 @@ android {
         versionName versionCode.toString()
         resConfigs "en"
     }
+
     signingConfigs {
         release
     }
+
     buildTypes {
         release {
             minifyEnabled true
@@ -25,10 +28,16 @@ android {
             signingConfig signingConfigs.release
         }
     }
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11
+    }
+
     packagingOptions {
         dex {
             useLegacyPackaging = false
