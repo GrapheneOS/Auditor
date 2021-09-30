@@ -11,7 +11,7 @@ import android.util.AttributeSet
 import android.view.View
 import app.attestation.auditor.R
 
-class QROverlay(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
+class QROverlay(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     companion object {
         private const val TAG = "QROverlay"
         private const val T_SIZE = 24f
