@@ -2,7 +2,7 @@
     <string name="app_name">Auditor</string>
     <string name="introduction">Two devices are needed to perform verification:\n\n- The device to be verified (Auditee), which needs to be one of the supported devices launched with Android 8.0+.\n\n- An Android 8.0+ device to perform the verification (Auditor).\n\nThe verification process requires sending data between the devices by scanning QR codes.</string>
     <string name="unsupported_auditee">Device is not one of the supported models.</string>
-    <string name="camera_permission_denied">Camera permission is required to scan QR codes. Please try again.</string>
+    <string name="camera_permission_denied">Camera permission is required to scan QR codes.</string>
     <string name="auditee_button">Auditee (device being verified)</string>
     <string name="auditor_button">Auditor (device performing verification)</string>
     <string name="qrcode_content_description">QR code</string>
