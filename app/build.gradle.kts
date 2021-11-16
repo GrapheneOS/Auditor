@@ -35,8 +35,6 @@ android {
         versionCode = 35
         versionName = versionCode.toString()
         resConfigs("en")
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
