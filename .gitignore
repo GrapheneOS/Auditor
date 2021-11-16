@@ -7,7 +7,7 @@
 /build
 /captures
 .externalNativeBuild
-signing.properties
+keystore.properties
 *.keystore
 /.idea
 /releases
