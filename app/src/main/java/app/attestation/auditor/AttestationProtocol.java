@@ -326,6 +326,10 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_5, 3, 4, false /* uses new API */, true, R.string.os_graphene))
             .put("0ABDDEDA03B6CE10548C95E0BEA196FAA539866F929BCDF7ECA84B4203952514",
                     new DeviceInfo(R.string.device_pixel_5a, 3, 4, false /* uses new API */, true, R.string.os_graphene))
+            .put("F0A890375D1405E62EBFD87E8D3F475F948EF031BBF9DDD516D5F600A23677E8",
+                    new DeviceInfo(R.string.device_pixel_6, 4, 41, false /* uses new API */, true, R.string.os_graphene))
+            .put("439B76524D94C40652CE1BF0D8243773C634D2F99BA3160D8D02AA5E29FF925C",
+                    new DeviceInfo(R.string.device_pixel_6_pro, 4, 41, false /* uses new API */, true, R.string.os_graphene))
             .build();
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStock = ImmutableMap
             .<String, DeviceInfo>builder()
@@ -480,6 +484,10 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_5, 4, 41, false /* uses new API */, true, R.string.os_graphene))
             .put("0ABDDEDA03B6CE10548C95E0BEA196FAA539866F929BCDF7ECA84B4203952514",
                     new DeviceInfo(R.string.device_pixel_5a, 4, 41, false /* uses new API */, true, R.string.os_graphene))
+            .put("F0A890375D1405E62EBFD87E8D3F475F948EF031BBF9DDD516D5F600A23677E8",
+                    new DeviceInfo(R.string.device_pixel_6, 4, 41, false /* uses new API */, true, R.string.os_graphene))
+            .put("439B76524D94C40652CE1BF0D8243773C634D2F99BA3160D8D02AA5E29FF925C",
+                    new DeviceInfo(R.string.device_pixel_6_pro, 4, 41, false /* uses new API */, true, R.string.os_graphene))
             .build();
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxStock = ImmutableMap
             .<String, DeviceInfo>builder()
