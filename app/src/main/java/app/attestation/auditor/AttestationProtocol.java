@@ -1012,10 +1012,8 @@ class AttestationProtocol {
                 toYesNoString(context, denyNewUsb)));
         osEnforced.append(context.getString(R.string.oem_unlock_allowed,
                 toYesNoString(context, oemUnlockAllowed)));
-        if (verified.appVersion >= 14) {
-            osEnforced.append(context.getString(R.string.system_user,
-                    toYesNoString(context, systemUser)));
-        }
+        osEnforced.append(context.getString(R.string.system_user,
+                toYesNoString(context, systemUser)));
 
         return new VerificationResult(hasPersistentKey, teeEnforced.toString(), osEnforced.toString());
     }
