@@ -1152,12 +1152,13 @@ class AttestationProtocol {
                 statePrefix + KEYSTORE_ALIAS_PERSISTENT_PREFIX + index;
 
         // generate a new key for fresh attestation results unless the persistent key is not yet created
-        keyStore.deleteEntry(statePrefix + KEYSTORE_ALIAS_FRESH);
         final boolean hasPersistentKey = keyStore.containsAlias(persistentKeystoreAlias);
         final String attestationKeystoreAlias;
         final boolean useStrongBox;
         if (hasPersistentKey) {
-            attestationKeystoreAlias = statePrefix + KEYSTORE_ALIAS_FRESH;
+            final String freshKeyStoreAlias = statePrefix + KEYSTORE_ALIAS_FRESH;
+            keyStore.deleteEntry(freshKeyStoreAlias);
+            attestationKeystoreAlias = freshKeyStoreAlias;
             final X509Certificate persistent =
                 (X509Certificate) getCertificate(keyStore, persistentKeystoreAlias);
             final String dn = persistent.getIssuerX500Principal().getName(X500Principal.RFC1779);
