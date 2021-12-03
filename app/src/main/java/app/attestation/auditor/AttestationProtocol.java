@@ -92,6 +92,7 @@ class AttestationProtocol {
 
     private static final String KEYSTORE_ALIAS_FRESH = "fresh_attestation_key";
     private static final String KEYSTORE_ALIAS_PERSISTENT_PREFIX = "persistent_attestation_key_";
+    private static final String KEYSTORE_ALIAS_ATTEST_PREFIX = "attest_key_";
 
     // Global preferences
     private static final String KEY_CHALLENGE_INDEX = "challenge_index";
@@ -272,6 +273,8 @@ class AttestationProtocol {
             "Pixel 6 Pro",
             "SM-N970U",
             "SM-N975U").contains(Build.MODEL);
+
+    private static final boolean isAttestKeySupported = ImmutableSet.of().contains(Build.MODEL);
 
     private static final ImmutableSet<Integer> extraPatchLevelMissing = ImmutableSet.of(
             R.string.device_sm_a705fn,
@@ -1107,6 +1110,27 @@ class AttestationProtocol {
         builder.setIsStrongBoxBacked(true);
     }
 
+    @TargetApi(31)
+    static void setAttestKeyAlias(final KeyGenParameterSpec.Builder builder, final String alias) {
+        builder.setAttestKeyAlias(alias);
+    }
+
+    @TargetApi(31)
+    static void generateAttestKey(final String alias, final byte[] challenge, final boolean useStrongBox) throws
+            GeneralSecurityException, IOException {
+        final Date startTime = new Date(new Date().getTime() - CLOCK_SKEW_MS);
+        final KeyGenParameterSpec.Builder builder = new KeyGenParameterSpec.Builder(alias,
+                KeyProperties.PURPOSE_ATTEST_KEY)
+                .setAlgorithmParameterSpec(new ECGenParameterSpec(EC_CURVE))
+                .setDigests(KEY_DIGEST)
+                .setAttestationChallenge(challenge)
+                .setKeyValidityStart(startTime);
+        if (useStrongBox) {
+            enableStrongBox(builder);
+        }
+        generateKeyPair(KEY_ALGORITHM_EC, builder.build());
+    }
+
     static Certificate getCertificate(final KeyStore keyStore, final String alias)
             throws GeneralSecurityException {
         final Certificate result = keyStore.getCertificate(alias);
@@ -1148,6 +1172,8 @@ class AttestationProtocol {
             index = BaseEncoding.base16().encode(challengeIndex);
         }
 
+        final String attestKeystoreAlias =
+                statePrefix + KEYSTORE_ALIAS_ATTEST_PREFIX + index;
         final String persistentKeystoreAlias =
                 statePrefix + KEYSTORE_ALIAS_PERSISTENT_PREFIX + index;
 
@@ -1155,6 +1181,7 @@ class AttestationProtocol {
         final boolean hasPersistentKey = keyStore.containsAlias(persistentKeystoreAlias);
         final String attestationKeystoreAlias;
         final boolean useStrongBox;
+        final boolean useAttestKey;
         if (hasPersistentKey) {
             final String freshKeyStoreAlias = statePrefix + KEYSTORE_ALIAS_FRESH;
             keyStore.deleteEntry(freshKeyStoreAlias);
@@ -1163,9 +1190,15 @@ class AttestationProtocol {
                 (X509Certificate) getCertificate(keyStore, persistentKeystoreAlias);
             final String dn = persistent.getIssuerX500Principal().getName(X500Principal.RFC1779);
             useStrongBox = dn.contains("StrongBox");
+            useAttestKey = keyStore.containsAlias(attestKeystoreAlias);
         } else {
             attestationKeystoreAlias = persistentKeystoreAlias;
             useStrongBox = isStrongBoxSupported && PREFER_STRONGBOX;
+            useAttestKey = isAttestKeySupported;
+
+            if (useAttestKey) {
+                generateAttestKey(attestKeystoreAlias, challenge, useStrongBox);
+            }
         }
 
         final Date startTime = new Date(new Date().getTime() - CLOCK_SKEW_MS);
@@ -1180,6 +1213,9 @@ class AttestationProtocol {
         }
         if (useStrongBox) {
             enableStrongBox(builder);
+        }
+        if (useAttestKey) {
+            setAttestKeyAlias(builder, attestKeystoreAlias);
         }
         generateKeyPair(KEY_ALGORITHM_EC, builder.build());
 
@@ -1387,7 +1423,7 @@ class AttestationProtocol {
         final Enumeration<String> aliases = keyStore.aliases();
         while (aliases.hasMoreElements()) {
             final String alias = aliases.nextElement();
-            if (alias.startsWith(KEYSTORE_ALIAS_PERSISTENT_PREFIX)) {
+            if (alias.startsWith(KEYSTORE_ALIAS_ATTEST_PREFIX) || alias.startsWith(KEYSTORE_ALIAS_PERSISTENT_PREFIX)) {
                 deleteKey(keyStore, alias);
             }
         }
@@ -1398,6 +1434,7 @@ class AttestationProtocol {
         final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
         keyStore.load(null);
 
+        deleteKey(keyStore, statePrefix + KEYSTORE_ALIAS_ATTEST_PREFIX + index);
         deleteKey(keyStore, statePrefix + KEYSTORE_ALIAS_PERSISTENT_PREFIX + index);
     }
 
