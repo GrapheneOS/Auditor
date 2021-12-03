@@ -1375,6 +1375,11 @@ class AttestationProtocol {
         }
     }
 
+    static void deleteKey(final KeyStore keyStore, final String alias) throws GeneralSecurityException {
+        Log.d(TAG, "deleting key " + alias);
+        keyStore.deleteEntry(alias);
+    }
+
     static void clearAuditee() throws GeneralSecurityException, IOException {
         final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
         keyStore.load(null);
@@ -1383,8 +1388,7 @@ class AttestationProtocol {
         while (aliases.hasMoreElements()) {
             final String alias = aliases.nextElement();
             if (alias.startsWith(KEYSTORE_ALIAS_PERSISTENT_PREFIX)) {
-                Log.d(TAG, "deleting key " + alias);
-                keyStore.deleteEntry(alias);
+                deleteKey(keyStore, alias);
             }
         }
     }
@@ -1394,9 +1398,7 @@ class AttestationProtocol {
         final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
         keyStore.load(null);
 
-        final String alias = statePrefix + KEYSTORE_ALIAS_PERSISTENT_PREFIX + index;
-        Log.d(TAG, "deleting key " + alias);
-        keyStore.deleteEntry(alias);
+        deleteKey(keyStore, statePrefix + KEYSTORE_ALIAS_PERSISTENT_PREFIX + index);
     }
 
     static void clearAuditor(final Context context) {
