@@ -23,6 +23,12 @@
     <string name="enable_remote_verify">Scheduling regular remote verification</string>
     <string name="disable_remote_verify">Disabling regular remote verification</string>
     <string name="schedule_submit_sample">Submitting sample data</string>
+    <string name="clear_auditee_pairings">Clearing Auditee pairings</string>
+    <string name="clear_auditor_pairings">Clearing Auditor pairings</string>
+
+    <string name="cancel">Cancel</string>
+    <string name="clear">Clear</string>
+    <string name="disable">Disable</string>
 
     <string name="remote_verification_notification_channel">Remote verification</string>
     <string name="remote_verification_notification_title">Remote verification</string>
