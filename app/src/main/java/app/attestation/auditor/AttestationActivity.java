@@ -25,6 +25,7 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
@@ -502,42 +503,63 @@ public class AttestationActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(final MenuItem item) {
         final int itemId = item.getItemId();
         if (itemId == R.id.action_clear_auditee) {
-            final Intent intent = new Intent(this, GenerateAttestationService.class);
-            intent.putExtra(GenerateAttestationService.EXTRA_CLEAR, true);
-            startService(intent);
+            new AlertDialog.Builder(this)
+                    .setMessage(getString(R.string.action_clear_auditee) + "?")
+                    .setPositiveButton(R.string.clear, (dialogInterface, i) -> {
+                        final Intent intent = new Intent(this, GenerateAttestationService.class);
+                        intent.putExtra(GenerateAttestationService.EXTRA_CLEAR, true);
+                        startService(intent);
+
+                        snackbar.setText(R.string.clear_auditee_pairings).show();
+                    })
+                    .setNegativeButton(R.string.cancel, null)
+                    .show();
             return true;
         } else if (itemId == R.id.action_clear_auditor) {
-            final Intent intent = new Intent(this, VerifyAttestationService.class);
-            intent.putExtra(VerifyAttestationService.EXTRA_CLEAR, true);
-            startService(intent);
+            new AlertDialog.Builder(this)
+                    .setMessage(getString(R.string.action_clear_auditor) + "?")
+                    .setPositiveButton(R.string.clear, (dialogInterface, i) -> {
+                        final Intent intent = new Intent(this, VerifyAttestationService.class);
+                        intent.putExtra(VerifyAttestationService.EXTRA_CLEAR, true);
+                        startService(intent);
+
+                        snackbar.setText(R.string.clear_auditor_pairings).show();
+                    })
+                    .setNegativeButton(R.string.cancel, null)
+                    .show();
             return true;
         } else if (itemId == R.id.action_enable_remote_verify) {
             stage = Stage.EnableRemoteVerify;
             startQrScanner();
             return true;
         } else if (itemId == R.id.action_disable_remote_verify) {
-            RemoteVerifyJob.cancel(this);
+            new AlertDialog.Builder(this)
+                    .setMessage(getString(R.string.action_disable_remote_verify) + "?")
+                    .setPositiveButton(R.string.disable, (dialogInterface, i) -> {
+                        RemoteVerifyJob.cancel(this);
 
-            final SharedPreferences preferences =
-                PreferenceManager.getDefaultSharedPreferences(this);
+                        final SharedPreferences preferences =
+                                PreferenceManager.getDefaultSharedPreferences(this);
 
-            final long userId = preferences.getLong(RemoteVerifyJob.KEY_USER_ID, -1);
-            if (userId != -1) {
-                final Intent intent = new Intent(this, GenerateAttestationService.class);
-                intent.putExtra(GenerateAttestationService.EXTRA_CLEAR, true);
-                intent.putExtra(GenerateAttestationService.EXTRA_CLEAR_STATE_PREFIX,
-                        RemoteVerifyJob.STATE_PREFIX);
-                intent.putExtra(GenerateAttestationService.EXTRA_CLEAR_INDEX,
-                        Long.toString(userId));
-                startService(intent);
-            }
+                        final long userId = preferences.getLong(RemoteVerifyJob.KEY_USER_ID, -1);
+                        if (userId != -1) {
+                            final Intent intent = new Intent(this, GenerateAttestationService.class);
+                            intent.putExtra(GenerateAttestationService.EXTRA_CLEAR, true);
+                            intent.putExtra(GenerateAttestationService.EXTRA_CLEAR_STATE_PREFIX,
+                                    RemoteVerifyJob.STATE_PREFIX);
+                            intent.putExtra(GenerateAttestationService.EXTRA_CLEAR_INDEX,
+                                    Long.toString(userId));
+                            startService(intent);
+                        }
+                        preferences.edit()
+                                .remove(RemoteVerifyJob.KEY_USER_ID)
+                                .remove(RemoteVerifyJob.KEY_SUBSCRIBE_KEY)
+                                .apply();
 
-            preferences.edit()
-                .remove(RemoteVerifyJob.KEY_USER_ID)
-                .remove(RemoteVerifyJob.KEY_SUBSCRIBE_KEY)
-                .apply();
-
-            snackbar.setText(R.string.disable_remote_verify).show();
+                        snackbar.setText(R.string.disable_remote_verify).show();
+                    })
+                    .setNegativeButton(R.string.cancel, null)
+                    .show();
             return true;
         } else if (itemId == R.id.action_submit_sample) {
             SubmitSampleJob.schedule(this);
