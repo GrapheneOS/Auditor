@@ -1313,7 +1313,7 @@ class AttestationProtocol {
             }
 
             final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-            final Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION, true);
+            final Deflater deflater = new Deflater(Deflater.BEST_COMPRESSION, true);
             final int dictionary = R.raw.deflate_dictionary_2;
             try (final InputStream stream = context.getResources().openRawResource(dictionary)) {
                 deflater.setDictionary(ByteStreams.toByteArray(stream));
