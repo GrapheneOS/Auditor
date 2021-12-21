@@ -14,6 +14,11 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
+    <style name="AppTheme.EdgeToEdge" parent="AppTheme.NoActionBar">
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />

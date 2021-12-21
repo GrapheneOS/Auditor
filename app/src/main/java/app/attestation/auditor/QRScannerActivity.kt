@@ -21,6 +21,7 @@ import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import java.util.concurrent.Executors
 
 class QRScannerActivity : AppCompatActivity() {
@@ -66,6 +67,7 @@ class QRScannerActivity : AppCompatActivity() {
     public override fun onCreate(state: Bundle?) {
         super.onCreate(state)
         setContentView(R.layout.activity_qrscanner)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         contentFrame = findViewById(R.id.content_frame)
         contentFrame.setScaleType(PreviewView.ScaleType.FIT_CENTER)
