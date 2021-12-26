@@ -48,7 +48,8 @@ public class RemoteVerifyJob extends JobService {
     static final String KEY_USER_ID = "remote_user_id";
     static final String KEY_SUBSCRIBE_KEY = "remote_subscribe_key";
     private static final int NOTIFICATION_ID = 1;
-    private static final String NOTIFICATION_CHANNEL_ID = "remote_verification";
+    private static final String NOTIFICATION_CHANNEL_SUCCESS_ID = "remote_verification";
+    private static final String NOTIFICATION_CHANNEL_FAILURE_ID = "remote_verification_failure";
 
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
     private Future<?> task;
@@ -186,16 +187,24 @@ public class RemoteVerifyJob extends JobService {
             }
 
             final NotificationManager manager = context.getSystemService(NotificationManager.class);
-            final NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
-                    context.getString(R.string.remote_verification_notification_channel),
+            final NotificationChannel channel = new NotificationChannel(failure ?
+                            NOTIFICATION_CHANNEL_FAILURE_ID :
+                            NOTIFICATION_CHANNEL_SUCCESS_ID,
+                    context.getString(failure ?
+                            R.string.remote_verification_notification_failure_channel :
+                            R.string.remote_verification_notification_success_channel),
                     NotificationManager.IMPORTANCE_MIN);
             channel.setShowBadge(false);
             manager.createNotificationChannel(channel);
-            manager.notify(NOTIFICATION_ID, new Notification.Builder(context, NOTIFICATION_CHANNEL_ID)
-                    .setContentTitle(context.getString(R.string.remote_verification_notification_title))
+            manager.notify(NOTIFICATION_ID, new Notification.Builder(context, failure ?
+                            NOTIFICATION_CHANNEL_FAILURE_ID :
+                            NOTIFICATION_CHANNEL_SUCCESS_ID)
+                    .setContentTitle(context.getString(failure ?
+                            R.string.remote_verification_notification_failure_title :
+                            R.string.remote_verification_notification_success_title))
                     .setContentText(context.getString(failure ?
-                            R.string.remote_verification_notification_failure :
-                            R.string.remote_verification_notification_success))
+                            R.string.remote_verification_notification_failure_content :
+                            R.string.remote_verification_notification_success_content))
                     .setShowWhen(true)
                     .setSmallIcon(R.drawable.baseline_security_white_24)
                     .build());

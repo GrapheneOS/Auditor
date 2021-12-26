@@ -30,10 +30,13 @@
     <string name="clear">Clear</string>
     <string name="disable">Disable</string>
 
-    <string name="remote_verification_notification_channel">Remote verification</string>
-    <string name="remote_verification_notification_title">Remote verification</string>
-    <string name="remote_verification_notification_success">Successfully submitted remote attestation.</string>
-    <string name="remote_verification_notification_failure">Failed to submit remote attestation.</string>
+    <string name="remote_verification_notification_success_channel">Remote verification success</string>
+    <string name="remote_verification_notification_success_title">Remote verification success</string>
+    <string name="remote_verification_notification_success_content">Successfully submitted remote attestation.</string>
+
+    <string name="remote_verification_notification_failure_channel">Remote verification failure</string>
+    <string name="remote_verification_notification_failure_title">Remote verification failure</string>
+    <string name="remote_verification_notification_failure_content">Failed to submit remote attestation.</string>
 
     <string name="sample_submission_notification_channel">Sample submission</string>
     <string name="sample_submission_notification_title">Submitted sample data</string>
