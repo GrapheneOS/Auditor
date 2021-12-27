@@ -83,7 +83,7 @@ public class Attestation {
             case KM_SECURITY_LEVEL_TRUSTED_ENVIRONMENT:
                 return "TEE";
             default:
-                return "Unkown";
+                return "Unknown";
         }
     }
 
