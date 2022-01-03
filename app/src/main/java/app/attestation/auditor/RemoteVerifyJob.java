@@ -24,9 +24,11 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.List;
 
 import app.attestation.auditor.AttestationProtocol.AttestationResult;
 
@@ -187,15 +189,23 @@ public class RemoteVerifyJob extends JobService {
             }
 
             final NotificationManager manager = context.getSystemService(NotificationManager.class);
-            final NotificationChannel channel = new NotificationChannel(failure ?
-                            NOTIFICATION_CHANNEL_FAILURE_ID :
-                            NOTIFICATION_CHANNEL_SUCCESS_ID,
-                    context.getString(failure ?
-                            R.string.remote_verification_notification_failure_channel :
-                            R.string.remote_verification_notification_success_channel),
+
+            final List<NotificationChannel> channels = new ArrayList<>();
+
+            final NotificationChannel successChannel = new NotificationChannel(NOTIFICATION_CHANNEL_SUCCESS_ID,
+                    context.getString(R.string.remote_verification_notification_success_channel),
                     NotificationManager.IMPORTANCE_MIN);
-            channel.setShowBadge(false);
-            manager.createNotificationChannel(channel);
+            successChannel.setShowBadge(false);
+            channels.add(successChannel);
+
+            final NotificationChannel failureChannel = new NotificationChannel(NOTIFICATION_CHANNEL_FAILURE_ID,
+                    context.getString(R.string.remote_verification_notification_failure_channel),
+                    NotificationManager.IMPORTANCE_MIN);
+            failureChannel.setShowBadge(false);
+            channels.add(failureChannel);
+
+            manager.createNotificationChannels(channels);
+
             manager.notify(NOTIFICATION_ID, new Notification.Builder(context, failure ?
                             NOTIFICATION_CHANNEL_FAILURE_ID :
                             NOTIFICATION_CHANNEL_SUCCESS_ID)
