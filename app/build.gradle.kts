@@ -25,16 +25,16 @@ android {
         }
     }
 
-    compileSdk = 31
-    buildToolsVersion("31.0.0")
+    compileSdk = 32
+    buildToolsVersion = "32.0.0"
 
     defaultConfig {
         applicationId = "app.attestation.auditor"
         minSdk = 26
-        targetSdk = 31
+        targetSdk = 32
         versionCode = 41
         versionName = versionCode.toString()
-        resConfigs("en")
+        resourceConfigurations.addAll(listOf("en"))
     }
 
     buildTypes {
@@ -65,10 +65,10 @@ android {
 }
 
 dependencies {
-    implementation("androidx.appcompat:appcompat:1.4.0")
+    implementation("androidx.appcompat:appcompat:1.4.1")
     implementation("androidx.biometric:biometric:1.1.0")
     implementation("androidx.preference:preference:1.1.1")
-    implementation("com.google.android.material:material:1.4.0")
+    implementation("com.google.android.material:material:1.5.0")
     implementation("com.google.guava:guava:31.0.1-android")
     implementation("com.google.zxing:core:3.4.1")
     implementation("org.bouncycastle:bcpkix-jdk15to18:1.70")

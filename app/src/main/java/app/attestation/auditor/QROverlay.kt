@@ -9,7 +9,7 @@ import android.graphics.PorterDuffXfermode
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
-import app.attestation.auditor.R
+import kotlin.math.min
 
 class QROverlay(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     companion object {
@@ -43,7 +43,7 @@ class QROverlay(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        val dim = Math.min(width, height)
+        val dim = min(width, height)
         size = (dim * SIZE_FACTOR).toInt()
         tPaint.textSize = T_SIZE * SIZE_FACTOR * resources.displayMetrics.density
 

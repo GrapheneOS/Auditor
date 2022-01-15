@@ -15,7 +15,6 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.MeteringPointFactory
 import androidx.camera.core.Preview
 import androidx.camera.core.SurfaceOrientedMeteringPointFactory
-import androidx.camera.core.CameraInfoUnavailableException
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
@@ -27,7 +26,7 @@ class QRScannerActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_SCAN_RESULT = "app.attestation.auditor.SCAN_RESULT"
         private val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-        private val autoCenterFocusDuration = 2000L
+        private const val autoCenterFocusDuration = 2000L
     }
 
     private val handler = Handler(Looper.getMainLooper())
