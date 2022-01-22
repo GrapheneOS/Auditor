@@ -26,7 +26,7 @@ class QRScannerActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_SCAN_RESULT = "app.attestation.auditor.SCAN_RESULT"
         private val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-        private val autoCenterFocusDuration = 2000L
+        private const val autoCenterFocusDuration = 2000L
     }
 
     private val handler = Handler(Looper.getMainLooper())
