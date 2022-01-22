@@ -9,7 +9,6 @@ import android.graphics.PorterDuffXfermode
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
-import app.attestation.auditor.R
 import kotlin.math.min
 
 class QROverlay(context: Context, attrs: AttributeSet?) : View(context, attrs) {
