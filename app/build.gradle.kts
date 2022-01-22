@@ -26,7 +26,7 @@ android {
     }
 
     compileSdk = 31
-    buildToolsVersion("31.0.0")
+    buildToolsVersion = "31.0.0"
 
     defaultConfig {
         applicationId = "app.attestation.auditor"
@@ -34,7 +34,7 @@ android {
         targetSdk = 31
         versionCode = 41
         versionName = versionCode.toString()
-        resConfigs("en")
+        resourceConfigurations.add("en")
     }
 
     buildTypes {
