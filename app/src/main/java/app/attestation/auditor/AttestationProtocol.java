@@ -788,6 +788,14 @@ class AttestationProtocol {
 
     private static void appendVerifiedInformation(final Context context,
             final StringBuilder builder, final Verified verified, final String fingerprint) {
+        final String securityLevel;
+        if (verified.securityLevel == SECURITY_LEVEL_STRONGBOX) {
+            securityLevel = context.getString(R.string.security_level_strongbox);
+        } else {
+            securityLevel = context.getString(R.string.security_level_tee);
+        }
+        builder.append(context.getString(R.string.security_level, securityLevel));
+
         builder.append(context.getString(R.string.device, context.getString(verified.device)));
         builder.append(context.getString(R.string.os, context.getString(verified.osName)));
 
@@ -816,14 +824,6 @@ class AttestationProtocol {
             builder.append(context.getString(R.string.verified_boot_hash,
                     BaseEncoding.base16().encode(verified.verifiedBootHash)));
         }
-
-        final String securityLevel;
-        if (verified.securityLevel == SECURITY_LEVEL_STRONGBOX) {
-            securityLevel = context.getString(R.string.security_level_strongbox);
-        } else {
-            securityLevel = context.getString(R.string.security_level_tee);
-        }
-        builder.append(context.getString(R.string.security_level, securityLevel));
 
         final StringBuilder splitFingerprint = new StringBuilder();
         for (int i = 0; i < fingerprint.length(); i += FINGERPRINT_SPLIT_INTERVAL) {
