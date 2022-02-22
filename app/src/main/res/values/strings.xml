@@ -49,22 +49,22 @@
     <string name="verify_basic"><b>Successfully performed basic initial verification and pairing.</b>\n\n</string>
 
     <string name="device_information"><b>Hardware verified information:</b>\n\n</string>
-    <string name="device">Device: %s\n</string>
-    <string name="os">OS: %s (unmodified official release)\n</string>
-    <string name="os_version">OS version: %s\n</string>
-    <string name="os_version_developer_preview">not a production release</string>
-    <string name="os_patch_level">OS patch level: %s\n</string>
-    <string name="vendor_patch_level">Vendor patch level: %s\n</string>
-    <string name="boot_patch_level">Boot patch level: %s\n</string>
-    <string name="security_level">Security level: %s\n</string>
+    <string name="identity">Pairing identity (hash of pinned hardware-backed key): %s\n</string>
+    <string name="security_level">Pinned security level: %s\n</string>
     <string name="security_level_tee">Standard - Trusted Execution Environment (TEE)</string>
     <string name="security_level_strongbox">High (StrongBox) - Hardware Security Module (HSM)</string>
-    <string name="verified_boot_key_hash">Verified boot key hash: %s\n</string>
+    <string name="device">Pinned device: %s\n</string>
+    <string name="os">Pinned OS: %s (unmodified official release)\n</string>
+    <string name="os_version">Pinned OS version: %s\n</string>
+    <string name="os_version_developer_preview">not a production release</string>
+    <string name="os_patch_level">Pinned OS patch level: %s\n</string>
+    <string name="vendor_patch_level">Pinned vendor patch level: %s\n</string>
+    <string name="boot_patch_level">Pinned boot patch level: %s\n</string>
+    <string name="verified_boot_key_hash">Pinned verified boot key hash: %s\n</string>
     <string name="verified_boot_hash">Verified boot hash: %s\n</string>
-    <string name="identity">Identity: %s\n</string>
 
     <string name="os_enforced">\n<b>Information provided by the verified OS:</b>\n\n</string>
-    <string name="auditor_app_version">Auditor app version: %d\n</string>
+    <string name="auditor_app_version">Pinned Auditor app version: %d\n</string>
     <string name="user_profile_secure">User profile secure: %s\n</string>
     <string name="enrolled_fingerprints">Enrolled fingerprints: %s\n</string>
     <string name="enrolled_biometrics">Enrolled biometrics: %s\n</string>
