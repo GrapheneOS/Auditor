@@ -1031,27 +1031,12 @@ class AttestationProtocol {
         return new VerificationResult(hasPersistentKey, teeEnforced.toString(), osEnforced.toString());
     }
 
-    static VerificationResult verifySerialized(final Context context, final byte[] attestationResult,
-            final byte[] challengeMessage) throws DataFormatException, GeneralSecurityException, IOException {
-        final ByteBuffer deserializer = ByteBuffer.wrap(attestationResult);
-        final byte version = deserializer.get();
-        if (version > PROTOCOL_VERSION) {
-            throw new GeneralSecurityException("invalid protocol version: " + version);
-        } else if (version < PROTOCOL_VERSION_MINIMUM) {
-            throw new GeneralSecurityException("Auditee protocol version too old: " + version);
-        }
-
-        final short compressedChainLength = deserializer.getShort();
-        final byte[] compressedChain = new byte[compressedChainLength];
-        deserializer.get(compressedChain);
-
+    private static Certificate[] decodeChain(final byte[] dictionary, final byte[] compressedChain)
+            throws DataFormatException, GeneralSecurityException {
         final byte[] chain = new byte[MAX_ENCODED_CHAIN_LENGTH];
         final Inflater inflater = new Inflater(true);
         inflater.setInput(compressedChain);
-        final int dictionary = R.raw.deflate_dictionary_2;
-        try (final InputStream stream = context.getResources().openRawResource(dictionary)) {
-            inflater.setDictionary(ByteStreams.toByteArray(stream));
-        }
+        inflater.setDictionary(dictionary);
         final int chainLength = inflater.inflate(chain);
         if (!inflater.finished()) {
             throw new GeneralSecurityException("certificate chain is too large");
@@ -1067,7 +1052,59 @@ class AttestationProtocol {
             chainDeserializer.get(encoded);
             certs.add(generateCertificate(new ByteArrayInputStream(encoded)));
         }
-        final Certificate[] certificates = certs.toArray(new Certificate[0]);
+        return certs.toArray(new Certificate[0]);
+    }
+
+    private static byte[] encodeChain(final byte[] dictionary, final Certificate[] certificates)
+            throws CertificateEncodingException, IOException {
+        final ByteBuffer chainSerializer = ByteBuffer.allocate(MAX_ENCODED_CHAIN_LENGTH);
+        for (int i = 0; i < certificates.length; i++) {
+            final byte[] encoded = certificates[i].getEncoded();
+            if (encoded.length > Short.MAX_VALUE) {
+                throw new RuntimeException("encoded certificate too long");
+            }
+            chainSerializer.putShort((short) encoded.length);
+            chainSerializer.put(encoded);
+        }
+        chainSerializer.flip();
+        final byte[] chain = new byte[chainSerializer.remaining()];
+        chainSerializer.get(chain);
+
+        if (chain.length > MAX_ENCODED_CHAIN_LENGTH) {
+            throw new RuntimeException("encoded certificate chain too long");
+        }
+
+        final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        final Deflater deflater = new Deflater(Deflater.BEST_COMPRESSION, true);
+        deflater.setDictionary(dictionary);
+        final DeflaterOutputStream deflaterStream = new DeflaterOutputStream(byteStream, deflater);
+        deflaterStream.write(chain);
+        deflaterStream.finish();
+        final byte[] compressed = byteStream.toByteArray();
+        Log.d(TAG, "encoded length: " + chain.length + ", compressed length: " + compressed.length);
+
+        return compressed;
+    }
+
+    static VerificationResult verifySerialized(final Context context, final byte[] attestationResult,
+            final byte[] challengeMessage) throws DataFormatException, GeneralSecurityException, IOException {
+        final ByteBuffer deserializer = ByteBuffer.wrap(attestationResult);
+        final byte version = deserializer.get();
+        if (version > PROTOCOL_VERSION) {
+            throw new GeneralSecurityException("invalid protocol version: " + version);
+        } else if (version < PROTOCOL_VERSION_MINIMUM) {
+            throw new GeneralSecurityException("Auditee protocol version too old: " + version);
+        }
+
+        final short compressedChainLength = deserializer.getShort();
+        final byte[] compressedChain = new byte[compressedChainLength];
+        deserializer.get(compressedChain);
+
+        final Certificate[] certificates;
+        final int dictionary = R.raw.deflate_dictionary_2;
+        try (final InputStream stream = context.getResources().openRawResource(dictionary)) {
+            certificates = decodeChain(ByteStreams.toByteArray(stream), compressedChain);
+        }
 
         final byte[] fingerprint = new byte[FINGERPRINT_LENGTH];
         deserializer.get(fingerprint);
@@ -1305,38 +1342,16 @@ class AttestationProtocol {
             final byte version = (byte) Math.min(PROTOCOL_VERSION, maxVersion);
             serializer.put(version);
 
-            final ByteBuffer chainSerializer = ByteBuffer.allocate(MAX_ENCODED_CHAIN_LENGTH);
-            for (int i = 0; i < attestationCertificates.length; i++) {
-                final byte[] encoded = attestationCertificates[i].getEncoded();
-                if (encoded.length > Short.MAX_VALUE) {
-                    throw new RuntimeException("encoded certificate too long");
-                }
-                chainSerializer.putShort((short) encoded.length);
-                chainSerializer.put(encoded);
-            }
-            chainSerializer.flip();
-            final byte[] chain = new byte[chainSerializer.remaining()];
-            chainSerializer.get(chain);
-
-            if (chain.length > MAX_ENCODED_CHAIN_LENGTH) {
-                throw new RuntimeException("encoded certificate chain too long");
-            }
-
-            final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-            final Deflater deflater = new Deflater(Deflater.BEST_COMPRESSION, true);
+            final byte[] compressed;
             final int dictionary = R.raw.deflate_dictionary_2;
             try (final InputStream stream = context.getResources().openRawResource(dictionary)) {
-                deflater.setDictionary(ByteStreams.toByteArray(stream));
+                compressed = encodeChain(ByteStreams.toByteArray(stream), attestationCertificates);
             }
-            final DeflaterOutputStream deflaterStream = new DeflaterOutputStream(byteStream, deflater);
-            deflaterStream.write(chain);
-            deflaterStream.finish();
-            final byte[] compressed = byteStream.toByteArray();
-            Log.d(TAG, "encoded length: " + chain.length + ", compressed length: " + compressed.length);
 
             if (compressed.length > Short.MAX_VALUE) {
                 throw new RuntimeException("compressed chain too long");
             }
+
             serializer.putShort((short) compressed.length);
             serializer.put(compressed);
 
