@@ -51,8 +51,8 @@
     <string name="device_information"><b>Hardware verified information:</b>\n\n</string>
     <string name="identity">Pairing identity (hash of pinned hardware-backed key): %s\n</string>
     <string name="security_level">Pinned security level: %s\n</string>
-    <string name="security_level_tee">Standard - Trusted Execution Environment (TEE)</string>
-    <string name="security_level_strongbox">High (StrongBox) - Hardware Security Module (HSM)</string>
+    <string name="security_level_tee">Standard — Trusted Execution Environment (TEE)</string>
+    <string name="security_level_strongbox">High (StrongBox) — Hardware Security Module (HSM)</string>
     <string name="device">Pinned device: %s\n</string>
     <string name="os">Pinned OS: %s (unmodified official release)\n</string>
     <string name="os_version">Pinned OS version: %s\n</string>
