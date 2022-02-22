@@ -4,11 +4,6 @@
         <ignore regexp="org/bouncycastle/est/jcajce/JcaJceUtils\$.\.class"/>
     </issue>
 
-    <!-- full backups are desired -->
-    <issue id="AllowBackup">
-        <ignore path="src/main/AndroidManifest.xml"/>
-    </issue>
-
     <!-- LinearLayout is used programmatically -->
     <issue id="UseCompoundDrawables">
         <ignore path="src/main/res/layout/content_attestation.xml"/>
