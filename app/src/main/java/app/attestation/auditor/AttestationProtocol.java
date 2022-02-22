@@ -788,6 +788,16 @@ class AttestationProtocol {
 
     private static void appendVerifiedInformation(final Context context,
             final StringBuilder builder, final Verified verified, final String fingerprint) {
+        final StringBuilder splitFingerprint = new StringBuilder();
+        for (int i = 0; i < fingerprint.length(); i += FINGERPRINT_SPLIT_INTERVAL) {
+            splitFingerprint.append(fingerprint.substring(i,
+                    Math.min(fingerprint.length(), i + FINGERPRINT_SPLIT_INTERVAL)));
+            if (i + FINGERPRINT_SPLIT_INTERVAL < fingerprint.length()) {
+                splitFingerprint.append("-");
+            }
+        }
+        builder.append(context.getString(R.string.identity, splitFingerprint.toString()));
+
         final String securityLevel;
         if (verified.securityLevel == SECURITY_LEVEL_STRONGBOX) {
             securityLevel = context.getString(R.string.security_level_strongbox);
@@ -827,16 +837,6 @@ class AttestationProtocol {
             builder.append(context.getString(R.string.verified_boot_hash,
                     BaseEncoding.base16().encode(verified.verifiedBootHash)));
         }
-
-        final StringBuilder splitFingerprint = new StringBuilder();
-        for (int i = 0; i < fingerprint.length(); i += FINGERPRINT_SPLIT_INTERVAL) {
-            splitFingerprint.append(fingerprint.substring(i,
-                    Math.min(fingerprint.length(), i + FINGERPRINT_SPLIT_INTERVAL)));
-            if (i + FINGERPRINT_SPLIT_INTERVAL < fingerprint.length()) {
-                splitFingerprint.append("-");
-            }
-        }
-        builder.append(context.getString(R.string.identity, splitFingerprint.toString()));
     }
 
     private static void verifySignature(final PublicKey key, final ByteBuffer message,
