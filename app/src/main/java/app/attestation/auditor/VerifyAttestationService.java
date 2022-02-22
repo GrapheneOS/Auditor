@@ -20,6 +20,7 @@ public class VerifyAttestationService extends IntentService {
     static final String EXTRA_STRONG = "app.attestation.auditor.STRONG";
     static final String EXTRA_TEE_ENFORCED = "app.attestation.auditor.TEE_ENFORCED";
     static final String EXTRA_OS_ENFORCED = "app.attestation.auditor.OS_ENFORCED";
+    static final String EXTRA_HISTORY = "app.attestation.auditor.HISTORY";
     static final String EXTRA_ERROR = "app.attestation.auditor.ERROR";
     static final String EXTRA_CLEAR = "app.attestation.auditor.CLEAR";
 
@@ -58,6 +59,7 @@ public class VerifyAttestationService extends IntentService {
             resultIntent.putExtra(EXTRA_STRONG, result.strong);
             resultIntent.putExtra(EXTRA_TEE_ENFORCED, result.teeEnforced);
             resultIntent.putExtra(EXTRA_OS_ENFORCED, result.osEnforced);
+            resultIntent.putExtra(EXTRA_HISTORY, result.history);
         } catch (final DataFormatException | GeneralSecurityException | IOException e) {
             Log.e(TAG, "attestation generation error", e);
             resultIntent.putExtra(EXTRA_ERROR, e.getMessage());

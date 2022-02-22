@@ -61,8 +61,6 @@
     <string name="security_level_strongbox">High (StrongBox) - Hardware Security Module (HSM)</string>
     <string name="verified_boot_hash">Verified boot hash: %s\n</string>
     <string name="identity">Identity: %s\n</string>
-    <string name="first_verified">First verified: %s\n</string>
-    <string name="last_verified">Last verified: %s\n</string>
 
     <string name="os_enforced">\n<b>Information provided by the verified OS:</b>\n\n</string>
     <string name="auditor_app_version">Auditor app version: %d\n</string>
@@ -78,6 +76,10 @@
     <string name="deny_new_usb">Disallow new USB peripherals when locked: %s\n</string>
     <string name="oem_unlock_allowed">OEM unlocking allowed: %s\n</string>
     <string name="system_user">Main user account: %s\n</string>
+
+    <string name="history">\n<b>Attestation history:</b>\n\n</string>
+    <string name="first_verified">First verified: %s\n</string>
+    <string name="last_verified">Last verified: %s\n</string>
 
     <string name="no">no</string>
     <string name="yes">yes</string>

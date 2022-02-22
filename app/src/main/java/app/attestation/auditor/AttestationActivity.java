@@ -476,6 +476,11 @@ public class AttestationActivity extends AppCompatActivity {
             textView.append(intent.getStringExtra(VerifyAttestationService.EXTRA_TEE_ENFORCED));
             textView.append(getText(R.string.os_enforced));
             textView.append(intent.getStringExtra(VerifyAttestationService.EXTRA_OS_ENFORCED));
+            final String history = intent.getStringExtra(VerifyAttestationService.EXTRA_HISTORY);
+            if (!history.isEmpty()) {
+                textView.append(getText(R.string.history));
+                textView.append(history);
+            }
         }
     }
 

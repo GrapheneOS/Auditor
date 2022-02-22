@@ -850,12 +850,14 @@ class AttestationProtocol {
         final boolean strong;
         final String teeEnforced;
         final String osEnforced;
+        final String history;
 
         VerificationResult(final boolean strong, final String teeEnforced,
-                final String osEnforced) {
+                final String osEnforced, final String history) {
             this.strong = strong;
             this.teeEnforced = teeEnforced;
             this.osEnforced = osEnforced;
+            this.history = history;
         }
     }
 
@@ -890,6 +892,7 @@ class AttestationProtocol {
                 generateCertificate(context.getResources(), R.raw.google_root_2));
 
         final StringBuilder teeEnforced = new StringBuilder();
+        final StringBuilder history = new StringBuilder();
 
         if (hasPersistentKey) {
             if (attestationCertificates.length != preferences.getInt(KEY_PINNED_CERTIFICATE_LENGTH, 0)) {
@@ -940,10 +943,9 @@ class AttestationProtocol {
                 throw new GeneralSecurityException("Security level mismatch");
             }
 
-            appendVerifiedInformation(context, teeEnforced, verified, fingerprintHex);
-            teeEnforced.append(context.getString(R.string.first_verified,
+            history.append(context.getString(R.string.first_verified,
                     new Date(preferences.getLong(KEY_VERIFIED_TIME_FIRST, 0))));
-            teeEnforced.append(context.getString(R.string.last_verified,
+            history.append(context.getString(R.string.last_verified,
                     new Date(preferences.getLong(KEY_VERIFIED_TIME_LAST, 0))));
 
             final SharedPreferences.Editor editor = preferences.edit();
@@ -994,9 +996,9 @@ class AttestationProtocol {
             editor.putLong(KEY_VERIFIED_TIME_LAST, now);
 
             editor.apply();
-
-            appendVerifiedInformation(context, teeEnforced, verified, fingerprintHex);
         }
+
+        appendVerifiedInformation(context, teeEnforced, verified, fingerprintHex);
 
         final StringBuilder osEnforced = new StringBuilder();
         osEnforced.append(context.getString(R.string.auditor_app_version, verified.appVersion));
@@ -1028,7 +1030,7 @@ class AttestationProtocol {
         osEnforced.append(context.getString(R.string.system_user,
                 toYesNoString(context, systemUser)));
 
-        return new VerificationResult(hasPersistentKey, teeEnforced.toString(), osEnforced.toString());
+        return new VerificationResult(hasPersistentKey, teeEnforced.toString(), osEnforced.toString(), history.toString());
     }
 
     private static Certificate[] decodeChain(final byte[] dictionary, final byte[] compressedChain)
