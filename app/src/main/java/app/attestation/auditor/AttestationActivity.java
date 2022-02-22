@@ -472,7 +472,7 @@ public class AttestationActivity extends AppCompatActivity {
             final boolean strong = intent.getBooleanExtra(VerifyAttestationService.EXTRA_STRONG, false);
             setBackgroundResource(strong ? R.color.green : R.color.orange);
             textView.setText(strong ? R.string.verify_strong : R.string.verify_basic);
-            textView.append(getText(R.string.device_information));
+            textView.append(getText(R.string.hardware_enforced));
             textView.append(intent.getStringExtra(VerifyAttestationService.EXTRA_TEE_ENFORCED));
             textView.append(getText(R.string.os_enforced));
             textView.append(intent.getStringExtra(VerifyAttestationService.EXTRA_OS_ENFORCED));

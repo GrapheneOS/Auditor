@@ -48,7 +48,7 @@
     <string name="verify_strong"><b>Successfully performed strong paired verification and identity confirmation.</b>\n\n</string>
     <string name="verify_basic"><b>Successfully performed basic initial verification and pairing.</b>\n\n</string>
 
-    <string name="device_information"><b>Hardware verified information:</b>\n\n</string>
+    <string name="hardware_enforced"><b>Hardware verified information:</b>\n\n</string>
     <string name="identity">Pairing identity (hash of pinned hardware-backed key): %s\n</string>
     <string name="security_level">Pinned security level: %s\n</string>
     <string name="security_level_tee">Standard — Trusted Execution Environment (TEE)</string>
