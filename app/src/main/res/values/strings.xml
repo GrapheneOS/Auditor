@@ -48,7 +48,7 @@
     <string name="verify_strong"><b>Successfully performed strong paired verification and identity confirmation.</b>\n\n</string>
     <string name="verify_basic"><b>Successfully performed basic initial verification and pairing.</b>\n\n</string>
 
-    <string name="device_information"><b>Verified device information:</b>\n\n</string>
+    <string name="device_information"><b>Hardware verified information:</b>\n\n</string>
     <string name="device">Device: %s\n</string>
     <string name="os">OS: %s (unmodified official release)\n</string>
     <string name="os_version">OS version: %s\n</string>
