@@ -820,6 +820,9 @@ class AttestationProtocol {
             builder.append(context.getString(R.string.boot_patch_level, formatPatchLevel(verified.bootPatchLevel)));
         }
 
+        builder.append(context.getString(R.string.verified_boot_key_hash,
+                    verified.verifiedBootKey));
+
         if (verified.verifiedBootHash != null) {
             builder.append(context.getString(R.string.verified_boot_hash,
                     BaseEncoding.base16().encode(verified.verifiedBootHash)));

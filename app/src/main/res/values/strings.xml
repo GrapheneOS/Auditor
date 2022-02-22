@@ -59,6 +59,7 @@
     <string name="security_level">Security level: %s\n</string>
     <string name="security_level_tee">Standard - Trusted Execution Environment (TEE)</string>
     <string name="security_level_strongbox">High (StrongBox) - Hardware Security Module (HSM)</string>
+    <string name="verified_boot_key_hash">Verified boot key hash: %s\n</string>
     <string name="verified_boot_hash">Verified boot hash: %s\n</string>
     <string name="identity">Identity: %s\n</string>
 
