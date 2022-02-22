@@ -82,7 +82,8 @@
             android:text=""
             android:scrollbarAlwaysDrawVerticalTrack="false"
             android:scrollbarAlwaysDrawHorizontalTrack="false"
-            android:scrollHorizontally="false" />
+            android:scrollHorizontally="false"
+            android:textIsSelectable="true" />
 
         <ImageView
             android:id="@+id/imageview"

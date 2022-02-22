@@ -265,7 +265,6 @@ public class AttestationActivity extends AppCompatActivity {
         });
 
         textView = findViewById(R.id.textview);
-        textView.setMovementMethod(new ScrollingMovementMethod());
 
         imageView = findViewById(R.id.imageview);
 
