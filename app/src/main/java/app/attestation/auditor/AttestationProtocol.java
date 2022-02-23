@@ -181,10 +181,6 @@ class AttestationProtocol {
     //
     // https://android-developers.googleblog.com/2018/10/building-titan-better-security-through.html
     //
-    // The attestation API could be improved with better guarantees about the certificate chain
-    // remaining the same, including rollback indexes in key attestation metadata and adding a
-    // per-app-install generated intermediate to the chain to be pinned with the others.
-    //
     // The attestation message also includes osEnforcedFlags with data obtained at the OS level,
     // which is vulnerable to tampering by an attacker with control over the OS. However, the OS
     // did get verified by verified boot so without a verified boot bypass they would need to keep
