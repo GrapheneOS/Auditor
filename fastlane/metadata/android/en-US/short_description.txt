@@ -1,1 +1,0 @@
-Validate device security with hardware-based integrity and identity verification
