@@ -10,7 +10,7 @@ class SystemProperties {
             try (Scanner scanner = new Scanner(process.getInputStream())) {
                 return scanner.nextLine().trim();
             }
-        } catch (IOException e) {}
+        } catch (IOException ignored) {}
         return def;
     }
 }
