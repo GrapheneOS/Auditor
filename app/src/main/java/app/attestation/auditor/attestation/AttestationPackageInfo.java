@@ -14,6 +14,8 @@
 
 package app.attestation.auditor.attestation;
 
+import androidx.annotation.NonNull;
+
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Sequence;
 
@@ -59,6 +61,7 @@ public class AttestationPackageInfo implements java.lang.Comparable<AttestationP
         return version;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Package name: " + getPackageName() +

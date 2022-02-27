@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -83,7 +82,7 @@ public class AttestationActivity extends AppCompatActivity {
     private int backgroundResource;
     private boolean canSubmitSample;
 
-    ActivityResultLauncher<Intent> QRScannerActivityLauncher = registerForActivityResult(
+    final ActivityResultLauncher<Intent> QRScannerActivityLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {

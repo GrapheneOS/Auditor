@@ -42,6 +42,8 @@ import java.util.Set;
 import static com.google.common.base.Functions.forMap;
 import static com.google.common.collect.Collections2.transform;
 
+import androidx.annotation.NonNull;
+
 public class AuthorizationList {
     // Algorithm values.
     public static final int KM_ALGORITHM_RSA = 1;
@@ -81,7 +83,7 @@ public class AuthorizationList {
     public static final int KM_PURPOSE_VERIFY = 3;
 
     // User authenticators.
-    public static final int HW_AUTH_PASSWORD = 1 << 0;
+    public static final int HW_AUTH_PASSWORD = 1;
     public static final int HW_AUTH_FINGERPRINT = 1 << 1;
 
     // Keymaster tag classes
@@ -617,6 +619,7 @@ public class AuthorizationList {
         }
     }
 
+    @NonNull
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
@@ -690,8 +693,7 @@ public class AuthorizationList {
         }
 
         if (rootOfTrust != null) {
-            s.append("\nRoot of Trust:\n");
-            s.append(rootOfTrust);
+            s.append("\nRoot of Trust: ").append(rootOfTrust);
         }
 
         if (osVersion != null) {
