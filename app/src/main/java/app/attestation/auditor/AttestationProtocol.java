@@ -1059,8 +1059,8 @@ class AttestationProtocol {
     private static byte[] encodeChain(final byte[] dictionary, final Certificate[] certificates)
             throws CertificateEncodingException, IOException {
         final ByteBuffer chainSerializer = ByteBuffer.allocate(MAX_ENCODED_CHAIN_LENGTH);
-        for (int i = 0; i < certificates.length; i++) {
-            final byte[] encoded = certificates[i].getEncoded();
+        for (Certificate certificate : certificates) {
+            final byte[] encoded = certificate.getEncoded();
             if (encoded.length > Short.MAX_VALUE) {
                 throw new RuntimeException("encoded certificate too long");
             }

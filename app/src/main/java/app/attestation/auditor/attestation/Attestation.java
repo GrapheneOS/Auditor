@@ -16,6 +16,8 @@
 
 package app.attestation.auditor.attestation;
 
+import androidx.annotation.NonNull;
+
 import com.google.common.base.CharMatcher;
 import com.google.common.io.BaseEncoding;
 
@@ -119,6 +121,7 @@ public class Attestation {
         return teeEnforced;
     }
 
+    @NonNull
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();

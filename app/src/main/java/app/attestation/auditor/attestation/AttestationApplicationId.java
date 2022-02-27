@@ -14,6 +14,8 @@
 
 package app.attestation.auditor.attestation;
 
+import androidx.annotation.NonNull;
+
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.ASN1Set;
@@ -54,6 +56,7 @@ public class AttestationApplicationId implements java.lang.Comparable<Attestatio
         return signatureDigests;
     }
 
+    @NonNull
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
