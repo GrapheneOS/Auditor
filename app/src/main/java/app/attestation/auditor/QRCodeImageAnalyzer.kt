@@ -13,7 +13,10 @@ import com.google.zxing.common.HybridBinarizer
 import java.util.EnumMap
 import kotlin.math.roundToInt
 
-class QRCodeImageAnalyzer(private val mActivity: QRScannerActivity, private val listener: (qrCode: String) -> Unit): Analyzer {
+class QRCodeImageAnalyzer(
+    private val mActivity: QRScannerActivity,
+    private val listener: (qrCode: String) -> Unit
+) : Analyzer {
     companion object {
         private const val TAG = "QRCodeImageAnalyzer"
     }

@@ -53,8 +53,20 @@ class QROverlay(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         // Drawing the background
         canvas.drawRect(0f, 0f, width.toFloat(), verticalHeight.toFloat(), bPaint)
         canvas.drawRect(0f, 0f, horizontalWidth.toFloat(), height.toFloat(), bPaint)
-        canvas.drawRect((horizontalWidth + size).toFloat(), 0f, width.toFloat(), height.toFloat(), bPaint)
-        canvas.drawRect(0f, (verticalHeight + size).toFloat(), width.toFloat(), height.toFloat(), bPaint)
+        canvas.drawRect(
+            (horizontalWidth + size).toFloat(),
+            0f,
+            width.toFloat(),
+            height.toFloat(),
+            bPaint
+        )
+        canvas.drawRect(
+            0f,
+            (verticalHeight + size).toFloat(),
+            width.toFloat(),
+            height.toFloat(),
+            bPaint
+        )
 
         val text = context.getString(R.string.scanner_label)
         val textX = horizontalWidth + size / 2
@@ -72,13 +84,17 @@ class QROverlay(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
         // Top left
         canvas.drawLine(
-            horizontalWidth.toFloat(), (verticalHeight + halfFrameSideSize).toFloat(),
-            (horizontalWidth + frameSideLength).toFloat(), (verticalHeight + halfFrameSideSize).toFloat(),
+            horizontalWidth.toFloat(),
+            (verticalHeight + halfFrameSideSize).toFloat(),
+            (horizontalWidth + frameSideLength).toFloat(),
+            (verticalHeight + halfFrameSideSize).toFloat(),
             fPaint
         )
         canvas.drawLine(
-            (horizontalWidth + halfFrameSideSize).toFloat(), verticalHeight.toFloat(),
-            (horizontalWidth + halfFrameSideSize).toFloat(), (verticalHeight + frameSideLength).toFloat(),
+            (horizontalWidth + halfFrameSideSize).toFloat(),
+            verticalHeight.toFloat(),
+            (horizontalWidth + halfFrameSideSize).toFloat(),
+            (verticalHeight + frameSideLength).toFloat(),
             fPaint
         )
 
