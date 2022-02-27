@@ -61,8 +61,16 @@ public class AttestationPackageInfo implements java.lang.Comparable<AttestationP
 
     @Override
     public String toString() {
-        return "Package name: " + getPackageName() +
-                "\nVersion: " + getVersion();
+        StringBuilder s = new StringBuilder();
+
+        if (getPackageName() != null) {
+            s.append("Package name: ").append(packageName);
+        }
+
+        // version can't be null
+        s.append("\nVersion: ").append(getVersion());
+
+        return s.toString();
     }
 
     @Override

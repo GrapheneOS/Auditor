@@ -122,20 +122,20 @@ public class Attestation {
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
-        s.append("Attest version: " + attestationVersion);
-        s.append("\nAttest security: " + securityLevelToString(attestationSecurityLevel));
-        s.append("\nKM version: " + keymasterVersion);
-        s.append("\nKM security: " + securityLevelToString(keymasterSecurityLevel));
+        s.append("Attest version: ").append(attestationVersion);
+        s.append("\nAttest security: ").append(securityLevelToString(attestationSecurityLevel));
+        s.append("\nKM version: ").append(keymasterVersion);
+        s.append("\nKM security: ").append(securityLevelToString(keymasterSecurityLevel));
 
         s.append("\nChallenge");
         String stringChallenge = new String(attestationChallenge);
         if (CharMatcher.ascii().matchesAllOf(stringChallenge)) {
-            s.append(": [" + stringChallenge + "]");
+            s.append(": [").append(stringChallenge).append("]");
         } else {
-            s.append(" (base64): [" + BaseEncoding.base64().encode(attestationChallenge) + "]");
+            s.append(" (base64): [").append(BaseEncoding.base64().encode(attestationChallenge)).append("]");
         }
         if (uniqueId != null) {
-            s.append("\nUnique ID (base64): [" + BaseEncoding.base64().encode(uniqueId) + "]");
+            s.append("\nUnique ID (base64): [").append(BaseEncoding.base64().encode(uniqueId)).append("]");
         }
 
         s.append("\n-- SW enforced --");
