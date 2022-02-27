@@ -73,7 +73,6 @@ public class AttestationPackageInfo implements java.lang.Comparable<AttestationP
         int res = packageName.compareTo(other.packageName);
         if (res != 0) return res;
         res = Long.compare(version, other.version);
-        if (res != 0) return res;
         return res;
     }
 
