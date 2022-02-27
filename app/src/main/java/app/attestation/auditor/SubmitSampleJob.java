@@ -36,8 +36,6 @@ import java.util.concurrent.Future;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import static android.security.keystore.KeyProperties.KEY_ALGORITHM_EC;
-
 @TargetApi(26)
 public class SubmitSampleJob extends JobService {
     private static final String TAG = "SubmitSampleJob";
@@ -87,7 +85,7 @@ public class SubmitSampleJob extends JobService {
                         .setAlgorithmParameterSpec(new ECGenParameterSpec(AttestationProtocol.EC_CURVE))
                         .setDigests(AttestationProtocol.KEY_DIGEST)
                         .setAttestationChallenge("sample".getBytes());
-                AttestationProtocol.generateKeyPair(KEY_ALGORITHM_EC, builder.build());
+                AttestationProtocol.generateKeyPair(builder.build());
                 final Certificate[] certs = keyStore.getCertificateChain(KEYSTORE_ALIAS_SAMPLE);
                 keyStore.deleteEntry(KEYSTORE_ALIAS_SAMPLE);
 
@@ -95,7 +93,7 @@ public class SubmitSampleJob extends JobService {
                 if (Build.VERSION.SDK_INT >= 28) {
                     try {
                         builder.setIsStrongBoxBacked(true);
-                        AttestationProtocol.generateKeyPair(KEY_ALGORITHM_EC, builder.build());
+                        AttestationProtocol.generateKeyPair(builder.build());
                         strongBoxCerts = keyStore.getCertificateChain(KEYSTORE_ALIAS_SAMPLE);
                         keyStore.deleteEntry(KEYSTORE_ALIAS_SAMPLE);
                     } catch (final StrongBoxUnavailableException ignored) {

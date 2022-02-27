@@ -73,7 +73,6 @@ import app.attestation.auditor.attestation.AuthorizationList;
 import app.attestation.auditor.attestation.RootOfTrust;
 
 import static android.security.keystore.KeyProperties.DIGEST_SHA256;
-import static android.security.keystore.KeyProperties.KEY_ALGORITHM_EC;
 
 import static androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_WEAK;
 import static androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS;
@@ -1176,7 +1175,7 @@ class AttestationProtocol {
         if (useStrongBox) {
             enableStrongBox(builder);
         }
-        generateKeyPair(KEY_ALGORITHM_EC, builder.build());
+        generateKeyPair(builder.build());
     }
 
     static Certificate getCertificate(final KeyStore keyStore, final String alias)
@@ -1265,7 +1264,7 @@ class AttestationProtocol {
         if (useAttestKey) {
             setAttestKeyAlias(builder, attestKeystoreAlias);
         }
-        generateKeyPair(KEY_ALGORITHM_EC, builder.build());
+        generateKeyPair(builder.build());
 
         try {
             final byte[] fingerprint =
@@ -1417,7 +1416,7 @@ class AttestationProtocol {
         }
     }
 
-    static void generateKeyPair(final String algorithm, final KeyGenParameterSpec spec)
+    static void generateKeyPair(final KeyGenParameterSpec spec)
             throws NoSuchAlgorithmException, NoSuchProviderException,
             InvalidAlgorithmParameterException, IOException {
         // Handle RuntimeExceptions caused by a broken keystore. A common issue involves users
@@ -1428,7 +1427,7 @@ class AttestationProtocol {
         // being spammed to the Google Play error collection and causing it to think the app is
         // unreliable.
         try {
-            final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algorithm,
+            final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_EC,
                     "AndroidKeyStore");
             keyPairGenerator.initialize(spec);
             keyPairGenerator.generateKeyPair();
