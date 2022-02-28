@@ -16,19 +16,23 @@
 
 package app.attestation.auditor.attestation;
 
-import android.security.keystore.KeyProperties;
-import android.util.Log;
+import static com.google.common.base.Functions.forMap;
+import static com.google.common.collect.Collections2.transform;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
+import android.security.keystore.KeyProperties;
+import android.util.Log;
+
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.ASN1SequenceParser;
 import org.bouncycastle.asn1.ASN1TaggedObject;
+import org.bouncycastle.asn1.ASN1InputStream;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -167,6 +171,7 @@ public class AuthorizationList {
             .put(KM_PURPOSE_VERIFY, "VERIFY")
             .build();
 
+    private Integer securityLevel;
     private Set<Integer> purposes;
     private Integer algorithm;
     private Integer keySize;
@@ -205,6 +210,10 @@ public class AuthorizationList {
     private boolean confirmationRequired;
 
     public AuthorizationList(ASN1Encodable sequence) throws CertificateParsingException {
+        this(sequence, true);
+    }
+
+    public AuthorizationList(ASN1Encodable sequence, boolean strictParsing) throws CertificateParsingException {
         if (!(sequence instanceof ASN1Sequence)) {
             throw new CertificateParsingException("Expected sequence for authorization list, found "
                     + sequence.getClass().getName());
@@ -293,7 +302,7 @@ public class AuthorizationList {
                     userAuthType = Asn1Utils.getIntegerFromAsn1(value);
                     break;
                 case KM_TAG_ROOT_OF_TRUST & KEYMASTER_TAG_TYPE_MASK:
-                    rootOfTrust = new RootOfTrust(value);
+                    rootOfTrust = new RootOfTrust(value, strictParsing);
                     break;
                 case KM_TAG_ATTESTATION_APPLICATION_ID & KEYMASTER_TAG_TYPE_MASK:
                     attestationApplicationId = new AttestationApplicationId(Asn1Utils
@@ -417,6 +426,10 @@ public class AuthorizationList {
         } catch (IOException e) {
             throw new CertificateParsingException("Failed to parse ASN1 sequence", e);
         }
+    }
+
+    public Integer getSecurityLevel() {
+        return securityLevel;
     }
 
     public Set<Integer> getPurposes() {
@@ -693,7 +706,7 @@ public class AuthorizationList {
         }
 
         if (rootOfTrust != null) {
-            s.append("\nRoot of Trust: ").append(rootOfTrust);
+            s.append("\nRoot of Trust:\n").append(rootOfTrust);
         }
 
         if (osVersion != null) {

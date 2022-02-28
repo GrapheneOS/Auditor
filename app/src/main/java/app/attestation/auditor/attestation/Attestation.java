@@ -19,18 +19,23 @@ package app.attestation.auditor.attestation;
 import androidx.annotation.NonNull;
 
 import com.google.common.base.CharMatcher;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.io.BaseEncoding;
 
 import org.bouncycastle.asn1.ASN1Sequence;
 
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
+import java.util.Set;
 
 /**
  * Parses an attestation certificate and provides an easy-to-use interface for examining the
  * contents.
  */
 public class Attestation {
+    static final String EAT_OID = "1.3.6.1.4.1.11129.2.1.25";
+    static final String ASN1_OID = "1.3.6.1.4.1.11129.2.1.17";
+    static final String KEY_USAGE_OID = "2.5.29.15"; // Standard key usage extension.
     static final String KEY_DESCRIPTION_OID = "1.3.6.1.4.1.11129.2.1.17";
     static final int ATTESTATION_VERSION_INDEX = 0;
     static final int ATTESTATION_SECURITY_LEVEL_INDEX = 1;
@@ -43,6 +48,17 @@ public class Attestation {
 
     public static final int KM_SECURITY_LEVEL_SOFTWARE = 0;
     public static final int KM_SECURITY_LEVEL_TRUSTED_ENVIRONMENT = 1;
+    public static final int KM_SECURITY_LEVEL_STRONG_BOX = 2;
+
+    // Known KeyMaster/KeyMint versions. This is the version number
+    // which appear in the keymasterVersion field.
+    public static final int KM_VERSION_KEYMASTER_1 = 10;
+    public static final int KM_VERSION_KEYMASTER_1_1 = 11;
+    public static final int KM_VERSION_KEYMASTER_2 = 20;
+    public static final int KM_VERSION_KEYMASTER_3 = 30;
+    public static final int KM_VERSION_KEYMASTER_4 = 40;
+    public static final int KM_VERSION_KEYMASTER_4_1 = 41;
+    public static final int KM_VERSION_KEYMINT_1 = 100;
 
     private final int attestationVersion;
     private final int attestationSecurityLevel;
@@ -52,14 +68,17 @@ public class Attestation {
     private final byte[] uniqueId;
     private final AuthorizationList softwareEnforced;
     private final AuthorizationList teeEnforced;
-
+    private final Set<String> unexpectedExtensionOids;
 
     /**
      * Constructs an {@code Attestation} object from the provided {@link X509Certificate},
      * extracting the attestation data from the attestation extension.
      *
+     * <p>This method ensures that at most one attestation extension is included in the certificate.
+     *
      * @throws CertificateParsingException if the certificate does not contain a properly-formatted
-     *                                     attestation extension.
+     *     attestation extension, if it contains multiple attestation extensions, or if the
+     *     attestation extension can not be parsed.
      */
     public Attestation(X509Certificate x509Cert) throws CertificateParsingException {
         ASN1Sequence seq = getAttestationSequence(x509Cert);
@@ -76,6 +95,7 @@ public class Attestation {
 
         softwareEnforced = new AuthorizationList(seq.getObjectAt(SW_ENFORCED_INDEX));
         teeEnforced = new AuthorizationList(seq.getObjectAt(TEE_ENFORCED_INDEX));
+        unexpectedExtensionOids = retrieveUnexpectedExtensionOids(x509Cert);
     }
 
     public static String securityLevelToString(int attestationSecurityLevel) {
@@ -84,6 +104,8 @@ public class Attestation {
                 return "Software";
             case KM_SECURITY_LEVEL_TRUSTED_ENVIRONMENT:
                 return "TEE";
+            case KM_SECURITY_LEVEL_STRONG_BOX:
+                return "StrongBox";
             default:
                 return "Unknown";
         }
@@ -97,6 +119,7 @@ public class Attestation {
         return attestationSecurityLevel;
     }
 
+    // Returns one of the KM_VERSION_* values define above.
     public int getKeymasterVersion() {
         return keymasterVersion;
     }
@@ -121,17 +144,23 @@ public class Attestation {
         return teeEnforced;
     }
 
+    public Set<String> getUnexpectedExtensionOids() {
+        return unexpectedExtensionOids;
+    }
+
     @NonNull
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
-        s.append("Attest version: " + attestationVersion);
-        s.append("\nAttest security: " + securityLevelToString(attestationSecurityLevel));
+        s.append("Extension type: " + getClass());
+        s.append("\nAttest version: " + attestationVersion);
+        s.append("\nAttest security: " + securityLevelToString(getAttestationSecurityLevel()));
         s.append("\nKM version: " + keymasterVersion);
         s.append("\nKM security: " + securityLevelToString(keymasterSecurityLevel));
 
         s.append("\nChallenge");
-        String stringChallenge = new String(attestationChallenge);
+        String stringChallenge =
+                attestationChallenge != null ? new String(attestationChallenge) : "null";
         if (CharMatcher.ascii().matchesAllOf(stringChallenge)) {
             s.append(": [" + stringChallenge + "]");
         } else {
@@ -159,4 +188,16 @@ public class Attestation {
         return Asn1Utils.getAsn1SequenceFromBytes(attestationExtensionBytes);
     }
 
+    Set<String> retrieveUnexpectedExtensionOids(X509Certificate x509Cert) {
+        return new ImmutableSet.Builder<String>()
+                .addAll(
+                        x509Cert.getCriticalExtensionOIDs().stream()
+                                .filter(s -> !KEY_USAGE_OID.equals(s))
+                                .iterator())
+                .addAll(
+                        x509Cert.getNonCriticalExtensionOIDs().stream()
+                                .filter(s -> !ASN1_OID.equals(s) && !EAT_OID.equals(s))
+                                .iterator())
+                .build();
+    }
 }
