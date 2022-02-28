@@ -38,7 +38,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Set;
 
-class Asn1Utils {
+public class Asn1Utils {
 
     public static int getIntegerFromAsn1(ASN1Encodable asn1Value)
             throws CertificateParsingException {
@@ -137,11 +137,30 @@ class Asn1Utils {
 
     public static boolean getBooleanFromAsn1(ASN1Encodable value)
             throws CertificateParsingException {
+        return getBooleanFromAsn1(value, true);
+    }
+
+    public static boolean getBooleanFromAsn1(ASN1Encodable value, boolean strictParsing)
+            throws CertificateParsingException {
         if (!(value instanceof ASN1Boolean)) {
             throw new CertificateParsingException(
                     "Expected boolean, found " + value.getClass().getName());
         }
-        return ((ASN1Boolean) value).isTrue();
+        ASN1Boolean booleanValue = (ASN1Boolean) value;
+
+        if (booleanValue.equals(ASN1Boolean.TRUE)) {
+            return true;
+        } else if (booleanValue.equals((ASN1Boolean.FALSE))) {
+            return false;
+        } else if (!strictParsing) {
+            // Value is not 0xFF nor 0x00, but some other non-zero value.
+            // This is invalid DER, but if we're not being strict,
+            // consider it true, otherwise fall through and throw exception
+            return true;
+        }
+
+        throw new CertificateParsingException(
+                "DER-encoded boolean values must contain either 0x00 or 0xFF");
     }
 
     private static int bigIntegerToInt(BigInteger bigInt) throws CertificateParsingException {
