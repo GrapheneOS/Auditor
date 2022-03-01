@@ -77,6 +77,33 @@ public class SubmitSampleJob extends JobService {
     @Override
     public boolean onStartJob(final JobParameters params) {
         task = executor.submit(() -> {
+            try {
+                String osPatchLevel = SystemProperties.get("ro.build.version.security_patch", "");
+                osPatchLevel = osPatchLevel.substring(0, osPatchLevel.length() - 3);
+                if (!(osPatchLevel.equals(OS_PATCH_LEVEL_MINIMUM))) {
+                    throw new GeneralSecurityException("OS patch level is behind or in the future (not valid), cannot accept samples from this device.");
+                }
+            } catch (GeneralSecurityException e) {
+                Log.e(TAG, String.valueOf(e));
+                final Context context = SubmitSampleJob.this;
+                final NotificationManager manager = context.getSystemService(NotificationManager.class);
+                final NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
+                        context.getString(R.string.sample_submission_notification_channel),
+                        NotificationManager.IMPORTANCE_LOW);
+                manager.createNotificationChannel(channel);
+                manager.notify(NOTIFICATION_ID, new Notification.Builder(context, NOTIFICATION_CHANNEL_ID)
+                        .setContentTitle(context.getString(R.string.sample_submission_notification_title_failure))
+                        .setContentText(context.getString(R.string.sample_submission_notification_content_failure))
+                        .setShowWhen(true)
+                        .setSmallIcon(R.drawable.baseline_cloud_upload_white_24)
+                        .build());
+
+                // Since we know this device is out of date, don't reschedule it.
+                // User can try again when they update via the same button.
+                jobFinished(params, false);
+                return;
+            }
+
             HttpURLConnection connection = null;
             try {
                 connection = (HttpURLConnection) new URL(SUBMIT_URL).openConnection();
