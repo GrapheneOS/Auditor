@@ -35,6 +35,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 
 @TargetApi(26)
 public class SubmitSampleJob extends JobService {
@@ -46,6 +48,12 @@ public class SubmitSampleJob extends JobService {
     private static final int NOTIFICATION_ID = 2;
     private static final String NOTIFICATION_CHANNEL_ID = "sample_submission";
 
+    // We only want to allow samples submitted by (mostly) non-EOL devices to make filtering
+    // and prioritisation easier so we'll get the current date, subtract 5 days to account for some days
+    // before a security patch is released (usually the 1st - 5th of new month) remove "-DD" and compare it to
+    // ro.build.version.security_patch (outputs YYYY-MM-DD but we also remove "-DD" there too).
+    // This isn't foolproof, but it should help.
+    private static final String OS_PATCH_LEVEL_MINIMUM = LocalDate.now().minusDays(5).format(DateTimeFormatter.ofPattern("uuuu-MM"));
     private static final String KEYSTORE_ALIAS_SAMPLE = "sample_attestation_key";
 
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
