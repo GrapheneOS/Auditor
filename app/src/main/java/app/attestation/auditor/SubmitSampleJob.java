@@ -144,6 +144,18 @@ public class SubmitSampleJob extends JobService {
                 }
             } catch (final GeneralSecurityException | IOException e) {
                 Log.e(TAG, "submit failure", e);
+                final Context context = SubmitSampleJob.this;
+                final NotificationManager manager = context.getSystemService(NotificationManager.class);
+                final NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
+                        context.getString(R.string.sample_submission_notification_channel),
+                        NotificationManager.IMPORTANCE_LOW);
+                manager.createNotificationChannel(channel);
+                manager.notify(NOTIFICATION_ID, new Notification.Builder(context, NOTIFICATION_CHANNEL_ID)
+                        .setContentTitle(context.getString(R.string.sample_submission_notification_title_failure))
+                        .setContentText(context.getString(R.string.sample_submission_notification_content_failure))
+                        .setShowWhen(true)
+                        .setSmallIcon(R.drawable.baseline_cloud_upload_white_24)
+                        .build());
                 jobFinished(params, true);
                 return;
             } finally {

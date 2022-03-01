@@ -41,6 +41,8 @@
     <string name="sample_submission_notification_channel">Sample submission</string>
     <string name="sample_submission_notification_title">Submitted sample data</string>
     <string name="sample_submission_notification_content">Successfully submitted sample data.</string>
+    <string name="sample_submission_notification_title_failure">Failed submitting sample data</string>
+    <string name="sample_submission_notification_content_failure">Failed to submit sample data.</string>
 
     <string name="scanner_label">Scan QR code shown on the other device.</string>
     <string name="verifying_attestation">Verifying attestation…</string>
