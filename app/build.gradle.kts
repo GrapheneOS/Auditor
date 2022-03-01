@@ -69,7 +69,7 @@ dependencies {
     implementation("androidx.biometric:biometric:1.1.0")
     implementation("androidx.preference:preference:1.2.0")
     implementation("com.google.android.material:material:1.5.0")
-    implementation("com.google.guava:guava:31.0.1-android")
+    implementation("com.google.guava:guava:31.1-android")
     implementation("com.google.zxing:core:3.4.1")
     implementation("org.bouncycastle:bcpkix-jdk15to18:1.70")
 
