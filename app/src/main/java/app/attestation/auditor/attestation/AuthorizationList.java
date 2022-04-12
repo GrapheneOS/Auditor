@@ -32,7 +32,6 @@ import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.ASN1SequenceParser;
 import org.bouncycastle.asn1.ASN1TaggedObject;
-import org.bouncycastle.asn1.ASN1InputStream;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -42,11 +41,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-
-import static com.google.common.base.Functions.forMap;
-import static com.google.common.collect.Collections2.transform;
-
-import androidx.annotation.NonNull;
 
 public class AuthorizationList {
     // Algorithm values.
@@ -226,9 +220,6 @@ public class AuthorizationList {
             ASN1Primitive value = entry.getObject();
             Log.i("Attestation", "Parsing tag: [" + tag + "], value: [" + value + "]");
             switch (tag) {
-                default:
-                    throw new CertificateParsingException("Unknown tag " + tag + " found");
-
                 case KM_TAG_PURPOSE & KEYMASTER_TAG_TYPE_MASK:
                     purposes = Asn1Utils.getIntegersFromAsn1Set(value);
                     break;
@@ -341,6 +332,8 @@ public class AuthorizationList {
                 case KM_TAG_TRUSTED_CONFIRMATION_REQUIRED & KEYMASTER_TAG_TYPE_MASK:
                     confirmationRequired = true;
                     break;
+                default:
+                    throw new CertificateParsingException("Unknown tag " + tag + " found");
             }
         }
 
@@ -632,117 +625,4 @@ public class AuthorizationList {
         }
     }
 
-    @NonNull
-    @Override
-    public String toString() {
-        StringBuilder s = new StringBuilder();
-
-        if (algorithm != null) {
-            s.append("\nAlgorithm: ").append(algorithmToString(algorithm));
-        }
-
-        if (keySize != null) {
-            s.append("\nKeySize: ").append(keySize);
-        }
-
-        if (purposes != null && !purposes.isEmpty()) {
-            s.append("\nPurposes: ").append(purposesToString(purposes));
-        }
-
-        if (digests != null && !digests.isEmpty()) {
-            s.append("\nDigests: ").append(digestsToString(digests));
-        }
-
-        if (paddingModes != null && !paddingModes.isEmpty()) {
-            s.append("\nPadding modes: ").append(paddingModesToString(paddingModes));
-        }
-
-        if (ecCurve != null) {
-            s.append("\nEC Curve: ").append(ecCurveAsString());
-        }
-
-        String label = "\nRSA exponent: ";
-        if (rsaPublicExponent != null) {
-            s.append(label).append(rsaPublicExponent);
-        }
-
-        if (activeDateTime != null) {
-            s.append("\nActive: ").append(formatDate(activeDateTime));
-        }
-
-        if (originationExpireDateTime != null) {
-            s.append("\nOrigination expire: ").append(formatDate(originationExpireDateTime));
-        }
-
-        if (usageExpireDateTime != null) {
-            s.append("\nUsage expire: ").append(formatDate(usageExpireDateTime));
-        }
-
-        if (!noAuthRequired && userAuthType != null) {
-            s.append("\nAuth types: ").append(userAuthTypeToString(userAuthType));
-            if (authTimeout != null) {
-                s.append("\nAuth timeout: ").append(authTimeout);
-            }
-        }
-
-        if (applicationId != null) {
-            s.append("\nApplication ID: ").append(new String(applicationId));
-        }
-
-        if (creationDateTime != null) {
-            s.append("\nCreated: ").append(formatDate(creationDateTime));
-        }
-
-        if (origin != null) {
-            s.append("\nOrigin: ").append(originToString(origin));
-        }
-
-        if (rollbackResistant) {
-            s.append("\nRollback resistant: true");
-        }
-
-        if (rollbackResistance) {
-            s.append("\nRollback resistance: true");
-        }
-
-        if (rootOfTrust != null) {
-            s.append("\nRoot of Trust:\n").append(rootOfTrust);
-        }
-
-        if (osVersion != null) {
-            s.append("\nOS Version: ").append(osVersion);
-        }
-
-        if (osPatchLevel != null) {
-            s.append("\nOS Patchlevel: ").append(osPatchLevel);
-        }
-
-        if (vendorPatchLevel != null) {
-            s.append("\nVendor Patchlevel: ").append(vendorPatchLevel);
-        }
-
-        if (bootPatchLevel != null) {
-            s.append("\nBoot Patchlevel: ").append(bootPatchLevel);
-        }
-
-        if (attestationApplicationId != null) {
-            s.append("\nAttestation Application Id:").append(attestationApplicationId);
-        }
-
-        if (userPresenceRequired) {
-            s.append("\nUser presence required");
-        }
-
-        if (confirmationRequired) {
-            s.append("\nConfirmation required");
-        }
-
-        if (brand != null) {
-            s.append("\nBrand: ").append(brand);
-        }
-        if (device != null) {
-            s.append("\nDevice type: ").append(device);
-        }
-        return s.toString();
-    }
 }

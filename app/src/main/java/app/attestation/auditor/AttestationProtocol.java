@@ -680,10 +680,8 @@ class AttestationProtocol {
 
         // OS version sanity checks
         final int osVersion = teeEnforced.getOsVersion();
-        if (osVersion == DEVELOPER_PREVIEW_OS_VERSION) {
-            if (!BuildConfig.DEBUG) {
-                throw new GeneralSecurityException("OS version is not a production release");
-            }
+        if (osVersion == DEVELOPER_PREVIEW_OS_VERSION && !BuildConfig.DEBUG) {
+            throw new GeneralSecurityException("OS version is not a production release");
         } else if (osVersion < OS_VERSION_MINIMUM) {
             throw new GeneralSecurityException("OS version too old: " + osVersion);
         }

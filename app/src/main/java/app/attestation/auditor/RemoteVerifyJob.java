@@ -81,7 +81,7 @@ public class RemoteVerifyJob extends JobService {
         }
         final JobScheduler scheduler = context.getSystemService(JobScheduler.class);
         final JobInfo jobInfo = scheduler.getPendingJob(PERIODIC_JOB_ID);
-        final long intervalMillis = interval * 1000;
+        final long intervalMillis = interval * 1000L;
         final long flexMillis = intervalMillis / 10;
         if (jobInfo != null &&
                 jobInfo.getIntervalMillis() == intervalMillis &&
@@ -90,14 +90,12 @@ public class RemoteVerifyJob extends JobService {
             return;
         }
         final ComponentName serviceName = new ComponentName(context, RemoteVerifyJob.class);
-        if (jobInfo == null) {
-            if (scheduler.schedule(new JobInfo.Builder(FIRST_RUN_JOB_ID, serviceName)
-                        .setOverrideDeadline(intervalMillis - OVERRIDE_OFFSET_MS)
-                        .setPersisted(true)
-                        .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                        .build()) == JobScheduler.RESULT_FAILURE) {
-                throw new RuntimeException("job schedule failed");
-            }
+        if (jobInfo == null && scheduler.schedule(new JobInfo.Builder(FIRST_RUN_JOB_ID, serviceName)
+                .setOverrideDeadline(intervalMillis - OVERRIDE_OFFSET_MS)
+                .setPersisted(true)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .build()) == JobScheduler.RESULT_FAILURE) {
+            throw new RuntimeException("job schedule failed");
         }
         if (scheduler.schedule(new JobInfo.Builder(PERIODIC_JOB_ID, serviceName)
                 .setPeriodic(intervalMillis, flexMillis)
