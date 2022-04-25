@@ -270,6 +270,7 @@ class AttestationProtocol {
             "Pixel 5a",
             "Pixel 6",
             "Pixel 6 Pro",
+            "SM-F711B",
             "SM-N970U",
             "SM-N975U").contains(Build.MODEL);
 
@@ -421,6 +422,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_sm_t510, 3, 4, false /* uses new API */, true, false, R.string.os_stock))
             .put("87790149AED63553B768456AAB6DAAD5678CD87BDEB2BF3649467085349C34E0",
                     new DeviceInfo(R.string.device_sm_t835, 1, 2, false, false, false, R.string.os_stock))
+            .put("23377439DAD9742BDB722C8D26B8A4CD7E88208DD8827940C1581895AF389630",
+                    new DeviceInfo(R.string.device_sm_f711b, 3, 4, false /* uses new API */, true, true, R.string.os_stock))
             .put("4285AD64745CC79B4499817F264DC16BF2AF5163AF6C328964F39E61EC84693E",
                     new DeviceInfo(R.string.device_sony_xperia_xa2, 2, 3, true, true, false, R.string.os_stock))
             .put("54A9F21E9CFAD3A2D028517EF333A658302417DB7FB75E0A109A019646CC5F39",
@@ -513,6 +516,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_sm_n970u, 3, 4, false /* uses new API */, true, true, R.string.os_stock))
             .put("9AC63842137D92C119A1B1BE2C9270B9EBB6083BBE6350B7823571942B5869F0",
                     new DeviceInfo(R.string.device_sm_n975u, 3, 4, false /* uses new API */, true, true, R.string.os_stock))
+            .put("23377439DAD9742BDB722C8D26B8A4CD7E88208DD8827940C1581895AF389630",
+                    new DeviceInfo(R.string.device_sm_f711b, 3, 4, false /* uses new API */, true, true, R.string.os_stock))
             .build();
 
     private static byte[] getChallengeIndex(final Context context) {

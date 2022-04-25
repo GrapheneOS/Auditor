@@ -197,6 +197,7 @@ public class AttestationActivity extends AppCompatActivity {
             "REVVL 2",
             "RMX1941",
             "SM-A705FN",
+            "SM-F711B",
             "SM-G960F",
             "SM-G960U",
             "SM-G960U1",
