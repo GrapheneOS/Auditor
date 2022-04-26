@@ -43,7 +43,7 @@ class QRCodeImageAnalyzer(
         if (imageData.size != byteBuffer.capacity()) {
             imageData = ByteArray(byteBuffer.capacity())
         }
-        byteBuffer[imageData]
+        byteBuffer.get(imageData)
 
         val previewWidth: Int
         val previewHeight: Int
