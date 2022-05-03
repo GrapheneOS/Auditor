@@ -11,6 +11,8 @@ import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 
 import androidx.preference.PreferenceManager;
@@ -125,6 +127,7 @@ public class RemoteVerifyJob extends JobService {
             final Context context = RemoteVerifyJob.this;
             boolean failure = false;
             HttpURLConnection connection = null;
+            String exceptionMessage = null;
             try {
                 connection = (HttpURLConnection) new URL(CHALLENGE_URL).openConnection();
                 connection.setConnectTimeout(CONNECT_TIMEOUT);
@@ -181,6 +184,7 @@ public class RemoteVerifyJob extends JobService {
                 }
             } catch (final GeneralSecurityException | IOException | NumberFormatException e) {
                 Log.e(TAG, "remote verify failure", e);
+                exceptionMessage = e.toString();
                 failure = true;
             } finally {
                 if (connection != null) {
@@ -206,18 +210,32 @@ public class RemoteVerifyJob extends JobService {
 
             manager.createNotificationChannels(channels);
 
-            manager.notify(NOTIFICATION_ID, new Notification.Builder(context, failure ?
-                            NOTIFICATION_CHANNEL_FAILURE_ID :
-                            NOTIFICATION_CHANNEL_SUCCESS_ID)
-                    .setContentTitle(context.getString(failure ?
-                            R.string.remote_verification_notification_failure_title :
-                            R.string.remote_verification_notification_success_title))
-                    .setContentText(context.getString(failure ?
-                            R.string.remote_verification_notification_failure_content :
-                            R.string.remote_verification_notification_success_content))
-                    .setShowWhen(true)
-                    .setSmallIcon(R.drawable.baseline_security_white_24)
-                    .build());
+            if (failure) {
+                String errorMessage = context.getString(R.string.remote_verification_notification_failure_content) +
+                        "<br><br><tt>" + exceptionMessage + "</tt>";
+                Spanned styledText = Html.fromHtml(errorMessage, Html.FROM_HTML_MODE_LEGACY);
+
+                manager.notify(NOTIFICATION_ID, new Notification.Builder(context,
+                        NOTIFICATION_CHANNEL_FAILURE_ID)
+                        .setContentTitle(context.getString(
+                                R.string.remote_verification_notification_failure_title))
+                        .setContentText(styledText)
+                        .setShowWhen(true)
+                        .setSmallIcon(R.drawable.baseline_security_white_24)
+                        .setStyle(new Notification.BigTextStyle()
+                                .bigText(styledText))
+                        .build());
+            } else {
+                manager.notify(NOTIFICATION_ID, new Notification.Builder(context,
+                        NOTIFICATION_CHANNEL_SUCCESS_ID)
+                        .setContentTitle(context.getString(
+                                R.string.remote_verification_notification_success_title))
+                        .setContentText(context.getString(
+                                R.string.remote_verification_notification_success_content))
+                        .setShowWhen(true)
+                        .setSmallIcon(R.drawable.baseline_security_white_24)
+                        .build());
+            }
 
             jobFinished(params, failure);
         });
