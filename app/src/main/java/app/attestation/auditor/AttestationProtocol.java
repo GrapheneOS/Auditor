@@ -962,7 +962,7 @@ class AttestationProtocol {
         } else {
             verifySignature(attestationCertificates[0].getPublicKey(), signedMessage, signature);
 
-            if (verified.enforceStrongBox && verified.securityLevel != Attestation.KM_SECURITY_LEVEL_STRONG_BOX) {
+            if (PREFER_STRONGBOX && verified.enforceStrongBox && verified.securityLevel != Attestation.KM_SECURITY_LEVEL_STRONG_BOX) {
                 throw new GeneralSecurityException("non-StrongBox security level for initial pairing with StrongBox device");
             }
 
