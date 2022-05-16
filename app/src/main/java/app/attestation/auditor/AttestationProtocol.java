@@ -119,6 +119,7 @@ class AttestationProtocol {
 
     private static final int SECURITY_LEVEL_STRONGBOX = 2;
     private static final boolean PREFER_STRONGBOX = true;
+    private static final boolean USE_ATTEST_KEY = false;
 
     // Challenge message:
     //
@@ -272,8 +273,6 @@ class AttestationProtocol {
             "Pixel 6 Pro",
             "SM-N970U",
             "SM-N975U").contains(Build.MODEL);
-
-    private static final boolean isAttestKeySupported = ImmutableSet.of().contains(Build.MODEL);
 
     private static final ImmutableSet<Integer> extraPatchLevelMissing = ImmutableSet.of(
             R.string.device_sm_a705fn,
@@ -1224,6 +1223,8 @@ class AttestationProtocol {
         final String persistentKeystoreAlias =
                 statePrefix + KEYSTORE_ALIAS_PERSISTENT_PREFIX + index;
 
+        final PackageManager pm = context.getPackageManager();
+
         // generate a new key for fresh attestation results unless the persistent key is not yet created
         final boolean hasPersistentKey = keyStore.containsAlias(persistentKeystoreAlias);
         final String attestationKeystoreAlias;
@@ -1241,7 +1242,7 @@ class AttestationProtocol {
         } else {
             attestationKeystoreAlias = persistentKeystoreAlias;
             useStrongBox = isStrongBoxSupported && PREFER_STRONGBOX;
-            useAttestKey = isAttestKeySupported;
+            useAttestKey = pm.hasSystemFeature(PackageManager.FEATURE_KEYSTORE_APP_ATTEST_KEY) && USE_ATTEST_KEY;
 
             if (useAttestKey) {
                 generateAttestKey(attestKeystoreAlias, challenge, useStrongBox);
@@ -1286,7 +1287,6 @@ class AttestationProtocol {
             boolean deviceAdminNonSystem = false;
             if (activeAdmins != null) {
                 for (final ComponentName name : activeAdmins) {
-                    final PackageManager pm = context.getPackageManager();
                     try {
                         final ApplicationInfo info = pm.getApplicationInfo(name.getPackageName(), 0);
                         if ((info.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
