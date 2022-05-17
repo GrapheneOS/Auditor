@@ -275,6 +275,11 @@ class AttestationProtocol {
             "SM-N970U",
             "SM-N975U").contains(Build.MODEL);
 
+    // Pixel 6 and Pixel 6 Pro forgot to declare the attest key feature when it shipped in Android 12
+    private static final boolean alwaysHasAttestKey = ImmutableSet.of(
+            "Pixel 6",
+            "Pixel 6 Pro").contains(Build.MODEL);
+
     private static final ImmutableSet<Integer> extraPatchLevelMissing = ImmutableSet.of(
             R.string.device_sm_a705fn,
             R.string.device_sm_g970f,
@@ -1252,7 +1257,8 @@ class AttestationProtocol {
         } else {
             attestationKeystoreAlias = persistentKeystoreAlias;
             useStrongBox = isStrongBoxSupported && PREFER_STRONGBOX;
-            useAttestKey = pm.hasSystemFeature(PackageManager.FEATURE_KEYSTORE_APP_ATTEST_KEY) && USE_ATTEST_KEY;
+            useAttestKey = (alwaysHasAttestKey || pm.hasSystemFeature(PackageManager.FEATURE_KEYSTORE_APP_ATTEST_KEY))
+                    && USE_ATTEST_KEY;
 
             if (useAttestKey) {
                 generateAttestKey(attestKeystoreAlias, challenge, useStrongBox);
