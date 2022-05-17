@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.UserManager;
 import android.provider.Settings;
 import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyInfo;
 import android.security.keystore.KeyProperties;
 import android.util.Log;
 import android.view.accessibility.AccessibilityManager;
@@ -37,6 +38,7 @@ import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.KeyFactory;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
@@ -1233,10 +1235,19 @@ class AttestationProtocol {
             final String freshKeyStoreAlias = statePrefix + KEYSTORE_ALIAS_FRESH;
             keyStore.deleteEntry(freshKeyStoreAlias);
             attestationKeystoreAlias = freshKeyStoreAlias;
-            final X509Certificate persistent =
-                (X509Certificate) getCertificate(keyStore, persistentKeystoreAlias);
-            final String dn = persistent.getIssuerX500Principal().getName(X500Principal.RFC1779);
-            useStrongBox = dn.contains("StrongBox");
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                final PrivateKey key = (PrivateKey) keyStore.getKey(persistentKeystoreAlias, null);
+                final KeyFactory factory = KeyFactory.getInstance(key.getAlgorithm(), "AndroidKeyStore");
+                final KeyInfo keyinfo = factory.getKeySpec(key, KeyInfo.class);
+                useStrongBox = keyinfo.getSecurityLevel() == KeyProperties.SECURITY_LEVEL_STRONGBOX;
+            } else {
+                final X509Certificate persistent =
+                    (X509Certificate) getCertificate(keyStore, persistentKeystoreAlias);
+                final String dn = persistent.getIssuerX500Principal().getName(X500Principal.RFC1779);
+                useStrongBox = dn.contains("StrongBox");
+            }
+
             useAttestKey = keyStore.containsAlias(attestKeystoreAlias);
         } else {
             attestationKeystoreAlias = persistentKeystoreAlias;
