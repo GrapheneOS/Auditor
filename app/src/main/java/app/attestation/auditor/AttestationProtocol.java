@@ -1270,7 +1270,16 @@ class AttestationProtocol {
             final byte[] fingerprint =
                     getFingerprint(getCertificate(keyStore, persistentKeystoreAlias));
 
-            final Certificate[] attestationCertificates = getCertificateChain(keyStore, attestationKeystoreAlias);
+            final Certificate[] attestationCertificates;
+
+            if (useAttestKey) {
+                final Certificate[] attestCertificates = getCertificateChain(keyStore, attestKeystoreAlias);
+                attestationCertificates = new Certificate[1 + attestCertificates.length];
+                System.arraycopy(attestCertificates, 0, attestationCertificates, 1, attestCertificates.length);
+                attestationCertificates[0] = getCertificate(keyStore, attestationKeystoreAlias);
+            } else {
+                attestationCertificates = getCertificateChain(keyStore, attestationKeystoreAlias);
+            }
 
             // sanity check on the device being verified before sending it off to the verifying device
             final Verified verified = verifyStateless(attestationCertificates, challenge,
