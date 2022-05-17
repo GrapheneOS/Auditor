@@ -13,6 +13,9 @@
     <string name="qr_code_scan_hint_auditor">Now scan this QR Code from the other device.\n\nTap this QR code after scanning to proceed.</string>
     <string name="scanned_invalid_account_qr_code">Scanned invalid account QR code</string>
 
+    <string name="bind_failure">Failed to open camera due to an OS or hardware issue. Try rebooting.</string>
+    <string name="camera_provider_init_failure">Failed to load camera provider due to OS or hardware issue. Try rebooting.</string>
+
     <string name="action_clear_auditee">Clear Auditee pairings</string>
     <string name="action_clear_auditor">Clear Auditor pairings</string>
     <string name="action_enable_remote_verify">Enable remote verification</string>

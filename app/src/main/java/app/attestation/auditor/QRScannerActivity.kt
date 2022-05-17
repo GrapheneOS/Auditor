@@ -17,9 +17,12 @@ import androidx.camera.core.Preview
 import androidx.camera.core.SurfaceOrientedMeteringPointFactory
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.CameraController
+import androidx.camera.core.CameraProvider
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
+import com.google.android.material.snackbar.Snackbar
+import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executors
 
 class QRScannerActivity : AppCompatActivity() {
@@ -112,9 +115,14 @@ class QRScannerActivity : AppCompatActivity() {
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
-        cameraProviderFuture.addListener(
-            {
-                val cameraProvider = cameraProviderFuture.get()
+        cameraProviderFuture.addListener(fun() {
+                val cameraProvider: CameraProvider
+                try {
+                    cameraProvider = cameraProviderFuture.get()
+                } catch (exception: ExecutionException) {
+                    Snackbar.make(overlayView, R.string.camera_provider_init_failure, Snackbar.LENGTH_LONG).show()
+                    return
+                }
 
                 val preview = Preview.Builder()
                     .build()
@@ -134,8 +142,12 @@ class QRScannerActivity : AppCompatActivity() {
                 )
 
                 cameraProvider.unbindAll()
-                camera =
-                    cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis)
+                try {
+                    camera =
+                        cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis)
+                } catch (exception: IllegalArgumentException) {
+                    Snackbar.make(overlayView, R.string.bind_failure, Snackbar.LENGTH_LONG).show()
+                }
                 startFocusTimer()
             },
             ContextCompat.getMainExecutor(this)
