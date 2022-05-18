@@ -147,6 +147,7 @@ class QRScannerActivity : AppCompatActivity() {
                         cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis)
                 } catch (exception: IllegalArgumentException) {
                     Snackbar.make(overlayView, R.string.bind_failure, Snackbar.LENGTH_LONG).show()
+                    return
                 }
                 startFocusTimer()
             },
