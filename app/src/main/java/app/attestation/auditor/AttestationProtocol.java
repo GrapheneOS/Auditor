@@ -156,6 +156,10 @@ class AttestationProtocol {
     // }
     // byte[] signature (rest of message)
     //
+    // Protocol version changes:
+    //
+    // 3: replace deflate_dictionary_2 with deflate_dictionary_3
+    //
     // For each audit, the Auditee generates a fresh hardware-backed key with key attestation
     // using the provided challenge. It reports back the certificate chain to be verified by the
     // Auditor. The public key certificate of the generated key is signed by a key provisioned on
@@ -192,7 +196,7 @@ class AttestationProtocol {
     // the outer signature and the rest of the chain for pinning the expected chain. It enforces
     // downgrade protection for the OS version/patch (bootloader/TEE enforced) and app version (OS
     // enforced) by keeping them updated.
-    private static final byte PROTOCOL_VERSION = 2;
+    private static final byte PROTOCOL_VERSION = 3;
     private static final byte PROTOCOL_VERSION_MINIMUM = 2;
     // can become longer in the future, but this is the minimum length
     static final byte CHALLENGE_MESSAGE_LENGTH = 1 + CHALLENGE_LENGTH * 2;
@@ -1109,7 +1113,7 @@ class AttestationProtocol {
         deserializer.get(compressedChain);
 
         final Certificate[] certificates;
-        final int dictionary = R.raw.deflate_dictionary_2;
+        final int dictionary = version < 3 ? R.raw.deflate_dictionary_2 : R.raw.deflate_dictionary_3;
         try (final InputStream stream = context.getResources().openRawResource(dictionary)) {
             certificates = decodeChain(ByteStreams.toByteArray(stream), compressedChain);
         }
@@ -1372,7 +1376,7 @@ class AttestationProtocol {
             serializer.put(version);
 
             final byte[] compressed;
-            final int dictionary = R.raw.deflate_dictionary_2;
+            final int dictionary = version < 3 ? R.raw.deflate_dictionary_2 : R.raw.deflate_dictionary_3;
             try (final InputStream stream = context.getResources().openRawResource(dictionary)) {
                 compressed = encodeChain(ByteStreams.toByteArray(stream), attestationCertificates);
             }
