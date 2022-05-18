@@ -60,15 +60,15 @@ public class Attestation {
     public static final int KM_VERSION_KEYMASTER_4_1 = 41;
     public static final int KM_VERSION_KEYMINT_1 = 100;
 
-    private final int attestationVersion;
-    private final int attestationSecurityLevel;
-    private final int keymasterVersion;
-    private final int keymasterSecurityLevel;
-    private final byte[] attestationChallenge;
-    private final byte[] uniqueId;
-    private final AuthorizationList softwareEnforced;
-    private final AuthorizationList teeEnforced;
-    private final Set<String> unexpectedExtensionOids;
+    int attestationVersion;
+    int attestationSecurityLevel;
+    int keymasterVersion;
+    int keymasterSecurityLevel;
+    byte[] attestationChallenge;
+    byte[] uniqueId;
+    AuthorizationList softwareEnforced;
+    AuthorizationList teeEnforced;
+    Set<String> unexpectedExtensionOids;
 
     /**
      * Constructs an {@code Attestation} object from the provided {@link X509Certificate},
@@ -96,6 +96,24 @@ public class Attestation {
         softwareEnforced = new AuthorizationList(seq.getObjectAt(SW_ENFORCED_INDEX));
         teeEnforced = new AuthorizationList(seq.getObjectAt(TEE_ENFORCED_INDEX));
         unexpectedExtensionOids = retrieveUnexpectedExtensionOids(x509Cert);
+    }
+
+    public static Attestation loadFromCertificate(X509Certificate x509Cert)
+            throws CertificateParsingException {
+        return Attestation.loadFromCertificate(x509Cert, true);
+    }
+    public static Attestation loadFromCertificate(X509Certificate x509Cert, boolean strictParsing)
+            throws CertificateParsingException {
+        if (x509Cert.getExtensionValue(EAT_OID) == null
+                && x509Cert.getExtensionValue(ASN1_OID) == null) {
+            throw new CertificateParsingException("No attestation extensions found");
+        }
+        if (x509Cert.getExtensionValue(EAT_OID) != null) {
+            if (x509Cert.getExtensionValue(ASN1_OID) != null) {
+                throw new CertificateParsingException("Multiple attestation extensions found");
+            }
+        }
+        return new Asn1Attestation(x509Cert, strictParsing);
     }
 
     public static String securityLevelToString(int attestationSecurityLevel) {
