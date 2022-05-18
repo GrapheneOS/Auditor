@@ -596,13 +596,15 @@ class AttestationProtocol {
     }
 
     private static Verified verifyStateless(final Certificate[] certificates,
-            final byte[] challenge, final Certificate root, final Certificate root_2) throws GeneralSecurityException {
+            final byte[] challenge, final Certificate root0, final Certificate root1,
+            final Certificate root2) throws GeneralSecurityException {
 
         verifyCertificateSignatures(certificates);
 
-        // check that the root certificate is the Google key attestation root
-        if (!Arrays.equals(root.getEncoded(), certificates[certificates.length - 1].getEncoded()) &&
-                !Arrays.equals(root_2.getEncoded(), certificates[certificates.length - 1].getEncoded())) {
+        // check that the root certificate is a valid key attestation root
+        if (!Arrays.equals(root0.getEncoded(), certificates[certificates.length - 1].getEncoded()) &&
+                !Arrays.equals(root1.getEncoded(), certificates[certificates.length - 1].getEncoded()) &&
+                !Arrays.equals(root2.getEncoded(), certificates[certificates.length - 1].getEncoded())) {
             throw new GeneralSecurityException("root certificate is not a valid key attestation root");
         }
 
@@ -891,7 +893,8 @@ class AttestationProtocol {
         }
 
         final Verified verified = verifyStateless(attestationCertificates, challenge,
-                generateCertificate(context.getResources(), R.raw.google_root),
+                generateCertificate(context.getResources(), R.raw.google_root_0),
+                generateCertificate(context.getResources(), R.raw.google_root_1),
                 generateCertificate(context.getResources(), R.raw.google_root_2));
 
         final StringBuilder teeEnforced = new StringBuilder();
@@ -1300,7 +1303,8 @@ class AttestationProtocol {
 
             // sanity check on the device being verified before sending it off to the verifying device
             final Verified verified = verifyStateless(attestationCertificates, challenge,
-                    generateCertificate(context.getResources(), R.raw.google_root),
+                    generateCertificate(context.getResources(), R.raw.google_root_0),
+                    generateCertificate(context.getResources(), R.raw.google_root_1),
                     generateCertificate(context.getResources(), R.raw.google_root_2));
 
             // OS-enforced checks and information
