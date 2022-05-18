@@ -53,6 +53,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.security.spec.ECGenParameterSpec;
 import java.util.ArrayList;
@@ -565,13 +566,15 @@ class AttestationProtocol {
         final int bootPatchLevel;
         final int appVersion;
         final int securityLevel;
+        final boolean attestKey;
         final boolean perUserEncryption;
         final boolean enforceStrongBox;
 
         Verified(final int device, final String verifiedBootKey, final byte[] verifiedBootHash,
                 final int osName, final int osVersion, final int osPatchLevel,
                 final int vendorPatchLevel, final int bootPatchLevel, final int appVersion,
-                final int securityLevel, final boolean perUserEncryption, final boolean enforceStrongBox) {
+                final int securityLevel, final boolean attestKey, final boolean perUserEncryption,
+                final boolean enforceStrongBox) {
             this.device = device;
             this.verifiedBootKey = verifiedBootKey;
             this.verifiedBootHash = verifiedBootHash;
@@ -582,6 +585,7 @@ class AttestationProtocol {
             this.bootPatchLevel = bootPatchLevel;
             this.appVersion = appVersion;
             this.securityLevel = securityLevel;
+            this.attestKey = attestKey;
             this.perUserEncryption = perUserEncryption;
             this.enforceStrongBox = enforceStrongBox;
         }
@@ -749,9 +753,16 @@ class AttestationProtocol {
             throw new GeneralSecurityException("verifiedBootHash expected for attestation version >= 3");
         }
 
+        boolean attestKey = false;
+        try {
+            new Attestation((X509Certificate) certificates[1]);
+            attestKey = true;
+        } catch (final CertificateParsingException e) {}
+
         return new Verified(device.name, verifiedBootKey, verifiedBootHash, device.osName,
                 osVersion, osPatchLevel, vendorPatchLevel, bootPatchLevel, appVersion,
-                attestationSecurityLevel, device.perUserEncryption, device.enforceStrongBox);
+                attestationSecurityLevel, attestKey, device.perUserEncryption,
+                device.enforceStrongBox);
     }
 
     private static void verifyCertificateSignatures(Certificate[] certChain)
@@ -806,9 +817,17 @@ class AttestationProtocol {
 
         final String securityLevel;
         if (verified.securityLevel == Attestation.KM_SECURITY_LEVEL_STRONG_BOX) {
-            securityLevel = context.getString(R.string.security_level_strongbox);
+            if (verified.attestKey) {
+                securityLevel = context.getString(R.string.security_level_strongbox_attest_key);
+            } else {
+                securityLevel = context.getString(R.string.security_level_strongbox);
+            }
         } else {
-            securityLevel = context.getString(R.string.security_level_tee);
+            if (verified.attestKey) {
+                securityLevel = context.getString(R.string.security_level_tee_attest_key);
+            } else {
+                securityLevel = context.getString(R.string.security_level_tee);
+            }
         }
         builder.append(context.getString(R.string.security_level, securityLevel));
 
