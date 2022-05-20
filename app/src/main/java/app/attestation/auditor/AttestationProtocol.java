@@ -89,7 +89,7 @@ class AttestationProtocol {
     // Settings.Global.ADD_USERS_WHEN_LOCKED is a private API
     private static final String ADD_USERS_WHEN_LOCKED = "add_users_when_locked";
 
-    private static final int CLOCK_SKEW_MS = 60 * 1000;
+    private static final int CLOCK_SKEW_MS = 5 * 60 * 1000;
     private static final int EXPIRE_OFFSET_MS = 5 * 60 * 1000 + CLOCK_SKEW_MS;
 
     private static final String KEYSTORE_ALIAS_FRESH = "fresh_attestation_key";
