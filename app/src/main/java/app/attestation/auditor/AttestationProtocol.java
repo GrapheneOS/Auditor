@@ -1193,20 +1193,28 @@ class AttestationProtocol {
         builder.setAttestKeyAlias(alias);
     }
 
-    @TargetApi(31)
-    static void generateAttestKey(final String alias, final byte[] challenge, final boolean useStrongBox) throws
-            GeneralSecurityException, IOException {
+    static KeyGenParameterSpec.Builder getKeyBuilder(final String alias, final int purposes,
+            final boolean useStrongBox, final byte[] challenge, final boolean temporary) {
         final Date startTime = new Date(new Date().getTime() - CLOCK_SKEW_MS);
-        final KeyGenParameterSpec.Builder builder = new KeyGenParameterSpec.Builder(alias,
-                KeyProperties.PURPOSE_ATTEST_KEY)
+        final KeyGenParameterSpec.Builder builder = new KeyGenParameterSpec.Builder(alias, purposes)
                 .setAlgorithmParameterSpec(new ECGenParameterSpec(EC_CURVE))
                 .setDigests(KEY_DIGEST)
                 .setAttestationChallenge(challenge)
                 .setKeyValidityStart(startTime);
+        if (temporary) {
+            builder.setKeyValidityEnd(new Date(startTime.getTime() + EXPIRE_OFFSET_MS));
+        }
         if (useStrongBox) {
             enableStrongBox(builder);
         }
-        generateKeyPair(builder.build());
+        return builder;
+    }
+
+    @TargetApi(31)
+    static void generateAttestKey(final String alias, final byte[] challenge, final boolean useStrongBox) throws
+            GeneralSecurityException, IOException {
+        generateKeyPair(getKeyBuilder(alias, KeyProperties.PURPOSE_ATTEST_KEY,
+                useStrongBox, challenge, false).build());
     }
 
     static Certificate getCertificate(final KeyStore keyStore, final String alias)
@@ -1291,19 +1299,9 @@ class AttestationProtocol {
             }
         }
 
-        final Date startTime = new Date(new Date().getTime() - CLOCK_SKEW_MS);
-        final KeyGenParameterSpec.Builder builder = new KeyGenParameterSpec.Builder(attestationKeystoreAlias,
-                KeyProperties.PURPOSE_SIGN | KeyProperties.PURPOSE_VERIFY)
-                .setAlgorithmParameterSpec(new ECGenParameterSpec(EC_CURVE))
-                .setDigests(KEY_DIGEST)
-                .setAttestationChallenge(challenge)
-                .setKeyValidityStart(startTime);
-        if (hasPersistentKey) {
-            builder.setKeyValidityEnd(new Date(startTime.getTime() + EXPIRE_OFFSET_MS));
-        }
-        if (useStrongBox) {
-            enableStrongBox(builder);
-        }
+        final KeyGenParameterSpec.Builder builder = getKeyBuilder(attestationKeystoreAlias,
+                KeyProperties.PURPOSE_SIGN | KeyProperties.PURPOSE_VERIFY, useStrongBox, challenge,
+                hasPersistentKey);
         if (useAttestKey) {
             setAttestKeyAlias(builder, attestKeystoreAlias);
         }
