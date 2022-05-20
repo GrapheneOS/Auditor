@@ -770,14 +770,7 @@ class AttestationProtocol {
         for (int i = 1; i < certChain.length; ++i) {
             final PublicKey pubKey = certChain[i].getPublicKey();
             try {
-                // For now, rely on the random challenge to check validity of the attestation
-                // certificate rather than the Not Before and Not After dates in the certificate.
-                //
-                // StrongBox implementations currently have issues with time sync and this doesn't
-                // provide any additional security due to the challenge.
-                if (i != 1) {
-                    ((X509Certificate) certChain[i - 1]).checkValidity();
-                }
+                ((X509Certificate) certChain[i - 1]).checkValidity();
                 certChain[i - 1].verify(pubKey);
             } catch (InvalidKeyException | CertificateException | NoSuchAlgorithmException
                     | NoSuchProviderException | SignatureException e) {
