@@ -772,29 +772,28 @@ class AttestationProtocol {
     private static void verifyCertificateSignatures(final Certificate[] certChain, final boolean hasPersistentKey)
             throws GeneralSecurityException {
         for (int i = 1; i < certChain.length; ++i) {
-            final PublicKey pubKey = certChain[i].getPublicKey();
             try {
                 if (i == 1 || !hasPersistentKey) {
                     ((X509Certificate) certChain[i - 1]).checkValidity();
                 }
-                certChain[i - 1].verify(pubKey);
+                certChain[i - 1].verify(certChain[i].getPublicKey());
             } catch (InvalidKeyException | CertificateException | NoSuchAlgorithmException
                     | NoSuchProviderException | SignatureException e) {
                 throw new GeneralSecurityException("Failed to verify certificate "
                         + certChain[i - 1] + " with public key " + certChain[i].getPublicKey(), e);
             }
-            if (i == certChain.length - 1) {
-                // Last cert is self-signed.
-                try {
-                    if (!hasPersistentKey) {
-                        ((X509Certificate) certChain[i]).checkValidity();
-                    }
-                    certChain[i].verify(pubKey);
-                } catch (CertificateException e) {
-                    throw new GeneralSecurityException(
-                            "Root cert " + certChain[i] + " is not correctly self-signed", e);
-                }
+        }
+
+        // Last cert is self-signed.
+        final int i = certChain.length - 1;
+        try {
+            if (i == 0 || !hasPersistentKey) {
+                ((X509Certificate) certChain[i]).checkValidity();
             }
+            certChain[i].verify(certChain[i].getPublicKey());
+        } catch (CertificateException e) {
+            throw new GeneralSecurityException(
+                    "Root cert " + certChain[i] + " is not correctly self-signed", e);
         }
     }
 
