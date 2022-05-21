@@ -934,7 +934,7 @@ class AttestationProtocol {
                     pinOffset = 1;
                     attestKeyMigration = true;
                 } else {
-                    throw new GeneralSecurityException("certificate chain mismatch");
+                    throw new GeneralSecurityException("certificate chain length mismatch");
                 }
             } else {
                 pinOffset = 0;
