@@ -16,10 +16,6 @@
 
 package app.attestation.auditor.attestation;
 
-import androidx.annotation.NonNull;
-
-import com.google.common.io.BaseEncoding;
-
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Sequence;
 
@@ -98,16 +94,4 @@ public class RootOfTrust {
         return verifiedBootHash;
     }
 
-    @NonNull
-    @Override
-    public String toString() {
-        return "\nVerified boot Key: " +
-                (verifiedBootKey != null ?
-                        BaseEncoding.base64().encode(verifiedBootKey) :
-                        "null") +
-                "\nDevice locked: " +
-                deviceLocked +
-                "\nVerified boot state: " +
-                verifiedBootStateToString(verifiedBootState);
-    }
 }

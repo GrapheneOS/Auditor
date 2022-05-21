@@ -16,11 +16,7 @@
 
 package app.attestation.auditor.attestation;
 
-import androidx.annotation.NonNull;
-
-import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.io.BaseEncoding;
 
 import org.bouncycastle.asn1.ASN1Sequence;
 
@@ -146,36 +142,6 @@ public class Attestation {
 
     public Set<String> getUnexpectedExtensionOids() {
         return unexpectedExtensionOids;
-    }
-
-    @NonNull
-    @Override
-    public String toString() {
-        StringBuilder s = new StringBuilder();
-        s.append("Extension type: " + getClass());
-        s.append("\nAttest version: " + attestationVersion);
-        s.append("\nAttest security: " + securityLevelToString(getAttestationSecurityLevel()));
-        s.append("\nKM version: " + keymasterVersion);
-        s.append("\nKM security: " + securityLevelToString(keymasterSecurityLevel));
-
-        s.append("\nChallenge");
-        String stringChallenge =
-                attestationChallenge != null ? new String(attestationChallenge) : "null";
-        if (CharMatcher.ascii().matchesAllOf(stringChallenge)) {
-            s.append(": [" + stringChallenge + "]");
-        } else {
-            s.append(" (base64): [" + BaseEncoding.base64().encode(attestationChallenge) + "]");
-        }
-        if (uniqueId != null) {
-            s.append("\nUnique ID (base64): [" + BaseEncoding.base64().encode(uniqueId) + "]");
-        }
-
-        s.append("\n-- SW enforced --");
-        s.append(softwareEnforced);
-        s.append("\n-- TEE enforced --");
-        s.append(teeEnforced);
-
-        return s.toString();
     }
 
     private ASN1Sequence getAttestationSequence(X509Certificate x509Cert)
