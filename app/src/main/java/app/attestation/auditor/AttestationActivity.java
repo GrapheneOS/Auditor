@@ -71,7 +71,7 @@ public class AttestationActivity extends AppCompatActivity {
         AuditeeGenerate,
         AuditeeResults,
         Auditor,
-        AuditorResults,
+        Result, // Auditor success/failure and Auditee failure
         EnableRemoteVerify
     }
 
@@ -102,7 +102,7 @@ public class AttestationActivity extends AppCompatActivity {
                             buttons.setVisibility(View.GONE);
                             generateAttestation(contentsBytes);
                         } else if (stage == Stage.Auditor) {
-                            stage = Stage.AuditorResults;
+                            stage = Stage.Result;
                             imageView.setVisibility(View.GONE);
                             handleAttestation(contentsBytes);
                         } else if (stage == Stage.EnableRemoteVerify) {
@@ -450,6 +450,7 @@ public class AttestationActivity extends AppCompatActivity {
                 throw new RuntimeException("unexpected result code");
             }
             if (intent.hasExtra(GenerateAttestationService.EXTRA_ATTESTATION_ERROR)) {
+                stage = Stage.Result;
                 setBackgroundResource(R.color.red);
                 textView.setText(R.string.generate_error);
                 textView.append(intent.getStringExtra(GenerateAttestationService.EXTRA_ATTESTATION_ERROR));
@@ -578,7 +579,7 @@ public class AttestationActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (stage == Stage.AuditeeResults || stage == Stage.Auditor ||
-                stage == Stage.AuditorResults) {
+                stage == Stage.Result) {
             auditeeSerializedAttestation = null;
             auditorChallenge = null;
             stage = Stage.None;
