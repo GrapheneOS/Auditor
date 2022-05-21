@@ -197,7 +197,7 @@ class AttestationProtocol {
     // the outer signature and the rest of the chain for pinning the expected chain. It enforces
     // downgrade protection for the OS version/patch (bootloader/TEE enforced) and app version (OS
     // enforced) by keeping them updated.
-    private static final byte PROTOCOL_VERSION = 3;
+    private static final byte PROTOCOL_VERSION = 4;
     private static final byte PROTOCOL_VERSION_MINIMUM = 2;
     // can become longer in the future, but this is the minimum length
     static final byte CHALLENGE_MESSAGE_LENGTH = 1 + CHALLENGE_LENGTH * 2;
@@ -804,7 +804,8 @@ class AttestationProtocol {
     }
 
     private static void appendVerifiedInformation(final Context context,
-            final StringBuilder builder, final Verified verified, final String fingerprint) {
+            final StringBuilder builder, final Verified verified, final String fingerprint,
+            final boolean attestKeyMigration) {
         final StringBuilder splitFingerprint = new StringBuilder();
         for (int i = 0; i < fingerprint.length(); i += FINGERPRINT_SPLIT_INTERVAL) {
             splitFingerprint.append(fingerprint.substring(i,
@@ -817,13 +818,13 @@ class AttestationProtocol {
 
         final String securityLevel;
         if (verified.securityLevel == Attestation.KM_SECURITY_LEVEL_STRONG_BOX) {
-            if (verified.attestKey) {
+            if (verified.attestKey && !attestKeyMigration) {
                 securityLevel = context.getString(R.string.security_level_strongbox_attest_key);
             } else {
                 securityLevel = context.getString(R.string.security_level_strongbox);
             }
         } else {
-            if (verified.attestKey) {
+            if (verified.attestKey && !attestKeyMigration) {
                 securityLevel = context.getString(R.string.security_level_tee_attest_key);
             } else {
                 securityLevel = context.getString(R.string.security_level_tee);
@@ -923,12 +924,23 @@ class AttestationProtocol {
         final StringBuilder teeEnforced = new StringBuilder();
         final StringBuilder history = new StringBuilder();
 
+        boolean attestKeyMigration = false;
         if (hasPersistentKey) {
+            final int pinOffset;
             if (attestationCertificates.length != preferences.getInt(KEY_PINNED_CERTIFICATE_LENGTH, 0)) {
-                throw new GeneralSecurityException("certificate chain mismatch");
+                if (attestationCertificates.length == 5 && preferences.getInt(KEY_PINNED_CERTIFICATE_LENGTH, 0) == 4) {
+                    // backwards compatible use of attest key without the security benefits for
+                    // forward compatibility with remote provisioning
+                    pinOffset = 1;
+                    attestKeyMigration = true;
+                } else {
+                    throw new GeneralSecurityException("certificate chain mismatch");
+                }
+            } else {
+                pinOffset = 0;
             }
-            for (int i = 1; i < attestationCertificates.length; i++) {
-                final byte[] b = BaseEncoding.base64().decode(preferences.getString(KEY_PINNED_CERTIFICATE + i, ""));
+            for (int i = 1 + pinOffset; i < attestationCertificates.length; i++) {
+                final byte[] b = BaseEncoding.base64().decode(preferences.getString(KEY_PINNED_CERTIFICATE + (i - pinOffset), ""));
                 if (!Arrays.equals(attestationCertificates[i].getEncoded(), b)) {
                     throw new GeneralSecurityException("certificate chain mismatch");
                 }
@@ -1027,7 +1039,7 @@ class AttestationProtocol {
             editor.apply();
         }
 
-        appendVerifiedInformation(context, teeEnforced, verified, fingerprintHex);
+        appendVerifiedInformation(context, teeEnforced, verified, fingerprintHex, attestKeyMigration);
 
         final StringBuilder osEnforced = new StringBuilder();
         osEnforced.append(context.getString(R.string.auditor_app_version, verified.appVersion));
@@ -1248,6 +1260,7 @@ class AttestationProtocol {
         if (maxVersion < PROTOCOL_VERSION_MINIMUM) {
             throw new GeneralSecurityException("Auditor protocol version too old: " + maxVersion);
         }
+        final byte version = (byte) Math.min(PROTOCOL_VERSION, maxVersion);
         final byte[] challengeIndex = Arrays.copyOfRange(challengeMessage, 1, 1 + CHALLENGE_LENGTH);
         final byte[] challenge = Arrays.copyOfRange(challengeMessage, 1 + CHALLENGE_LENGTH, 1 + CHALLENGE_LENGTH * 2);
 
@@ -1269,6 +1282,8 @@ class AttestationProtocol {
         final boolean hasPersistentKey = keyStore.containsAlias(persistentKeystoreAlias);
         final String attestationKeystoreAlias;
         final boolean useStrongBox;
+        final boolean canUseAttestKey = (alwaysHasAttestKey || pm.hasSystemFeature(PackageManager.FEATURE_KEYSTORE_APP_ATTEST_KEY))
+                && USE_ATTEST_KEY;
         final boolean useAttestKey;
         if (hasPersistentKey) {
             final String freshKeyStoreAlias = statePrefix + KEYSTORE_ALIAS_FRESH;
@@ -1287,12 +1302,21 @@ class AttestationProtocol {
                 useStrongBox = dn.contains("StrongBox");
             }
 
-            useAttestKey = keyStore.containsAlias(attestKeystoreAlias);
+            final boolean hasAttestKey = keyStore.containsAlias(attestKeystoreAlias);
+            if (hasAttestKey) {
+                useAttestKey = true;
+            } else {
+                if (canUseAttestKey && version >= 4) {
+                    generateAttestKey(attestKeystoreAlias, challenge, useStrongBox);
+                    useAttestKey = true;
+                } else {
+                    useAttestKey = false;
+                }
+            }
         } else {
             attestationKeystoreAlias = persistentKeystoreAlias;
             useStrongBox = isStrongBoxSupported && PREFER_STRONGBOX;
-            useAttestKey = (alwaysHasAttestKey || pm.hasSystemFeature(PackageManager.FEATURE_KEYSTORE_APP_ATTEST_KEY))
-                    && USE_ATTEST_KEY;
+            useAttestKey = canUseAttestKey;
 
             if (useAttestKey) {
                 generateAttestKey(attestKeystoreAlias, challenge, useStrongBox);
@@ -1389,7 +1413,6 @@ class AttestationProtocol {
 
             final ByteBuffer serializer = ByteBuffer.allocate(MAX_MESSAGE_SIZE);
 
-            final byte version = (byte) Math.min(PROTOCOL_VERSION, maxVersion);
             serializer.put(version);
 
             final byte[] compressed;
