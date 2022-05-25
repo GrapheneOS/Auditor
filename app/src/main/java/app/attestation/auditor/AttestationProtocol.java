@@ -160,6 +160,7 @@ class AttestationProtocol {
     // Protocol version changes:
     //
     // 3: replace deflate_dictionary_2 with deflate_dictionary_3
+    // 4: add attest key for existing pairings and offset the pinning cert chain check to accept it
     //
     // For each audit, the Auditee generates a fresh hardware-backed key with key attestation
     // using the provided challenge. It reports back the certificate chain to be verified by the
