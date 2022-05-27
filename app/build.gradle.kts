@@ -73,8 +73,9 @@ dependencies {
     implementation("com.google.zxing:core:3.5.0")
     implementation("org.bouncycastle:bcpkix-jdk15to18:1.70")
 
-    implementation("androidx.camera:camera-core:1.1.0-rc01")
-    implementation("androidx.camera:camera-camera2:1.1.0-rc01")
-    implementation("androidx.camera:camera-lifecycle:1.1.0-rc01")
-    implementation("androidx.camera:camera-view:1.1.0-rc01")
+    val cameraVersion = "1.2.0-alpha01"
+    implementation("androidx.camera:camera-core:$cameraVersion")
+    implementation("androidx.camera:camera-camera2:$cameraVersion")
+    implementation("androidx.camera:camera-lifecycle:$cameraVersion")
+    implementation("androidx.camera:camera-view:$cameraVersion")
 }
