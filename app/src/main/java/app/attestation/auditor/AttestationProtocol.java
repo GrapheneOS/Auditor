@@ -761,6 +761,15 @@ class AttestationProtocol {
             attestKey = true;
         } catch (final CertificateParsingException e) {}
 
+        for (int i = 2; i < certificates.length; i++) {
+            try {
+                new Attestation((X509Certificate) certificates[i]);
+            } catch (final CertificateParsingException e) {
+                continue;
+            }
+            throw new GeneralSecurityException("only initial key and attest key should have attestation extension");
+        }
+
         return new Verified(device.name, verifiedBootKey, verifiedBootHash, device.osName,
                 osVersion, osPatchLevel, vendorPatchLevel, bootPatchLevel, appVersion,
                 attestationSecurityLevel, attestKey, device.perUserEncryption,
