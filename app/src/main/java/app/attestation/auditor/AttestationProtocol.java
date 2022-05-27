@@ -772,13 +772,69 @@ class AttestationProtocol {
             }
 
             final AuthorizationList teeEnforced1 = attestation1.getTeeEnforced();
+
+            // verified boot security checks
+            final RootOfTrust rootOfTrust1 = teeEnforced1.getRootOfTrust();
+            if (rootOfTrust1 == null) {
+                throw new GeneralSecurityException("attest key missing root of trust");
+            }
+            if (rootOfTrust1.isDeviceLocked() != rootOfTrust.isDeviceLocked()) {
+                throw new GeneralSecurityException("attest key lock state does not match");
+            }
+            if (rootOfTrust1.getVerifiedBootState() != rootOfTrust.getVerifiedBootState()) {
+                throw new GeneralSecurityException("attest key verified boot state does not match");
+            }
+            if (!Arrays.equals(rootOfTrust1.getVerifiedBootKey(), rootOfTrust.getVerifiedBootKey())) {
+                throw new GeneralSecurityException("attest key verified boot key does not match");
+            }
+
+            // key sanity checks
             if (!teeEnforced1.getPurposes().equals(ImmutableSet.of(AuthorizationList.KM_PURPOSE_ATTEST_KEY))) {
                 throw new GeneralSecurityException("attest key has invalid purposes");
+            }
+            if (teeEnforced1.getOrigin() != AuthorizationList.KM_ORIGIN_GENERATED) {
+                throw new GeneralSecurityException("attest key not origin generated");
+            }
+            if (teeEnforced1.isAllApplications()) {
+                throw new GeneralSecurityException("expected attest key only usable by attestation app");
+            }
+            if (device.rollbackResistant && !teeEnforced1.isRollbackResistant()) {
+                throw new GeneralSecurityException("expected rollback resistant attest key");
             }
 
             if (!hasPersistentKey) {
                 if (!Arrays.equals(attestation1.getAttestationChallenge(), attestation.getAttestationChallenge())) {
                     throw new GeneralSecurityException("attest key challenge does not match");
+                }
+
+                if (!attestation1.getSoftwareEnforced().getAttestationApplicationId().equals(attestationApplicationId)) {
+                    throw new GeneralSecurityException("attest key application does not match");
+                }
+
+                // version sanity checks
+                if (attestation1.getAttestationVersion() != attestation.getAttestationVersion()) {
+                    throw new GeneralSecurityException("attest key attestation version does not match");
+                }
+                if (attestation1.getKeymasterVersion() != attestation.getKeymasterVersion()) {
+                    throw new GeneralSecurityException("attest key keymaster version does not match");
+                }
+
+                // OS version sanity checks
+                if (!teeEnforced1.getOsVersion().equals(teeEnforced.getOsVersion())) {
+                    throw new GeneralSecurityException("attest key OS version does not match");
+                }
+                if (!teeEnforced1.getOsPatchLevel().equals(teeEnforced.getOsPatchLevel())) {
+                    throw new GeneralSecurityException("attest key OS patch level does not match");
+                }
+                if (!teeEnforced1.getVendorPatchLevel().equals(teeEnforced.getVendorPatchLevel())) {
+                    throw new GeneralSecurityException("attest key vendor patch level does not match");
+                }
+                if (!teeEnforced1.getBootPatchLevel().equals(teeEnforced.getBootPatchLevel())) {
+                    throw new GeneralSecurityException("attest key boot patch level does not match");
+                }
+
+                if (!Arrays.equals(rootOfTrust1.getVerifiedBootHash(), rootOfTrust.getVerifiedBootHash())) {
+                    throw new GeneralSecurityException("attest key verified boot hash does not match");
                 }
             }
 
