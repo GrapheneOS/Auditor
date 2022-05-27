@@ -1,5 +1,6 @@
 package app.attestation.auditor;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.KeyguardManager;
 import android.app.admin.DevicePolicyManager;
@@ -1283,6 +1284,7 @@ class AttestationProtocol {
         final boolean hasPersistentKey = keyStore.containsAlias(persistentKeystoreAlias);
         final String attestationKeystoreAlias;
         final boolean useStrongBox;
+        @SuppressLint("InlinedApi")
         final boolean canUseAttestKey = (alwaysHasAttestKey || pm.hasSystemFeature(PackageManager.FEATURE_KEYSTORE_APP_ATTEST_KEY))
                 && USE_ATTEST_KEY;
         final boolean useAttestKey;
