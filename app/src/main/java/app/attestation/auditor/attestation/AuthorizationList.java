@@ -85,6 +85,10 @@ public class AuthorizationList {
     public static final int KM_PURPOSE_DECRYPT = 1;
     public static final int KM_PURPOSE_SIGN = 2;
     public static final int KM_PURPOSE_VERIFY = 3;
+    public static final int KM_PURPOSE_DERIVE_KEY = 4;
+    public static final int KM_PURPOSE_WRAP = 5;
+    public static final int KM_PURPOSE_AGREE_KEY = 6;
+    public static final int KM_PURPOSE_ATTEST_KEY = 7;
 
     // User authenticators.
     public static final int HW_AUTH_PASSWORD = 1;
