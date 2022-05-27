@@ -34,7 +34,6 @@ import java.util.List;
 
 import app.attestation.auditor.AttestationProtocol.AttestationResult;
 
-@TargetApi(26)
 public class RemoteVerifyJob extends JobService {
     private static final String TAG = "RemoteVerifyJob";
     private static final int PERIODIC_JOB_ID = 0;

@@ -38,7 +38,6 @@ import java.util.concurrent.Future;
 import java.util.Enumeration;
 import java.util.Properties;
 
-@TargetApi(26)
 public class SubmitSampleJob extends JobService {
     private static final String TAG = "SubmitSampleJob";
     private static final int JOB_ID = 2;
