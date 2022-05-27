@@ -757,7 +757,27 @@ class AttestationProtocol {
 
         boolean attestKey = false;
         try {
-            new Attestation((X509Certificate) certificates[1]);
+            final Attestation attestation1 = new Attestation((X509Certificate) certificates[1]);
+
+            if (attestation1.getAttestationSecurityLevel() != attestation.getAttestationSecurityLevel()) {
+                throw new GeneralSecurityException("attest key attestation security level does not match");
+            }
+
+            if (attestation1.getKeymasterSecurityLevel() != attestation.getKeymasterSecurityLevel()) {
+                throw new GeneralSecurityException("attest key keymaster security level does not match");
+            }
+
+            final AuthorizationList teeEnforced1 = attestation1.getTeeEnforced();
+            if (!teeEnforced1.getPurposes().equals(ImmutableSet.of(AuthorizationList.KM_PURPOSE_ATTEST_KEY))) {
+                throw new GeneralSecurityException("attest key has invalid purposes");
+            }
+
+            if (!hasPersistentKey) {
+                if (!Arrays.equals(attestation1.getAttestationChallenge(), attestation.getAttestationChallenge())) {
+                    throw new GeneralSecurityException("attest key challenge does not match");
+                }
+            }
+
             attestKey = true;
         } catch (final CertificateParsingException e) {}
 
