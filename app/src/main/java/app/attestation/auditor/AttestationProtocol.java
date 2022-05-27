@@ -733,7 +733,7 @@ class AttestationProtocol {
             throw new GeneralSecurityException("key has invalid purposes");
         }
         if (teeEnforced.getOrigin() != AuthorizationList.KM_ORIGIN_GENERATED) {
-            throw new GeneralSecurityException("not a generated key");
+            throw new GeneralSecurityException("key not origin generated");
         }
         if (teeEnforced.isAllApplications()) {
             throw new GeneralSecurityException("expected key only usable by attestation app");
