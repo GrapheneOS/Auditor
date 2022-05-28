@@ -178,11 +178,17 @@ public class Attestation {
         return s.toString();
     }
 
+    public class KeyDescriptionMissingException extends CertificateParsingException {
+        private KeyDescriptionMissingException(final String message) {
+            super(message);
+        }
+    }
+
     private ASN1Sequence getAttestationSequence(X509Certificate x509Cert)
             throws CertificateParsingException {
         byte[] attestationExtensionBytes = x509Cert.getExtensionValue(KEY_DESCRIPTION_OID);
         if (attestationExtensionBytes == null || attestationExtensionBytes.length == 0) {
-            throw new CertificateParsingException(
+            throw new KeyDescriptionMissingException(
                     "Did not find extension with OID " + KEY_DESCRIPTION_OID);
         }
         return Asn1Utils.getAsn1SequenceFromBytes(attestationExtensionBytes);

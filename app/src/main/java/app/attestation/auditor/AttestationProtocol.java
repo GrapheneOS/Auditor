@@ -839,12 +839,12 @@ class AttestationProtocol {
             }
 
             attestKey = true;
-        } catch (final CertificateParsingException e) {}
+        } catch (final Attestation.KeyDescriptionMissingException e) {}
 
         for (int i = 2; i < certificates.length; i++) {
             try {
                 new Attestation((X509Certificate) certificates[i]);
-            } catch (final CertificateParsingException e) {
+            } catch (final Attestation.KeyDescriptionMissingException e) {
                 continue;
             }
             throw new GeneralSecurityException("only initial key and attest key should have attestation extension");
