@@ -48,7 +48,7 @@ class QRScannerActivity : AppCompatActivity() {
 
         val autoFocusPoint = factory.createPoint(
             contentFrame.width / 2.0f,
-            contentFrame.height / 2.0f, overlayView.size.toFloat()
+            contentFrame.height / 2.0f, QROverlay.SIZE_FACTOR
         )
 
         camera.cameraControl.startFocusAndMetering(
