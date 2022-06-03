@@ -28,9 +28,11 @@ import java.util.concurrent.Executors
 class QRScannerActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_SCAN_RESULT = "app.attestation.auditor.SCAN_RESULT"
-        private val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
         private const val autoCenterFocusDuration = 2000L
     }
+
+    private var cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+    private lateinit var cameraController : LifecycleCameraController
 
     private val handler = Handler(Looper.getMainLooper())
     private val executor = Executors.newSingleThreadExecutor()
@@ -74,6 +76,11 @@ class QRScannerActivity : AppCompatActivity() {
         contentFrame = findViewById(R.id.content_frame)
         contentFrame.scaleType = PreviewView.ScaleType.FIT_CENTER
 
+        cameraController = LifecycleCameraController(this)
+        cameraController.bindToLifecycle(this)
+        cameraController.cameraSelector = cameraSelector
+        cameraController.setEnabledUseCases(CameraController.IMAGE_ANALYSIS)
+
         overlayView = findViewById(R.id.overlay)
         overlayView.viewTreeObserver.addOnGlobalLayoutListener(object :
             ViewTreeObserver.OnGlobalLayoutListener {
@@ -82,11 +89,6 @@ class QRScannerActivity : AppCompatActivity() {
                 startCamera()
             }
         })
-
-        val cameraController = LifecycleCameraController(this)
-        cameraController.bindToLifecycle(this)
-        cameraController.cameraSelector = cameraSelector
-        cameraController.setEnabledUseCases(CameraController.IMAGE_ANALYSIS)
     }
 
     override fun onResume() {
@@ -140,6 +142,15 @@ class QRScannerActivity : AppCompatActivity() {
                         handleResult(response)
                     }
                 )
+
+                // Fallback to using front camera if rear camera is not available
+                cameraSelector = if(cameraProvider.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA)) {
+                    CameraSelector.DEFAULT_BACK_CAMERA
+                } else {
+                    CameraSelector.DEFAULT_FRONT_CAMERA
+                }
+
+                cameraController.cameraSelector = cameraSelector
 
                 cameraProvider.unbindAll()
                 try {
