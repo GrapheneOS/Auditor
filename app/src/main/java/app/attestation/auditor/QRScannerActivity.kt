@@ -144,7 +144,7 @@ class QRScannerActivity : AppCompatActivity() {
                 )
 
                 // Fallback to using front camera if rear camera is not available
-                cameraSelector = if(cameraProvider.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA)) {
+                cameraSelector = if (cameraProvider.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA)) {
                     CameraSelector.DEFAULT_BACK_CAMERA
                 } else {
                     CameraSelector.DEFAULT_FRONT_CAMERA
