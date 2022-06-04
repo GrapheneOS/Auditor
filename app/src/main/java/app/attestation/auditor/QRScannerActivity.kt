@@ -32,7 +32,7 @@ class QRScannerActivity : AppCompatActivity() {
     }
 
     private var cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-    private lateinit var cameraController : LifecycleCameraController
+    private lateinit var cameraController: LifecycleCameraController
 
     private val handler = Handler(Looper.getMainLooper())
     private val executor = Executors.newSingleThreadExecutor()
