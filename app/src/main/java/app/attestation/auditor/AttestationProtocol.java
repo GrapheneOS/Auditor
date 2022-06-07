@@ -123,6 +123,7 @@ class AttestationProtocol {
 
     private static final boolean PREFER_STRONGBOX = true;
     private static final boolean USE_ATTEST_KEY = true;
+    private static final boolean ALLOW_ATTEST_KEY_DOWNGRADE = true;
 
     // Challenge message:
     //
@@ -1017,21 +1018,28 @@ class AttestationProtocol {
 
         boolean attestKeyMigration = false;
         if (hasPersistentKey) {
+            final int chainOffset;
             final int pinOffset;
             if (attestationCertificates.length != preferences.getInt(KEY_PINNED_CERTIFICATE_LENGTH, 0)) {
                 if (attestationCertificates.length == 5 && preferences.getInt(KEY_PINNED_CERTIFICATE_LENGTH, 0) == 4) {
                     // backwards compatible use of attest key without the security benefits for
                     // forward compatibility with remote provisioning
-                    pinOffset = 1;
+                    chainOffset = 1;
+                    pinOffset = 0;
                     attestKeyMigration = true;
+                } else if (ALLOW_ATTEST_KEY_DOWNGRADE && attestationCertificates.length == 4 && preferences.getInt(KEY_PINNED_CERTIFICATE_LENGTH, 0) == 5) {
+                    // temporarily work around attest key breakage by allowing not using it
+                    chainOffset = 0;
+                    pinOffset = 1;
                 } else {
                     throw new GeneralSecurityException("certificate chain length mismatch");
                 }
             } else {
+                chainOffset = 0;
                 pinOffset = 0;
             }
-            for (int i = 1 + pinOffset; i < attestationCertificates.length; i++) {
-                final byte[] b = BaseEncoding.base64().decode(preferences.getString(KEY_PINNED_CERTIFICATE + (i - pinOffset), ""));
+            for (int i = 1 + chainOffset; i < attestationCertificates.length; i++) {
+                final byte[] b = BaseEncoding.base64().decode(preferences.getString(KEY_PINNED_CERTIFICATE + (i - chainOffset + pinOffset), ""));
                 if (!Arrays.equals(attestationCertificates[i].getEncoded(), b)) {
                     throw new GeneralSecurityException("certificate chain mismatch");
                 }
@@ -1376,7 +1384,7 @@ class AttestationProtocol {
         @SuppressLint("InlinedApi")
         final boolean canUseAttestKey = (alwaysHasAttestKey || pm.hasSystemFeature(PackageManager.FEATURE_KEYSTORE_APP_ATTEST_KEY))
                 && USE_ATTEST_KEY;
-        final boolean useAttestKey;
+        boolean useAttestKey;
         if (hasPersistentKey) {
             final String freshKeyStoreAlias = statePrefix + KEYSTORE_ALIAS_FRESH;
             keyStore.deleteEntry(freshKeyStoreAlias);
@@ -1415,13 +1423,26 @@ class AttestationProtocol {
             }
         }
 
-        final KeyGenParameterSpec.Builder builder = getKeyBuilder(attestationKeystoreAlias,
-                KeyProperties.PURPOSE_SIGN | KeyProperties.PURPOSE_VERIFY, useStrongBox, challenge,
-                hasPersistentKey);
-        if (useAttestKey) {
-            setAttestKeyAlias(builder, attestKeystoreAlias);
+        try {
+            final KeyGenParameterSpec.Builder builder = getKeyBuilder(attestationKeystoreAlias,
+                    KeyProperties.PURPOSE_SIGN | KeyProperties.PURPOSE_VERIFY, useStrongBox, challenge,
+                    hasPersistentKey);
+            if (useAttestKey) {
+                setAttestKeyAlias(builder, attestKeystoreAlias);
+            }
+            generateKeyPair(builder.build());
+        } catch (final IOException e) {
+            // try without using attest key when already paired due to Pixel 6 / Pixel 6 Pro upgrade bug
+            if (hasPersistentKey) {
+                useAttestKey = false;
+                final KeyGenParameterSpec.Builder builder = getKeyBuilder(attestationKeystoreAlias,
+                        KeyProperties.PURPOSE_SIGN | KeyProperties.PURPOSE_VERIFY, useStrongBox, challenge,
+                        hasPersistentKey);
+                generateKeyPair(builder.build());
+            } else {
+                throw e;
+            }
         }
-        generateKeyPair(builder.build());
 
         try {
             final byte[] fingerprint =
