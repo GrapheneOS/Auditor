@@ -3,6 +3,7 @@ package app.attestation.auditor;
 import android.app.IntentService;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 
 import java.io.IOException;
@@ -50,7 +51,13 @@ public class GenerateAttestationService extends IntentService {
         if (challengeMessage == null) {
             throw new RuntimeException("no challenge message");
         }
-        final PendingIntent pending = intent.getParcelableExtra(EXTRA_PENDING_RESULT);
+        PendingIntent initialPending = null;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            initialPending = intent.getParcelableExtra(EXTRA_PENDING_RESULT);
+        } else {
+            initialPending = intent.getParcelableExtra(EXTRA_PENDING_RESULT, PendingIntent.class);
+        }
+        final PendingIntent pending = initialPending;
         if (pending == null) {
             throw new RuntimeException("no pending intent");
         }
