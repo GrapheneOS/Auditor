@@ -31,7 +31,7 @@ android {
     defaultConfig {
         applicationId = "app.attestation.auditor"
         minSdk = 26
-        targetSdk = 32
+        targetSdk = 33
         versionCode = 54
         versionName = versionCode.toString()
         resourceConfigurations.add("en")
