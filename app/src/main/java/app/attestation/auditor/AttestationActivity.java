@@ -59,6 +59,7 @@ public class AttestationActivity extends AppCompatActivity {
     private static final int VERIFY_REQUEST_CODE = 1;
 
     private static final int PERMISSIONS_REQUEST_CAMERA = 0;
+    private static final int PERMISSIONS_REQUEST_POST_NOTIFICATIONS = 1;
 
     private TextView textView;
     private ImageView imageView;
@@ -297,6 +298,11 @@ public class AttestationActivity extends AppCompatActivity {
         });
 
         RemoteVerifyJob.restore(this);
+
+        if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                    PERMISSIONS_REQUEST_POST_NOTIFICATIONS);
+        }
     }
 
     @Override
