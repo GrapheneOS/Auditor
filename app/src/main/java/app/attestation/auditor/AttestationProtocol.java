@@ -1356,6 +1356,17 @@ class AttestationProtocol {
         return result;
     }
 
+    @SuppressWarnings("deprecation")
+    @TargetApi(33)
+    static ApplicationInfo getApplicationInfo(final PackageManager pm, final String packageName,
+            final long flags) throws PackageManager.NameNotFoundException {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            return pm.getApplicationInfo(packageName, PackageManager.ApplicationInfoFlags.of(0));
+        } else {
+            return pm.getApplicationInfo(packageName, 0);
+        }
+    }
+
     static AttestationResult generateSerialized(final Context context, final byte[] challengeMessage,
             String index, final String statePrefix) throws GeneralSecurityException, IOException {
         if (challengeMessage.length < CHALLENGE_MESSAGE_LENGTH) {
@@ -1485,7 +1496,7 @@ class AttestationProtocol {
             if (activeAdmins != null) {
                 for (final ComponentName name : activeAdmins) {
                     try {
-                        final ApplicationInfo info = pm.getApplicationInfo(name.getPackageName(), 0);
+                        final ApplicationInfo info = getApplicationInfo(pm, name.getPackageName(), 0);
                         if ((info.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
                             deviceAdminNonSystem = true;
                         }
