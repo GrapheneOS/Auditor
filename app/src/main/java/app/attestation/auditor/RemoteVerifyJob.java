@@ -54,7 +54,7 @@ public class RemoteVerifyJob extends JobService {
     private static final String NOTIFICATION_CHANNEL_SUCCESS_ID = "remote_verification";
     private static final String NOTIFICATION_CHANNEL_FAILURE_ID = "remote_verification_failure";
 
-    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
+    static final ExecutorService executor = Executors.newSingleThreadExecutor();
     private Future<?> task;
 
     static boolean isEnabled(final Context context) {
