@@ -565,25 +565,26 @@ public class AttestationActivity extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setMessage(getString(R.string.action_disable_remote_verify) + "?")
                     .setPositiveButton(R.string.disable, (dialogInterface, i) -> {
-                        RemoteVerifyJob.cancel(this);
+                        RemoteVerifyJob.executor.submit(() -> {
+                            final SharedPreferences preferences =
+                                    PreferenceManager.getDefaultSharedPreferences(this);
+                            RemoteVerifyJob.cancel(this);
 
-                        final SharedPreferences preferences =
-                                PreferenceManager.getDefaultSharedPreferences(this);
+                            final long userId = preferences.getLong(RemoteVerifyJob.KEY_USER_ID, -1);
 
-                        final long userId = preferences.getLong(RemoteVerifyJob.KEY_USER_ID, -1);
-                        if (userId != -1) {
-                            RemoteVerifyJob.executor.submit(() -> {
+                            if (userId != -1) {
                                 try {
                                     AttestationProtocol.clearAuditee(RemoteVerifyJob.STATE_PREFIX, Long.toString(userId));
                                 } catch (final GeneralSecurityException | IOException e) {
                                     Log.e(TAG, "clearAuditee", e);
                                 }
-                            });
-                        }
-                        preferences.edit()
-                                .remove(RemoteVerifyJob.KEY_USER_ID)
-                                .remove(RemoteVerifyJob.KEY_SUBSCRIBE_KEY)
-                                .apply();
+                            }
+
+                            preferences.edit()
+                                    .remove(RemoteVerifyJob.KEY_USER_ID)
+                                    .remove(RemoteVerifyJob.KEY_SUBSCRIBE_KEY)
+                                    .apply();
+                        });
 
                         snackbar.setText(R.string.disable_remote_verify).show();
                     })
