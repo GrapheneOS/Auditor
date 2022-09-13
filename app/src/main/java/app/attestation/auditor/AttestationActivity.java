@@ -2,7 +2,6 @@ package app.attestation.auditor;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
