@@ -23,11 +23,12 @@
     <string name="action_submit_sample">Submit sample data</string>
     <string name="action_help">Help</string>
 
-    <string name="enable_remote_verify">Scheduling regular remote verification</string>
-    <string name="disable_remote_verify">Disabling regular remote verification</string>
-    <string name="schedule_submit_sample">Submitting sample data</string>
-    <string name="clear_auditee_pairings">Clearing Auditee pairings</string>
-    <string name="clear_auditor_pairings">Clearing Auditor pairings</string>
+    <string name="enable_remote_verify_success">Scheduled regular remote verification</string>
+    <string name="disable_remote_verify_success">Disabled remote verification</string>
+    <string name="schedule_submit_sample_success">Scheduled submitting sample data</string>
+    <string name="clear_auditee_pairings_success">Cleared Auditee pairings</string>
+    <string name="clear_auditee_pairings_failure">Failed to fully clear Auditee pairings</string>
+    <string name="clear_auditor_pairings_success">Cleared Auditor pairings</string>
 
     <string name="cancel">Cancel</string>
     <string name="clear">Clear</string>

@@ -126,7 +126,7 @@ public class AttestationActivity extends AppCompatActivity {
                                     .apply();
                             try {
                                 RemoteVerifyJob.schedule(this, Integer.parseInt(values[3]));
-                                snackbar.setText(R.string.enable_remote_verify).show();
+                                snackbar.setText(R.string.enable_remote_verify_success).show();
                             } catch (final NumberFormatException e) {
                                 snackbar.setText(R.string.scanned_invalid_account_qr_code).show();
                             }
@@ -486,7 +486,7 @@ public class AttestationActivity extends AppCompatActivity {
             QRScannerActivityLauncher.launch(new Intent(this, QRScannerActivity.class));
         } else if (requestCode == PERMISSIONS_REQUEST_POST_NOTIFICATIONS_SUBMIT_SAMPLE) {
             SubmitSampleJob.schedule(this);
-            snackbar.setText(R.string.schedule_submit_sample).show();
+            snackbar.setText(R.string.schedule_submit_sample_success).show();
         }
     }
 
@@ -534,12 +534,12 @@ public class AttestationActivity extends AppCompatActivity {
                         executor.submit(() -> {
                             try {
                                 AttestationProtocol.clearAuditee();
+                                runOnUiThread(() -> snackbar.setText(R.string.clear_auditee_pairings_success).show());
                             } catch (final GeneralSecurityException | IOException e) {
                                 Log.e(TAG, "clearAuditee", e);
+                                runOnUiThread(() -> snackbar.setText(R.string.clear_auditee_pairings_failure).show());
                             }
                         });
-
-                        snackbar.setText(R.string.clear_auditee_pairings).show();
                     })
                     .setNegativeButton(R.string.cancel, null)
                     .show();
@@ -550,9 +550,8 @@ public class AttestationActivity extends AppCompatActivity {
                     .setPositiveButton(R.string.clear, (dialogInterface, i) -> {
                         executor.submit(() -> {
                             AttestationProtocol.clearAuditor(this);
+                            runOnUiThread(() -> snackbar.setText(R.string.clear_auditor_pairings_success).show());
                         });
-
-                        snackbar.setText(R.string.clear_auditor_pairings).show();
                     })
                     .setNegativeButton(R.string.cancel, null)
                     .show();
@@ -584,9 +583,9 @@ public class AttestationActivity extends AppCompatActivity {
                                     .remove(RemoteVerifyJob.KEY_USER_ID)
                                     .remove(RemoteVerifyJob.KEY_SUBSCRIBE_KEY)
                                     .apply();
-                        });
 
-                        snackbar.setText(R.string.disable_remote_verify).show();
+                            snackbar.setText(R.string.disable_remote_verify_success).show();
+                        });
                     })
                     .setNegativeButton(R.string.cancel, null)
                     .show();
@@ -597,7 +596,7 @@ public class AttestationActivity extends AppCompatActivity {
                         PERMISSIONS_REQUEST_POST_NOTIFICATIONS_SUBMIT_SAMPLE);
             } else {
                 SubmitSampleJob.schedule(this);
-                snackbar.setText(R.string.schedule_submit_sample).show();
+                snackbar.setText(R.string.schedule_submit_sample_success).show();
             }
             return true;
         } else if (itemId == R.id.action_help) {
