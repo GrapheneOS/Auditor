@@ -1361,10 +1361,9 @@ class AttestationProtocol {
     static ApplicationInfo getApplicationInfo(final PackageManager pm, final String packageName,
             final long flags) throws PackageManager.NameNotFoundException {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            return pm.getApplicationInfo(packageName, PackageManager.ApplicationInfoFlags.of(0));
-        } else {
             return pm.getApplicationInfo(packageName, 0);
         }
+        return pm.getApplicationInfo(packageName, PackageManager.ApplicationInfoFlags.of(0));
     }
 
     static AttestationResult generateSerialized(final Context context, final byte[] challengeMessage,
