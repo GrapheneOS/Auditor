@@ -3,6 +3,7 @@ package app.attestation.auditor;
 import android.Manifest;
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -455,6 +456,7 @@ public class AttestationActivity extends AppCompatActivity {
         return Bitmap.createBitmap(pixels, width, height, Bitmap.Config.RGB_565);
     }
 
+    @SuppressLint("InlinedApi")
     private void startQrScanner() {
         if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.CAMERA},
