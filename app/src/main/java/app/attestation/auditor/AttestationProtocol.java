@@ -1359,11 +1359,11 @@ class AttestationProtocol {
     @SuppressWarnings("deprecation")
     @TargetApi(33)
     static ApplicationInfo getApplicationInfo(final PackageManager pm, final String packageName,
-            final long flags) throws PackageManager.NameNotFoundException {
+            final int flags) throws PackageManager.NameNotFoundException {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            return pm.getApplicationInfo(packageName, 0);
+            return pm.getApplicationInfo(packageName, flags);
         }
-        return pm.getApplicationInfo(packageName, PackageManager.ApplicationInfoFlags.of(0));
+        return pm.getApplicationInfo(packageName, PackageManager.ApplicationInfoFlags.of(flags));
     }
 
     static AttestationResult generateSerialized(final Context context, final byte[] challengeMessage,
