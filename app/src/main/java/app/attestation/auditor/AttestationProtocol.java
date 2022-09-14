@@ -1357,7 +1357,6 @@ class AttestationProtocol {
     }
 
     @SuppressWarnings("deprecation")
-    @TargetApi(33)
     static ApplicationInfo getApplicationInfo(final PackageManager pm, final String packageName,
             final int flags) throws PackageManager.NameNotFoundException {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
