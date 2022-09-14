@@ -50,6 +50,7 @@ public class RemoteVerifyJob extends JobService {
     static final String STATE_PREFIX = "remote_";
     static final String KEY_USER_ID = "remote_user_id";
     static final String KEY_SUBSCRIBE_KEY = "remote_subscribe_key";
+    static final String KEY_INTERVAL = "remote_interval";
     private static final int NOTIFICATION_ID = 1;
     private static final String NOTIFICATION_CHANNEL_SUCCESS_ID = "remote_verification";
     private static final String NOTIFICATION_CHANNEL_FAILURE_ID = "remote_verification_failure";
@@ -68,7 +69,7 @@ public class RemoteVerifyJob extends JobService {
     static void restore(final Context context) {
         if (isEnabled(context) && !isScheduled(context)) {
             Log.d(TAG, "remote attestation is enabled but job was not scheduled, rescheduling it");
-            schedule(context, DEFAULT_INTERVAL);
+            schedule(context, PreferenceManager.getDefaultSharedPreferences(context).getInt(KEY_INTERVAL, DEFAULT_INTERVAL));
         }
     }
 
@@ -172,8 +173,9 @@ public class RemoteVerifyJob extends JobService {
                         if (tokens.length < 2) {
                             throw new GeneralSecurityException("missing fields");
                         }
-                        preferences.edit().putString(KEY_SUBSCRIBE_KEY, tokens[0]).apply();
-                        schedule(context, Integer.parseInt(tokens[1]));
+                        final int interval = Integer.parseInt(tokens[1]);
+                        preferences.edit().putString(KEY_SUBSCRIBE_KEY, tokens[0]).putInt(KEY_INTERVAL, interval).apply();
+                        schedule(context, interval);
                     }
                 } else {
                     if (result.pairing) {
