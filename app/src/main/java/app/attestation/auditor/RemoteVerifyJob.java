@@ -67,8 +67,7 @@ public class RemoteVerifyJob extends JobService {
     }
 
     static void restore(final Context context) {
-        if (isEnabled(context) && !isScheduled(context)) {
-            Log.d(TAG, "remote attestation is enabled but job was not scheduled, rescheduling it");
+        if (isEnabled(context)) {
             schedule(context, PreferenceManager.getDefaultSharedPreferences(context).getInt(KEY_INTERVAL, DEFAULT_INTERVAL));
         }
     }
