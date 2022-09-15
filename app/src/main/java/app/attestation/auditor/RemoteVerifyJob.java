@@ -11,6 +11,7 @@ import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
@@ -46,7 +47,6 @@ public class RemoteVerifyJob extends JobService {
     private static final int DEFAULT_INTERVAL = 4 * 60 * 60;
     private static final int MIN_INTERVAL = 60 * 60;
     private static final int MAX_INTERVAL = 7 * 24 * 60 * 60;
-    private static final int OVERRIDE_OFFSET_MS = 10 * 60 * 1000;
     static final String STATE_PREFIX = "remote_";
     static final String KEY_USER_ID = "remote_user_id";
     static final String KEY_SUBSCRIBE_KEY = "remote_subscribe_key";
@@ -92,11 +92,16 @@ public class RemoteVerifyJob extends JobService {
         }
         final ComponentName serviceName = new ComponentName(context, RemoteVerifyJob.class);
         if (jobInfo == null) {
-            if (scheduler.schedule(new JobInfo.Builder(FIRST_RUN_JOB_ID, serviceName)
-                        .setOverrideDeadline(intervalMillis - OVERRIDE_OFFSET_MS)
-                        .setPersisted(true)
-                        .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                        .build()) == JobScheduler.RESULT_FAILURE) {
+            final JobInfo.Builder builder = new JobInfo.Builder(FIRST_RUN_JOB_ID, serviceName)
+                    .setPersisted(true)
+                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                builder.setExpedited(true);
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                builder.setPriority(JobInfo.PRIORITY_MAX);
+            }
+            if (scheduler.schedule(builder.build()) == JobScheduler.RESULT_FAILURE) {
                 throw new RuntimeException("job schedule failed");
             }
         }
@@ -117,11 +122,6 @@ public class RemoteVerifyJob extends JobService {
 
     @Override
     public boolean onStartJob(final JobParameters params) {
-        if (params.getJobId() == FIRST_RUN_JOB_ID && params.isOverrideDeadlineExpired()) {
-            Log.d(TAG, "override deadline expired");
-            return false;
-        }
-
         task = executor.submit(() -> {
             final Context context = RemoteVerifyJob.this;
             boolean failure = false;
