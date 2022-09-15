@@ -28,6 +28,8 @@ android {
     compileSdk = 33
     buildToolsVersion = "33.0.0"
 
+    namespace = "app.attestation.auditor"
+
     defaultConfig {
         applicationId = "app.attestation.auditor"
         minSdk = 26
