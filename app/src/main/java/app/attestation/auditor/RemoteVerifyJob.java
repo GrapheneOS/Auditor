@@ -47,6 +47,8 @@ public class RemoteVerifyJob extends JobService {
     private static final int DEFAULT_INTERVAL = 4 * 60 * 60;
     private static final int MIN_INTERVAL = 60 * 60;
     private static final int MAX_INTERVAL = 7 * 24 * 60 * 60;
+    private static final int ESTIMATED_DOWNLOAD_BYTES = 4 * 1024;
+    private static final int ESTIMATED_UPLOAD_BYTES = 8 * 1024;
     static final String STATE_PREFIX = "remote_";
     static final String KEY_USER_ID = "remote_user_id";
     static final String KEY_SUBSCRIBE_KEY = "remote_subscribe_key";
@@ -85,6 +87,9 @@ public class RemoteVerifyJob extends JobService {
         final long intervalMillis = interval * 1000;
         final long flexMillis = intervalMillis / 10;
         if (jobInfo != null &&
+                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
+                        jobInfo.getEstimatedNetworkDownloadBytes() == ESTIMATED_DOWNLOAD_BYTES &&
+                        jobInfo.getEstimatedNetworkUploadBytes() == ESTIMATED_UPLOAD_BYTES) &&
                 jobInfo.getIntervalMillis() == intervalMillis &&
                 jobInfo.getFlexMillis() == flexMillis) {
             Log.d(TAG, "job already registered");
@@ -95,6 +100,9 @@ public class RemoteVerifyJob extends JobService {
             final JobInfo.Builder builder = new JobInfo.Builder(FIRST_RUN_JOB_ID, serviceName)
                     .setPersisted(true)
                     .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                builder.setEstimatedNetworkBytes(ESTIMATED_DOWNLOAD_BYTES, ESTIMATED_UPLOAD_BYTES);
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 builder.setExpedited(true);
             }
@@ -105,11 +113,14 @@ public class RemoteVerifyJob extends JobService {
                 throw new RuntimeException("job schedule failed");
             }
         }
-        if (scheduler.schedule(new JobInfo.Builder(PERIODIC_JOB_ID, serviceName)
+        final JobInfo.Builder builder = new JobInfo.Builder(PERIODIC_JOB_ID, serviceName)
                 .setPeriodic(intervalMillis, flexMillis)
                 .setPersisted(true)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .build()) == JobScheduler.RESULT_FAILURE) {
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            builder.setEstimatedNetworkBytes(ESTIMATED_DOWNLOAD_BYTES, ESTIMATED_UPLOAD_BYTES);
+        }
+        if (scheduler.schedule(builder.build()) == JobScheduler.RESULT_FAILURE) {
             throw new RuntimeException("job schedule failed");
         }
     }

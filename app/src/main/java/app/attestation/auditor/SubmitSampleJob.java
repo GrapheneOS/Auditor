@@ -44,6 +44,8 @@ public class SubmitSampleJob extends JobService {
     private static final String SUBMIT_URL = "https://" + RemoteVerifyJob.DOMAIN + "/submit";
     private static final int CONNECT_TIMEOUT = 60000;
     private static final int READ_TIMEOUT = 60000;
+    private static final int ESTIMATED_DOWNLOAD_BYTES = 4 * 1024;
+    private static final int ESTIMATED_UPLOAD_BYTES = 16 * 1024;
     private static final int NOTIFICATION_ID = 2;
     private static final String NOTIFICATION_CHANNEL_ID = "sample_submission";
 
@@ -59,10 +61,13 @@ public class SubmitSampleJob extends JobService {
     static void schedule(final Context context) {
         final ComponentName serviceName = new ComponentName(context, SubmitSampleJob.class);
         final JobScheduler scheduler = context.getSystemService(JobScheduler.class);
-        if (scheduler.schedule(new JobInfo.Builder(JOB_ID, serviceName)
+        final JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, serviceName)
                 .setPersisted(true)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .build()) == JobScheduler.RESULT_FAILURE) {
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            builder.setEstimatedNetworkBytes(ESTIMATED_DOWNLOAD_BYTES, ESTIMATED_UPLOAD_BYTES);
+        }
+        if (scheduler.schedule(builder.build()) == JobScheduler.RESULT_FAILURE) {
             throw new RuntimeException("job schedule failed");
         }
     }
