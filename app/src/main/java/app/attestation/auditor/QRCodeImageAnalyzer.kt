@@ -43,7 +43,7 @@ class QRCodeImageAnalyzer(
         if (imageData.size != byteBuffer.capacity()) {
             imageData = ByteArray(byteBuffer.capacity())
         }
-        byteBuffer[imageData]
+        byteBuffer.get(imageData)
 
         val previewWidth: Int
         val previewHeight: Int
@@ -56,13 +56,13 @@ class QRCodeImageAnalyzer(
             previewHeight = mActivity.contentFrame.width
         }
 
-        val iFact = if (previewWidth < previewHeight) {
+        val scaleFactor = if (previewWidth < previewHeight) {
             image.width / previewWidth.toFloat()
         } else {
             image.height / previewHeight.toFloat()
         }
 
-        val size = mActivity.getOverlayView().size * iFact
+        val size = mActivity.getOverlayView().size * scaleFactor
 
         val left = (image.width - size) / 2
         val top = (image.height - size) / 2

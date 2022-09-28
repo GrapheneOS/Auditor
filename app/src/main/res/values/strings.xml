@@ -13,6 +13,9 @@
     <string name="qr_code_scan_hint_auditor">Now scan this QR Code from the other device.\n\nTap this QR code after scanning to proceed.</string>
     <string name="scanned_invalid_account_qr_code">Scanned invalid account QR code</string>
 
+    <string name="bind_failure">Failed to open camera due to an OS or hardware issue. Try rebooting.</string>
+    <string name="camera_provider_init_failure">Failed to load camera provider due to OS or hardware issue. Try rebooting.</string>
+
     <string name="action_clear_auditee">Clear Auditee pairings</string>
     <string name="action_clear_auditor">Clear Auditor pairings</string>
     <string name="action_enable_remote_verify">Enable remote verification</string>
@@ -20,11 +23,12 @@
     <string name="action_submit_sample">Submit sample data</string>
     <string name="action_help">Help</string>
 
-    <string name="enable_remote_verify">Scheduling regular remote verification</string>
-    <string name="disable_remote_verify">Disabling regular remote verification</string>
-    <string name="schedule_submit_sample">Submitting sample data</string>
-    <string name="clear_auditee_pairings">Clearing Auditee pairings</string>
-    <string name="clear_auditor_pairings">Clearing Auditor pairings</string>
+    <string name="enable_remote_verify_success">Scheduled regular remote verification</string>
+    <string name="disable_remote_verify_success">Disabled remote verification</string>
+    <string name="schedule_submit_sample_success">Scheduled submitting sample data</string>
+    <string name="clear_auditee_pairings_success">Cleared Auditee pairings</string>
+    <string name="clear_auditee_pairings_failure">Failed to fully clear Auditee pairings</string>
+    <string name="clear_auditor_pairings_success">Cleared Auditor pairings</string>
 
     <string name="cancel">Cancel</string>
     <string name="clear">Clear</string>
@@ -54,7 +58,9 @@
     <string name="identity">Pairing identity (hash of pinned hardware-backed key): %s\n</string>
     <string name="security_level">Pinned security level: %s\n</string>
     <string name="security_level_tee">Standard — Trusted Execution Environment (TEE)</string>
-    <string name="security_level_strongbox">High (StrongBox) — Hardware Security Module (HSM)</string>
+    <string name="security_level_tee_attest_key">Standard — Trusted Execution Environment (TEE) with pairing specific attest key</string>
+    <string name="security_level_strongbox">High — StrongBox Hardware Security Module (HSM)</string>
+    <string name="security_level_strongbox_attest_key">Very High — StrongBox Hardware Security Module (HSM) with pairing specific attest key</string>
     <string name="device">Pinned device: %s\n</string>
     <string name="os">Pinned OS: %s (unmodified official release)\n</string>
     <string name="os_version">Pinned OS version: %s\n</string>
@@ -110,6 +116,7 @@
     <string name="device_pixel_5a">Google Pixel 5a</string>
     <string name="device_pixel_6">Google Pixel 6</string>
     <string name="device_pixel_6_pro">Google Pixel 6 Pro</string>
+    <string name="device_pixel_6a">Google Pixel 6a</string>
     <string name="device_sm_a705fn">Samsung Galaxy A70 (SM-A705FN)</string>
     <string name="device_sm_g960f">Samsung Galaxy S9 (SM-G960F)</string>
     <string name="device_sm_g960_na">Samsung Galaxy S9 USA/Canada (SM-G960U/SM-G960U1/SM-G960W)</string>

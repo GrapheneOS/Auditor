@@ -25,14 +25,16 @@ android {
         }
     }
 
-    compileSdk = 32
-    buildToolsVersion = "32.0.0"
+    compileSdk = 33
+    buildToolsVersion = "33.0.0"
+
+    namespace = "app.attestation.auditor"
 
     defaultConfig {
         applicationId = "app.attestation.auditor"
         minSdk = 26
-        targetSdk = 32
-        versionCode = 45
+        targetSdk = 33
+        versionCode = 58
         versionName = versionCode.toString()
         resourceConfigurations.add("en")
     }
@@ -65,16 +67,20 @@ android {
 }
 
 dependencies {
-    implementation("androidx.appcompat:appcompat:1.4.1")
+    implementation("androidx.appcompat:appcompat:1.5.1")
     implementation("androidx.biometric:biometric:1.1.0")
     implementation("androidx.preference:preference:1.2.0")
-    implementation("com.google.android.material:material:1.5.0")
+    implementation("com.google.android.material:material:1.6.1")
     implementation("com.google.guava:guava:31.1-android")
-    implementation("com.google.zxing:core:3.4.1")
-    implementation("org.bouncycastle:bcpkix-jdk15to18:1.70")
+    implementation("com.google.zxing:core:3.5.0")
+    implementation("org.bouncycastle:bcpkix-jdk18on:1.71.1")
 
-    implementation("androidx.camera:camera-core:1.1.0-beta03")
-    implementation("androidx.camera:camera-camera2:1.1.0-beta03")
-    implementation("androidx.camera:camera-lifecycle:1.1.0-beta03")
-    implementation("androidx.camera:camera-view:1.1.0-beta03")
+    // work around conflict
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+
+    val cameraVersion = "1.2.0-beta01"
+    implementation("androidx.camera:camera-core:$cameraVersion")
+    implementation("androidx.camera:camera-camera2:$cameraVersion")
+    implementation("androidx.camera:camera-lifecycle:$cameraVersion")
+    implementation("androidx.camera:camera-view:$cameraVersion")
 }

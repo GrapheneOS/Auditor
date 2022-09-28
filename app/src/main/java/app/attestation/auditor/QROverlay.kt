@@ -15,7 +15,7 @@ class QROverlay(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     companion object {
         private const val TAG = "QROverlay"
         private const val T_SIZE = 24f
-        private const val SIZE_FACTOR = 0.6f
+        const val SIZE_FACTOR = 0.6f
     }
 
     private var bPaint: Paint

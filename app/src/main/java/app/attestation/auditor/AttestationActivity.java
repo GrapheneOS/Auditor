@@ -2,7 +2,7 @@ package app.attestation.auditor;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.PendingIntent;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -36,9 +36,15 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
+import java.io.IOException;
+import java.nio.BufferUnderflowException;
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.zip.DataFormatException;
 
 import static android.graphics.Color.BLACK;
 import static android.graphics.Color.WHITE;
@@ -55,10 +61,11 @@ public class AttestationActivity extends AppCompatActivity {
     private static final String STATE_OUTPUT = "output";
     private static final String STATE_BACKGROUND_RESOURCE = "background_resource";
 
-    private static final int GENERATE_REQUEST_CODE = 0;
-    private static final int VERIFY_REQUEST_CODE = 1;
-
     private static final int PERMISSIONS_REQUEST_CAMERA = 0;
+    private static final int PERMISSIONS_REQUEST_POST_NOTIFICATIONS_REMOTE_VERIFY = 1;
+    private static final int PERMISSIONS_REQUEST_POST_NOTIFICATIONS_SUBMIT_SAMPLE = 2;
+
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private TextView textView;
     private ImageView imageView;
@@ -71,7 +78,7 @@ public class AttestationActivity extends AppCompatActivity {
         AuditeeGenerate,
         AuditeeResults,
         Auditor,
-        AuditorResults,
+        Result, // Auditor success/failure and Auditee failure
         EnableRemoteVerify
     }
 
@@ -102,7 +109,7 @@ public class AttestationActivity extends AppCompatActivity {
                             buttons.setVisibility(View.GONE);
                             generateAttestation(contentsBytes);
                         } else if (stage == Stage.Auditor) {
-                            stage = Stage.AuditorResults;
+                            stage = Stage.Result;
                             imageView.setVisibility(View.GONE);
                             handleAttestation(contentsBytes);
                         } else if (stage == Stage.EnableRemoteVerify) {
@@ -119,7 +126,7 @@ public class AttestationActivity extends AppCompatActivity {
                                     .apply();
                             try {
                                 RemoteVerifyJob.schedule(this, Integer.parseInt(values[3]));
-                                snackbar.setText(R.string.enable_remote_verify).show();
+                                snackbar.setText(R.string.enable_remote_verify_success).show();
                             } catch (final NumberFormatException e) {
                                 snackbar.setText(R.string.scanned_invalid_account_qr_code).show();
                             }
@@ -192,6 +199,7 @@ public class AttestationActivity extends AppCompatActivity {
             "Pixel 5a",
             "Pixel 6",
             "Pixel 6 Pro",
+            "Pixel 6a",
             "POCOPHONE F1",
             "POT-LX3",
             "REVVL 2",
@@ -354,22 +362,60 @@ public class AttestationActivity extends AppCompatActivity {
     private void handleAttestation(final byte[] serialized) {
         Log.d(TAG, "received attestation: " + Utils.logFormatBytes(serialized));
         textView.setText(R.string.verifying_attestation);
-        final PendingIntent pending = createPendingResult(VERIFY_REQUEST_CODE, new Intent(), 0);
-        final Intent intent = new Intent(this, VerifyAttestationService.class);
-        intent.putExtra(VerifyAttestationService.EXTRA_CHALLENGE_MESSAGE, auditorChallenge);
-        intent.putExtra(VerifyAttestationService.EXTRA_SERIALIZED, serialized);
-        intent.putExtra(VerifyAttestationService.EXTRA_PENDING_RESULT, pending);
-        startService(intent);
+        executor.submit(() -> {
+            try {
+                final AttestationProtocol.VerificationResult result = AttestationProtocol.verifySerialized(this, serialized, auditorChallenge);
+                runOnUiThread(() -> {
+                    setBackgroundResource(result.strong ? R.color.green : R.color.orange);
+                    textView.setText(result.strong ? R.string.verify_strong : R.string.verify_basic);
+                    textView.append(getText(R.string.hardware_enforced));
+                    textView.append(result.teeEnforced);
+                    textView.append(getText(R.string.os_enforced));
+                    textView.append(result.osEnforced);
+                    if (!result.history.isEmpty()) {
+                        textView.append(getText(R.string.history));
+                        textView.append(result.history);
+                    }
+                });
+            } catch (final DataFormatException | GeneralSecurityException | IOException e) {
+                Log.e(TAG, "attestation verification error", e);
+                runOnUiThread(() -> {
+                    setBackgroundResource(R.color.red);
+                    textView.setText(R.string.verify_error);
+                    textView.append(e.getMessage());
+                });
+            } catch (final BufferUnderflowException | NegativeArraySizeException e) {
+                Log.e(TAG, "attestation verification error", e);
+                runOnUiThread(() -> {
+                    setBackgroundResource(R.color.red);
+                    textView.setText(R.string.verify_error);
+                    textView.append(e.getMessage());
+                });
+            }
+        });
     }
 
     private void generateAttestation(final byte[] challenge) {
         Log.d(TAG, "received random challenge: " + Utils.logFormatBytes(challenge));
         textView.setText(R.string.generating_attestation);
-        final PendingIntent pending = createPendingResult(GENERATE_REQUEST_CODE, new Intent(), 0);
-        final Intent intent = new Intent(this, GenerateAttestationService.class);
-        intent.putExtra(GenerateAttestationService.EXTRA_CHALLENGE_MESSAGE, challenge);
-        intent.putExtra(GenerateAttestationService.EXTRA_PENDING_RESULT, pending);
-        startService(intent);
+        executor.submit(() -> {
+            try {
+                final AttestationProtocol.AttestationResult result =
+                        AttestationProtocol.generateSerialized(this, challenge, null, "");
+                runOnUiThread(() -> {
+                    auditeePairing = result.pairing;
+                    auditeeShowAttestation(result.serialized);
+                });
+            } catch (final GeneralSecurityException | IOException e) {
+                Log.e(TAG, "attestation generation error", e);
+                runOnUiThread(() -> {
+                    stage = Stage.Result;
+                    setBackgroundResource(R.color.red);
+                    textView.setText(R.string.generate_error);
+                    textView.append(e.getMessage());
+                });
+            }
+        });
     }
 
     private void auditeeShowAttestation(final byte[] serialized) {
@@ -410,12 +456,19 @@ public class AttestationActivity extends AppCompatActivity {
         return Bitmap.createBitmap(pixels, width, height, Bitmap.Config.RGB_565);
     }
 
+    @SuppressLint("InlinedApi")
     private void startQrScanner() {
         if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.CAMERA},
                     PERMISSIONS_REQUEST_CAMERA);
         } else {
-            QRScannerActivityLauncher.launch(new Intent(this, QRScannerActivity.class));
+            if (stage == Stage.EnableRemoteVerify &&
+                    checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        PERMISSIONS_REQUEST_POST_NOTIFICATIONS_REMOTE_VERIFY);
+            } else {
+                QRScannerActivityLauncher.launch(new Intent(this, QRScannerActivity.class));
+            }
         }
     }
 
@@ -426,11 +479,15 @@ public class AttestationActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERMISSIONS_REQUEST_CAMERA) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                snackbar.dismiss();
-                QRScannerActivityLauncher.launch(new Intent(this, QRScannerActivity.class));
+                startQrScanner();
             } else {
                 snackbar.setText(R.string.camera_permission_denied).show();
             }
+        } else if (requestCode == PERMISSIONS_REQUEST_POST_NOTIFICATIONS_REMOTE_VERIFY) {
+            QRScannerActivityLauncher.launch(new Intent(this, QRScannerActivity.class));
+        } else if (requestCode == PERMISSIONS_REQUEST_POST_NOTIFICATIONS_SUBMIT_SAMPLE) {
+            SubmitSampleJob.schedule(this);
+            snackbar.setText(R.string.schedule_submit_sample_success).show();
         }
     }
 
@@ -446,41 +503,6 @@ public class AttestationActivity extends AppCompatActivity {
 
         Log.d(TAG, "onActivityResult " + requestCode + " " + resultCode);
 
-        if (requestCode == GENERATE_REQUEST_CODE) {
-            if (resultCode != GenerateAttestationService.RESULT_CODE) {
-                throw new RuntimeException("unexpected result code");
-            }
-            if (intent.hasExtra(GenerateAttestationService.EXTRA_ATTESTATION_ERROR)) {
-                setBackgroundResource(R.color.red);
-                textView.setText(R.string.generate_error);
-                textView.append(intent.getStringExtra(GenerateAttestationService.EXTRA_ATTESTATION_ERROR));
-                return;
-            }
-            auditeePairing = intent.getBooleanExtra(GenerateAttestationService.EXTRA_PAIRING, false);
-            auditeeShowAttestation(intent.getByteArrayExtra(GenerateAttestationService.EXTRA_ATTESTATION));
-        } else if (requestCode == VERIFY_REQUEST_CODE) {
-            if (resultCode != VerifyAttestationService.RESULT_CODE) {
-                throw new RuntimeException("unexpected result code");
-            }
-            if (intent.hasExtra(VerifyAttestationService.EXTRA_ERROR)) {
-                setBackgroundResource(R.color.red);
-                textView.setText(R.string.verify_error);
-                textView.append(intent.getStringExtra(VerifyAttestationService.EXTRA_ERROR));
-                return;
-            }
-            final boolean strong = intent.getBooleanExtra(VerifyAttestationService.EXTRA_STRONG, false);
-            setBackgroundResource(strong ? R.color.green : R.color.orange);
-            textView.setText(strong ? R.string.verify_strong : R.string.verify_basic);
-            textView.append(getText(R.string.hardware_enforced));
-            textView.append(intent.getStringExtra(VerifyAttestationService.EXTRA_TEE_ENFORCED));
-            textView.append(getText(R.string.os_enforced));
-            textView.append(intent.getStringExtra(VerifyAttestationService.EXTRA_OS_ENFORCED));
-            final String history = intent.getStringExtra(VerifyAttestationService.EXTRA_HISTORY);
-            if (!history.isEmpty()) {
-                textView.append(getText(R.string.history));
-                textView.append(history);
-            }
-        }
     }
 
     @Override
@@ -510,11 +532,15 @@ public class AttestationActivity extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setMessage(getString(R.string.action_clear_auditee) + "?")
                     .setPositiveButton(R.string.clear, (dialogInterface, i) -> {
-                        final Intent intent = new Intent(this, GenerateAttestationService.class);
-                        intent.putExtra(GenerateAttestationService.EXTRA_CLEAR, true);
-                        startService(intent);
-
-                        snackbar.setText(R.string.clear_auditee_pairings).show();
+                        executor.submit(() -> {
+                            try {
+                                AttestationProtocol.clearAuditee();
+                                runOnUiThread(() -> snackbar.setText(R.string.clear_auditee_pairings_success).show());
+                            } catch (final GeneralSecurityException | IOException e) {
+                                Log.e(TAG, "clearAuditee", e);
+                                runOnUiThread(() -> snackbar.setText(R.string.clear_auditee_pairings_failure).show());
+                            }
+                        });
                     })
                     .setNegativeButton(R.string.cancel, null)
                     .show();
@@ -523,11 +549,10 @@ public class AttestationActivity extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setMessage(getString(R.string.action_clear_auditor) + "?")
                     .setPositiveButton(R.string.clear, (dialogInterface, i) -> {
-                        final Intent intent = new Intent(this, VerifyAttestationService.class);
-                        intent.putExtra(VerifyAttestationService.EXTRA_CLEAR, true);
-                        startService(intent);
-
-                        snackbar.setText(R.string.clear_auditor_pairings).show();
+                        executor.submit(() -> {
+                            AttestationProtocol.clearAuditor(this);
+                            runOnUiThread(() -> snackbar.setText(R.string.clear_auditor_pairings_success).show());
+                        });
                     })
                     .setNegativeButton(R.string.cancel, null)
                     .show();
@@ -540,34 +565,40 @@ public class AttestationActivity extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setMessage(getString(R.string.action_disable_remote_verify) + "?")
                     .setPositiveButton(R.string.disable, (dialogInterface, i) -> {
-                        RemoteVerifyJob.cancel(this);
+                        RemoteVerifyJob.executor.submit(() -> {
+                            final SharedPreferences preferences =
+                                    PreferenceManager.getDefaultSharedPreferences(this);
+                            RemoteVerifyJob.cancel(this);
 
-                        final SharedPreferences preferences =
-                                PreferenceManager.getDefaultSharedPreferences(this);
+                            final long userId = preferences.getLong(RemoteVerifyJob.KEY_USER_ID, -1);
 
-                        final long userId = preferences.getLong(RemoteVerifyJob.KEY_USER_ID, -1);
-                        if (userId != -1) {
-                            final Intent intent = new Intent(this, GenerateAttestationService.class);
-                            intent.putExtra(GenerateAttestationService.EXTRA_CLEAR, true);
-                            intent.putExtra(GenerateAttestationService.EXTRA_CLEAR_STATE_PREFIX,
-                                    RemoteVerifyJob.STATE_PREFIX);
-                            intent.putExtra(GenerateAttestationService.EXTRA_CLEAR_INDEX,
-                                    Long.toString(userId));
-                            startService(intent);
-                        }
-                        preferences.edit()
-                                .remove(RemoteVerifyJob.KEY_USER_ID)
-                                .remove(RemoteVerifyJob.KEY_SUBSCRIBE_KEY)
-                                .apply();
+                            if (userId != -1) {
+                                try {
+                                    AttestationProtocol.clearAuditee(RemoteVerifyJob.STATE_PREFIX, Long.toString(userId));
+                                } catch (final GeneralSecurityException | IOException e) {
+                                    Log.e(TAG, "clearAuditee", e);
+                                }
+                            }
 
-                        snackbar.setText(R.string.disable_remote_verify).show();
+                            preferences.edit()
+                                    .remove(RemoteVerifyJob.KEY_USER_ID)
+                                    .remove(RemoteVerifyJob.KEY_SUBSCRIBE_KEY)
+                                    .apply();
+
+                            snackbar.setText(R.string.disable_remote_verify_success).show();
+                        });
                     })
                     .setNegativeButton(R.string.cancel, null)
                     .show();
             return true;
         } else if (itemId == R.id.action_submit_sample) {
-            SubmitSampleJob.schedule(this);
-            snackbar.setText(R.string.schedule_submit_sample).show();
+            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        PERMISSIONS_REQUEST_POST_NOTIFICATIONS_SUBMIT_SAMPLE);
+            } else {
+                SubmitSampleJob.schedule(this);
+                snackbar.setText(R.string.schedule_submit_sample_success).show();
+            }
             return true;
         } else if (itemId == R.id.action_help) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(TUTORIAL_URL)));
@@ -579,7 +610,7 @@ public class AttestationActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (stage == Stage.AuditeeResults || stage == Stage.Auditor ||
-                stage == Stage.AuditorResults) {
+                stage == Stage.Result) {
             auditeeSerializedAttestation = null;
             auditorChallenge = null;
             stage = Stage.None;
