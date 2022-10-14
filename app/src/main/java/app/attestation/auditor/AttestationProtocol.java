@@ -280,6 +280,8 @@ class AttestationProtocol {
             "Pixel 6",
             "Pixel 6 Pro",
             "Pixel 6a",
+            "Pixel 7",
+            "Pixel 7 Pro",
             "SM-N970U",
             "SM-N975U").contains(Build.MODEL);
 
@@ -348,6 +350,10 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_6_pro, 100, 100, false /* uses new API */, true, true, R.string.os_graphene))
             .put("08C860350A9600692D10C8512F7B8E80707757468E8FBFEEA2A870C0A83D6031",
                     new DeviceInfo(R.string.device_pixel_6a, 100, 100, false /* uses new API */, true, true, R.string.os_graphene))
+            .put("13EFE5392BE3AC38AFB894D13DE639E521675E62571A8A9B3EF9FC8C44FD17FA1",
+                    new DeviceInfo(R.string.device_pixel_7, 200, 200, false /* uses new API */, true, false, R.string.os_graphene))
+            .put("BC1C0DD95664604382BB888412026422742EB333071EA0B2D19036217D49182F",
+                    new DeviceInfo(R.string.device_pixel_7_pro, 200, 200, false /* uses new API */, true, false, R.string.os_graphene))
             .build();
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStock = ImmutableMap
             .<String, DeviceInfo>builder()
@@ -391,6 +397,10 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_6_pro, 100, 100, false /* uses new API */, true, true, R.string.os_stock))
             .put("9AC4174153D45E4545B0F49E22FE63273999B6AC1CB6949C3A9F03EC8807EEE9",
                     new DeviceInfo(R.string.device_pixel_6a, 100, 100, false /* uses new API */, true, true, R.string.os_stock))
+            .put("8B2C4CD539F5075E8E7CF212ADB3DB0413FBD77D321199C73D5A473C51F2E10D",
+                    new DeviceInfo(R.string.device_pixel_7, 200, 200, false /* uses new API */, true, false, R.string.os_stock))
+            .put("26AC4C60BEB1E378357CAD0C3061347AF8DF6FBABBB0D8CEA2445855EE01E368",
+                    new DeviceInfo(R.string.device_pixel_7_pro, 200, 200, false /* uses new API */, true, false, R.string.os_stock))
             .put("72376CAACF11726D4922585732429FB97D0D1DD69F0D2E0770B9E61D14ADDE65",
                     new DeviceInfo(R.string.device_sm_a705fn, 3, 4, false /* uses new API */, true, false, R.string.os_stock))
             .put("33D9484FD512E610BCF00C502827F3D55A415088F276C6506657215E622FA770",
@@ -510,6 +520,10 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_6_pro, 100, 100, false /* uses new API */, true, true, R.string.os_graphene))
             .put("08C860350A9600692D10C8512F7B8E80707757468E8FBFEEA2A870C0A83D6031",
                     new DeviceInfo(R.string.device_pixel_6a, 100, 100, false /* uses new API */, true, true, R.string.os_graphene))
+            .put("3EFE5392BE3AC38AFB894D13DE639E521675E62571A8A9B3EF9FC8C44FD17FA1",
+                    new DeviceInfo(R.string.device_pixel_7, 100, 100, false /* uses new API */, true, false, R.string.os_graphene))
+            .put("BC1C0DD95664604382BB888412026422742EB333071EA0B2D19036217D49182F",
+                    new DeviceInfo(R.string.device_pixel_7_pro, 100, 100, false /* uses new API */, true, false, R.string.os_graphene))
             .build();
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxStock = ImmutableMap
             .<String, DeviceInfo>builder()
@@ -531,6 +545,10 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_6_pro, 100, 100, false /* uses new API */, true, true, R.string.os_stock))
             .put("9AC4174153D45E4545B0F49E22FE63273999B6AC1CB6949C3A9F03EC8807EEE9",
                     new DeviceInfo(R.string.device_pixel_6a, 100, 100, false /* uses new API */, true, true, R.string.os_stock))
+            .put("8B2C4CD539F5075E8E7CF212ADB3DB0413FBD77D321199C73D5A473C51F2E10D",
+                    new DeviceInfo(R.string.device_pixel_7, 100, 100, false /* uses new API */, true, false, R.string.os_stock))
+            .put("26AC4C60BEB1E378357CAD0C3061347AF8DF6FBABBB0D8CEA2445855EE01E368",
+                    new DeviceInfo(R.string.device_pixel_7_pro, 100, 100, false /* uses new API */, true, false, R.string.os_stock))
             .put("3D3DEB132A89551D0A700D230BABAE4E3E80E3C7926ACDD7BAEDF9B57AD316D0",
                     new DeviceInfo(R.string.device_sm_n970u, 3, 4, false /* uses new API */, true, true, R.string.os_stock))
             .put("9AC63842137D92C119A1B1BE2C9270B9EBB6083BBE6350B7823571942B5869F0",
