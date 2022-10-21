@@ -81,7 +81,7 @@ android {
         ))
     }
 
-    aaptOptions {
+    androidResources {
        noCompress("dex")
     }
 }
