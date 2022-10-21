@@ -75,13 +75,14 @@ android {
     }
 
     packagingOptions {
-        dex {
-            useLegacyPackaging = false
-        }
         resources.excludes.addAll(listOf(
             "org/bouncycastle/pqc/**.properties",
             "org/bouncycastle/x509/**.properties",
         ))
+    }
+
+    aaptOptions {
+       noCompress("dex")
     }
 }
 
