@@ -63,6 +63,10 @@ android {
                 signingConfig = signingConfigs.getByName("play")
             }
         }
+
+        getByName("debug") {
+            applicationIdSuffix = ".debug"
+        }
     }
 
     compileOptions {

@@ -229,7 +229,8 @@ class AttestationProtocol {
             OS_ENFORCED_FLAGS_OEM_UNLOCK_ALLOWED |
             OS_ENFORCED_FLAGS_SYSTEM_USER;
 
-    private static final String AUDITOR_APP_PACKAGE_NAME = "app.attestation.auditor";
+    private static final String AUDITOR_APP_PACKAGE_NAME_RELEASE = "app.attestation.auditor";
+    private static final String AUDITOR_APP_PACKAGE_NAME_DEBUG = "app.attestation.auditor.debug";
     private static final String AUDITOR_APP_SIGNATURE_DIGEST_RELEASE =
             "990E04F0864B19F14F84E0E432F7A393F297AB105A22C1E1B10B442A4A62C42C";
     private static final String AUDITOR_APP_SIGNATURE_DIGEST_DEBUG =
@@ -670,18 +671,24 @@ class AttestationProtocol {
             throw new GeneralSecurityException("invalid number of attestation packages");
         }
         final AttestationPackageInfo info = infos.get(0);
-        if (!AUDITOR_APP_PACKAGE_NAME.equals(info.getPackageName())) {
-            throw new GeneralSecurityException("invalid Auditor app package name: " + info.getPackageName());
-        }
         final List<byte[]> signatureDigests = attestationApplicationId.getSignatureDigests();
         if (signatureDigests.size() != 1) {
             throw new GeneralSecurityException("invalid number of Auditor app signatures");
         }
         final String signatureDigest = BaseEncoding.base16().encode(signatureDigests.get(0));
-        if (!AUDITOR_APP_SIGNATURE_DIGEST_RELEASE.equals(signatureDigest)) {
-            if (!BuildConfig.DEBUG || !AUDITOR_APP_SIGNATURE_DIGEST_DEBUG.equals(signatureDigest)) {
+        if (AUDITOR_APP_PACKAGE_NAME_RELEASE.equals(info.getPackageName())) {
+            if (!AUDITOR_APP_SIGNATURE_DIGEST_RELEASE.equals(signatureDigest)) {
                 throw new GeneralSecurityException("invalid Auditor app signing key");
             }
+        } else if (AUDITOR_APP_PACKAGE_NAME_DEBUG.equals(info.getPackageName())) {
+            if (!BuildConfig.DEBUG) {
+                throw new GeneralSecurityException("debug builds are only trusted by debug builds");
+            }
+            if (!AUDITOR_APP_SIGNATURE_DIGEST_DEBUG.equals(signatureDigest)) {
+                throw new GeneralSecurityException("invalid Auditor app signing key");
+            }
+        } else {
+            throw new GeneralSecurityException("invalid Auditor app package name: " + info.getPackageName());
         }
         final int appVersion = Math.toIntExact(info.getVersion()); // int for compatibility
         if (appVersion < AUDITOR_APP_MINIMUM_VERSION) {
