@@ -667,20 +667,20 @@ class AttestationProtocol {
         final AttestationApplicationId attestationApplicationId = softwareEnforced.getAttestationApplicationId();
         final List<AttestationPackageInfo> infos = attestationApplicationId.getAttestationPackageInfos();
         if (infos.size() != 1) {
-            throw new GeneralSecurityException("wrong number of attestation packages");
+            throw new GeneralSecurityException("invalid number of attestation packages");
         }
         final AttestationPackageInfo info = infos.get(0);
         if (!AUDITOR_APP_PACKAGE_NAME.equals(info.getPackageName())) {
-            throw new GeneralSecurityException("wrong Auditor app package name: " + info.getPackageName());
+            throw new GeneralSecurityException("invalid Auditor app package name: " + info.getPackageName());
         }
         final List<byte[]> signatureDigests = attestationApplicationId.getSignatureDigests();
         if (signatureDigests.size() != 1) {
-            throw new GeneralSecurityException("wrong number of Auditor app signature digests");
+            throw new GeneralSecurityException("invalid number of Auditor app signatures");
         }
         final String signatureDigest = BaseEncoding.base16().encode(signatureDigests.get(0));
         if (!AUDITOR_APP_SIGNATURE_DIGEST_RELEASE.equals(signatureDigest)) {
             if (!BuildConfig.DEBUG || !AUDITOR_APP_SIGNATURE_DIGEST_DEBUG.equals(signatureDigest)) {
-                throw new GeneralSecurityException("wrong Auditor app signature digest");
+                throw new GeneralSecurityException("invalid Auditor app signing key");
             }
         }
         final int appVersion = Math.toIntExact(info.getVersion()); // int for compatibility
