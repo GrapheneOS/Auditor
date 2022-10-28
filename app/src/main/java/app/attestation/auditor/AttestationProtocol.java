@@ -229,11 +229,11 @@ class AttestationProtocol {
             OS_ENFORCED_FLAGS_OEM_UNLOCK_ALLOWED |
             OS_ENFORCED_FLAGS_SYSTEM_USER;
 
-    private static final String ATTESTATION_APP_PACKAGE_NAME = "app.attestation.auditor";
-    private static final int ATTESTATION_APP_MINIMUM_VERSION = 47;
-    private static final String ATTESTATION_APP_SIGNATURE_DIGEST_DEBUG =
+    private static final String AUDITOR_APP_PACKAGE_NAME = "app.attestation.auditor";
+    private static final int AUDITOR_APP_MINIMUM_VERSION = 47;
+    private static final String AUDITOR_APP_SIGNATURE_DIGEST_DEBUG =
             "17727D8B61D55A864936B1A7B4A2554A15151F32EBCF44CDAA6E6C3258231890";
-    private static final String ATTESTATION_APP_SIGNATURE_DIGEST_RELEASE =
+    private static final String AUDITOR_APP_SIGNATURE_DIGEST_RELEASE =
             "990E04F0864B19F14F84E0E432F7A393F297AB105A22C1E1B10B442A4A62C42C";
     private static final int OS_VERSION_MINIMUM = 80000;
     private static final int OS_PATCH_LEVEL_MINIMUM = 201801;
@@ -662,7 +662,7 @@ class AttestationProtocol {
             throw new GeneralSecurityException("challenge mismatch");
         }
 
-        // enforce communicating with the attestation app via OS level security
+        // enforce communicating with the Auditor app via OS level security
         final AuthorizationList softwareEnforced = attestation.getSoftwareEnforced();
         final AttestationApplicationId attestationApplicationId = softwareEnforced.getAttestationApplicationId();
         final List<AttestationPackageInfo> infos = attestationApplicationId.getAttestationPackageInfos();
@@ -670,21 +670,21 @@ class AttestationProtocol {
             throw new GeneralSecurityException("wrong number of attestation packages");
         }
         final AttestationPackageInfo info = infos.get(0);
-        if (!ATTESTATION_APP_PACKAGE_NAME.equals(info.getPackageName())) {
-            throw new GeneralSecurityException("wrong attestation app package name: " + info.getPackageName());
+        if (!AUDITOR_APP_PACKAGE_NAME.equals(info.getPackageName())) {
+            throw new GeneralSecurityException("wrong Auditor app package name: " + info.getPackageName());
         }
         final int appVersion = Math.toIntExact(info.getVersion()); // int for compatibility
-        if (appVersion < ATTESTATION_APP_MINIMUM_VERSION) {
-            throw new GeneralSecurityException("attestation app is too old: " + appVersion);
+        if (appVersion < AUDITOR_APP_MINIMUM_VERSION) {
+            throw new GeneralSecurityException("Auditor app is too old: " + appVersion);
         }
         final List<byte[]> signatureDigests = attestationApplicationId.getSignatureDigests();
         if (signatureDigests.size() != 1) {
-            throw new GeneralSecurityException("wrong number of attestation app signature digests");
+            throw new GeneralSecurityException("wrong number of Auditor app signature digests");
         }
         final String signatureDigest = BaseEncoding.base16().encode(signatureDigests.get(0));
-        if (!ATTESTATION_APP_SIGNATURE_DIGEST_RELEASE.equals(signatureDigest)) {
-            if (!BuildConfig.DEBUG || !ATTESTATION_APP_SIGNATURE_DIGEST_DEBUG.equals(signatureDigest)) {
-                throw new GeneralSecurityException("wrong attestation app signature digest");
+        if (!AUDITOR_APP_SIGNATURE_DIGEST_RELEASE.equals(signatureDigest)) {
+            if (!BuildConfig.DEBUG || !AUDITOR_APP_SIGNATURE_DIGEST_DEBUG.equals(signatureDigest)) {
+                throw new GeneralSecurityException("wrong Auditor app signature digest");
             }
         }
 
@@ -762,7 +762,7 @@ class AttestationProtocol {
             throw new GeneralSecurityException("key not origin generated");
         }
         if (teeEnforced.isAllApplications()) {
-            throw new GeneralSecurityException("expected key only usable by attestation app");
+            throw new GeneralSecurityException("expected key only usable by Auditor app");
         }
         if (device.rollbackResistant && !teeEnforced.isRollbackResistant()) {
             throw new GeneralSecurityException("expected rollback resistant key");
@@ -822,7 +822,7 @@ class AttestationProtocol {
                 throw new GeneralSecurityException("attest key not origin generated");
             }
             if (teeEnforced1.isAllApplications()) {
-                throw new GeneralSecurityException("expected attest key only usable by attestation app");
+                throw new GeneralSecurityException("expected attest key only usable by Auditor app");
             }
             if (device.rollbackResistant && !teeEnforced1.isRollbackResistant()) {
                 throw new GeneralSecurityException("expected rollback resistant attest key");
