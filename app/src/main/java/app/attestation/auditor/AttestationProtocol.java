@@ -231,12 +231,16 @@ class AttestationProtocol {
             OS_ENFORCED_FLAGS_SYSTEM_USER;
 
     private static final String AUDITOR_APP_PACKAGE_NAME_RELEASE = "app.attestation.auditor";
+    private static final String AUDITOR_APP_PACKAGE_NAME_PLAY = "app.attestation.auditor.play";
     private static final String AUDITOR_APP_PACKAGE_NAME_DEBUG = "app.attestation.auditor.debug";
     private static final String AUDITOR_APP_SIGNATURE_DIGEST_RELEASE =
             "990E04F0864B19F14F84E0E432F7A393F297AB105A22C1E1B10B442A4A62C42C";
+    private static final String AUDITOR_APP_SIGNATURE_DIGEST_PLAY =
+            "075335BD7B54C965222B5284D2A1FDEF1198AE45EC7B09A4934287A0E3A243C7";
     private static final String AUDITOR_APP_SIGNATURE_DIGEST_DEBUG =
             "17727D8B61D55A864936B1A7B4A2554A15151F32EBCF44CDAA6E6C3258231890";
     private static final byte AUDITOR_APP_VARIANT_RELEASE = 0;
+    private static final byte AUDITOR_APP_VARIANT_PLAY = 1;
     private static final byte AUDITOR_APP_VARIANT_DEBUG = 2;
     private static final int AUDITOR_APP_MINIMUM_VERSION = 47;
     private static final int OS_VERSION_MINIMUM = 80000;
@@ -687,6 +691,11 @@ class AttestationProtocol {
                 throw new GeneralSecurityException("invalid Auditor app signing key");
             }
             appVariant = AUDITOR_APP_VARIANT_RELEASE;
+        } else if (AUDITOR_APP_PACKAGE_NAME_PLAY.equals(info.getPackageName())) {
+            if (!AUDITOR_APP_SIGNATURE_DIGEST_PLAY.equals(signatureDigest)) {
+                throw new GeneralSecurityException("invalid Auditor app signing key");
+            }
+            appVariant = AUDITOR_APP_VARIANT_PLAY;
         } else if (AUDITOR_APP_PACKAGE_NAME_DEBUG.equals(info.getPackageName())) {
             if (!BuildConfig.DEBUG) {
                 throw new GeneralSecurityException("debug builds are only trusted by debug builds");
@@ -1192,6 +1201,8 @@ class AttestationProtocol {
         final String appVariant;
         if (verified.appVariant == AUDITOR_APP_VARIANT_RELEASE) {
             appVariant = context.getString(R.string.auditor_app_variant_release);
+        } else if (verified.appVariant == AUDITOR_APP_VARIANT_PLAY) {
+            appVariant = context.getString(R.string.auditor_app_variant_play);
         } else {
             appVariant = context.getString(R.string.auditor_app_variant_debug);
         }
