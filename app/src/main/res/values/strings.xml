@@ -73,6 +73,9 @@
 
     <string name="os_enforced">\n<b>Information provided by the verified OS:</b>\n\n</string>
     <string name="auditor_app_version">Pinned Auditor app version: %d\n</string>
+    <string name="auditor_app_variant">Pinned Auditor app variant: %s\n</string>
+    <string name="auditor_app_variant_release">Release build signed by GrapheneOS</string>
+    <string name="auditor_app_variant_debug">Debug build signed by GrapheneOS</string>
     <string name="user_profile_secure">User profile secure: %s\n</string>
     <string name="enrolled_fingerprints">Enrolled fingerprints: %s\n</string>
     <string name="enrolled_biometrics">Enrolled biometrics: %s\n</string>

@@ -110,6 +110,7 @@ class AttestationProtocol {
     private static final String KEY_PINNED_VENDOR_PATCH_LEVEL = "pinned_vendor_patch_level";
     private static final String KEY_PINNED_BOOT_PATCH_LEVEL = "pinned_boot_patch_level";
     private static final String KEY_PINNED_APP_VERSION = "pinned_app_version";
+    private static final String KEY_PINNED_APP_VARIANT = "pinned_app_variant";
     private static final String KEY_PINNED_SECURITY_LEVEL = "pinned_security_level";
     private static final String KEY_VERIFIED_TIME_FIRST = "verified_time_first";
     private static final String KEY_VERIFIED_TIME_LAST = "verified_time_last";
@@ -235,6 +236,8 @@ class AttestationProtocol {
             "990E04F0864B19F14F84E0E432F7A393F297AB105A22C1E1B10B442A4A62C42C";
     private static final String AUDITOR_APP_SIGNATURE_DIGEST_DEBUG =
             "17727D8B61D55A864936B1A7B4A2554A15151F32EBCF44CDAA6E6C3258231890";
+    private static final byte AUDITOR_APP_VARIANT_RELEASE = 0;
+    private static final byte AUDITOR_APP_VARIANT_DEBUG = 2;
     private static final int AUDITOR_APP_MINIMUM_VERSION = 47;
     private static final int OS_VERSION_MINIMUM = 80000;
     private static final int OS_PATCH_LEVEL_MINIMUM = 201801;
@@ -594,6 +597,7 @@ class AttestationProtocol {
         final int vendorPatchLevel;
         final int bootPatchLevel;
         final int appVersion;
+        final byte appVariant;
         final int securityLevel;
         final boolean attestKey;
         final boolean perUserEncryption;
@@ -601,7 +605,7 @@ class AttestationProtocol {
 
         Verified(final int device, final String verifiedBootKey, final byte[] verifiedBootHash,
                 final int osName, final int osVersion, final int osPatchLevel,
-                final int vendorPatchLevel, final int bootPatchLevel, final int appVersion,
+                final int vendorPatchLevel, final int bootPatchLevel, final int appVersion, final byte appVariant,
                 final int securityLevel, final boolean attestKey, final boolean perUserEncryption,
                 final boolean enforceStrongBox) {
             this.device = device;
@@ -613,6 +617,7 @@ class AttestationProtocol {
             this.vendorPatchLevel = vendorPatchLevel;
             this.bootPatchLevel = bootPatchLevel;
             this.appVersion = appVersion;
+            this.appVariant = appVariant;
             this.securityLevel = securityLevel;
             this.attestKey = attestKey;
             this.perUserEncryption = perUserEncryption;
@@ -676,10 +681,12 @@ class AttestationProtocol {
             throw new GeneralSecurityException("invalid number of Auditor app signatures");
         }
         final String signatureDigest = BaseEncoding.base16().encode(signatureDigests.get(0));
+        final byte appVariant;
         if (AUDITOR_APP_PACKAGE_NAME_RELEASE.equals(info.getPackageName())) {
             if (!AUDITOR_APP_SIGNATURE_DIGEST_RELEASE.equals(signatureDigest)) {
                 throw new GeneralSecurityException("invalid Auditor app signing key");
             }
+            appVariant = AUDITOR_APP_VARIANT_RELEASE;
         } else if (AUDITOR_APP_PACKAGE_NAME_DEBUG.equals(info.getPackageName())) {
             if (!BuildConfig.DEBUG) {
                 throw new GeneralSecurityException("debug builds are only trusted by debug builds");
@@ -687,6 +694,7 @@ class AttestationProtocol {
             if (!AUDITOR_APP_SIGNATURE_DIGEST_DEBUG.equals(signatureDigest)) {
                 throw new GeneralSecurityException("invalid Auditor app signing key");
             }
+            appVariant = AUDITOR_APP_VARIANT_DEBUG;
         } else {
             throw new GeneralSecurityException("invalid Auditor app package name: " + info.getPackageName());
         }
@@ -884,7 +892,7 @@ class AttestationProtocol {
         }
 
         return new Verified(device.name, verifiedBootKey, verifiedBootHash, device.osName,
-                osVersion, osPatchLevel, vendorPatchLevel, bootPatchLevel, appVersion,
+                osVersion, osPatchLevel, vendorPatchLevel, bootPatchLevel, appVersion, appVariant,
                 attestationSecurityLevel, attestKey, device.perUserEncryption,
                 device.enforceStrongBox);
     }
@@ -1111,6 +1119,10 @@ class AttestationProtocol {
             if (verified.appVersion < pinnedAppVersion) {
                 throw new GeneralSecurityException("App version downgraded");
             }
+            final int pinnedAppVariant = preferences.getInt(KEY_PINNED_APP_VARIANT, 0);
+            if (verified.appVariant < pinnedAppVariant) {
+                throw new GeneralSecurityException("App version downgraded");
+            }
             if (verified.securityLevel != preferences.getInt(KEY_PINNED_SECURITY_LEVEL, Attestation.KM_SECURITY_LEVEL_TRUSTED_ENVIRONMENT)) {
                 throw new GeneralSecurityException("Security level mismatch");
             }
@@ -1132,6 +1144,7 @@ class AttestationProtocol {
                 editor.putInt(KEY_PINNED_BOOT_PATCH_LEVEL, verified.bootPatchLevel);
             }
             editor.putInt(KEY_PINNED_APP_VERSION, verified.appVersion);
+            editor.putInt(KEY_PINNED_APP_VARIANT, verified.appVariant);
             editor.putInt(KEY_PINNED_SECURITY_LEVEL, verified.securityLevel); // new field
             editor.putLong(KEY_VERIFIED_TIME_LAST, new Date().getTime());
             editor.apply();
@@ -1161,6 +1174,7 @@ class AttestationProtocol {
                 editor.putInt(KEY_PINNED_BOOT_PATCH_LEVEL, verified.bootPatchLevel);
             }
             editor.putInt(KEY_PINNED_APP_VERSION, verified.appVersion);
+            editor.putInt(KEY_PINNED_APP_VARIANT, verified.appVariant);
             editor.putInt(KEY_PINNED_SECURITY_LEVEL, verified.securityLevel);
 
             final long now = new Date().getTime();
@@ -1174,6 +1188,15 @@ class AttestationProtocol {
 
         final StringBuilder osEnforced = new StringBuilder();
         osEnforced.append(context.getString(R.string.auditor_app_version, verified.appVersion));
+
+        final String appVariant;
+        if (verified.appVariant == AUDITOR_APP_VARIANT_RELEASE) {
+            appVariant = context.getString(R.string.auditor_app_variant_release);
+        } else {
+            appVariant = context.getString(R.string.auditor_app_variant_debug);
+        }
+        osEnforced.append(context.getString(R.string.auditor_app_variant, appVariant));
+
         osEnforced.append(context.getString(R.string.user_profile_secure,
                 toYesNoString(context, userProfileSecure)));
         osEnforced.append(context.getString(verified.appVersion < 26 ? R.string.enrolled_fingerprints : R.string.enrolled_biometrics,
