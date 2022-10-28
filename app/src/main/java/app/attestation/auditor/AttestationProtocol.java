@@ -230,11 +230,11 @@ class AttestationProtocol {
             OS_ENFORCED_FLAGS_SYSTEM_USER;
 
     private static final String AUDITOR_APP_PACKAGE_NAME = "app.attestation.auditor";
-    private static final int AUDITOR_APP_MINIMUM_VERSION = 47;
-    private static final String AUDITOR_APP_SIGNATURE_DIGEST_DEBUG =
-            "17727D8B61D55A864936B1A7B4A2554A15151F32EBCF44CDAA6E6C3258231890";
     private static final String AUDITOR_APP_SIGNATURE_DIGEST_RELEASE =
             "990E04F0864B19F14F84E0E432F7A393F297AB105A22C1E1B10B442A4A62C42C";
+    private static final String AUDITOR_APP_SIGNATURE_DIGEST_DEBUG =
+            "17727D8B61D55A864936B1A7B4A2554A15151F32EBCF44CDAA6E6C3258231890";
+    private static final int AUDITOR_APP_MINIMUM_VERSION = 47;
     private static final int OS_VERSION_MINIMUM = 80000;
     private static final int OS_PATCH_LEVEL_MINIMUM = 201801;
     private static final int VENDOR_PATCH_LEVEL_MINIMUM = 201808;
@@ -673,10 +673,6 @@ class AttestationProtocol {
         if (!AUDITOR_APP_PACKAGE_NAME.equals(info.getPackageName())) {
             throw new GeneralSecurityException("wrong Auditor app package name: " + info.getPackageName());
         }
-        final int appVersion = Math.toIntExact(info.getVersion()); // int for compatibility
-        if (appVersion < AUDITOR_APP_MINIMUM_VERSION) {
-            throw new GeneralSecurityException("Auditor app is too old: " + appVersion);
-        }
         final List<byte[]> signatureDigests = attestationApplicationId.getSignatureDigests();
         if (signatureDigests.size() != 1) {
             throw new GeneralSecurityException("wrong number of Auditor app signature digests");
@@ -686,6 +682,10 @@ class AttestationProtocol {
             if (!BuildConfig.DEBUG || !AUDITOR_APP_SIGNATURE_DIGEST_DEBUG.equals(signatureDigest)) {
                 throw new GeneralSecurityException("wrong Auditor app signature digest");
             }
+        }
+        final int appVersion = Math.toIntExact(info.getVersion()); // int for compatibility
+        if (appVersion < AUDITOR_APP_MINIMUM_VERSION) {
+            throw new GeneralSecurityException("Auditor app is too old: " + appVersion);
         }
 
         final AuthorizationList teeEnforced = attestation.getTeeEnforced();
