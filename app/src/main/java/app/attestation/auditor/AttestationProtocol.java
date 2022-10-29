@@ -698,7 +698,7 @@ class AttestationProtocol {
             appVariant = AUDITOR_APP_VARIANT_PLAY;
         } else if (AUDITOR_APP_PACKAGE_NAME_DEBUG.equals(info.getPackageName())) {
             if (!BuildConfig.DEBUG) {
-                throw new GeneralSecurityException("debug builds are only trusted by debug builds");
+                throw new GeneralSecurityException("Auditor debug builds are only trusted by other Auditor debug builds");
             }
             if (!AUDITOR_APP_SIGNATURE_DIGEST_DEBUG.equals(signatureDigest)) {
                 throw new GeneralSecurityException("invalid Auditor app signing key");
