@@ -1210,7 +1210,7 @@ class AttestationProtocol {
 
         osEnforced.append(context.getString(R.string.user_profile_secure,
                 toYesNoString(context, userProfileSecure)));
-        osEnforced.append(context.getString(verified.appVersion < 26 ? R.string.enrolled_fingerprints : R.string.enrolled_biometrics,
+        osEnforced.append(context.getString(R.string.enrolled_biometrics,
                 toYesNoString(context, enrolledBiometrics)));
         osEnforced.append(context.getString(R.string.accessibility,
                 toYesNoString(context, accessibility)));
