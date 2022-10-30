@@ -527,6 +527,7 @@ public class AttestationActivity extends AppCompatActivity {
     }
 
     @Override
+    @SuppressLint("InlinedApi")
     public boolean onOptionsItemSelected(final MenuItem item) {
         final int itemId = item.getItemId();
         if (itemId == R.id.action_clear_auditee) {
