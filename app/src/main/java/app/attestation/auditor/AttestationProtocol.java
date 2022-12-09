@@ -288,6 +288,8 @@ class AttestationProtocol {
             "Pixel 6",
             "Pixel 6 Pro",
             "Pixel 6a",
+            "Pixel 7",
+            "Pixel 7 Pro",
             "SM-N970U",
             "SM-N975U").contains(Build.MODEL);
 
