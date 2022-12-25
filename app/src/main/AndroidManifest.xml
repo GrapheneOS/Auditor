@@ -13,7 +13,6 @@
             android:useEmbeddedDex="true"
             android:networkSecurityConfig="@xml/network_security_config"
             android:icon="@mipmap/ic_launcher"
-            android:roundIcon="@mipmap/ic_launcher"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
 
