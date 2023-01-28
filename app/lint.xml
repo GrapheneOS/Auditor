@@ -1,7 +1,7 @@
 <lint>
     <!-- ignore false positive lint for Bouncy Castle -->
     <issue id="TrustAllX509TrustManager">
-        <ignore regexp="org/bouncycastle/est/jcajce/JcaJceUtils\$.\.class"/>
+        <ignore regexp="bcpkix-jdk18on-1.72.jar"/>
     </issue>
 
     <!-- LinearLayout is used programmatically -->
