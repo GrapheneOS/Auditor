@@ -97,7 +97,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.0")
     implementation("androidx.biometric:biometric:1.1.0")
     implementation("androidx.preference:preference:1.2.0")
-    implementation("com.google.android.material:material:1.7.0")
+    implementation("com.google.android.material:material:1.8.0")
     implementation("com.google.guava:guava:31.1-android")
     implementation("com.google.zxing:core:3.5.1")
     implementation("org.bouncycastle:bcpkix-jdk18on:1.72")
@@ -105,7 +105,7 @@ dependencies {
     // work around conflict
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
 
-    val cameraVersion = "1.3.0-alpha02"
+    val cameraVersion = "1.3.0-alpha03"
     implementation("androidx.camera:camera-core:$cameraVersion")
     implementation("androidx.camera:camera-camera2:$cameraVersion")
     implementation("androidx.camera:camera-lifecycle:$cameraVersion")
