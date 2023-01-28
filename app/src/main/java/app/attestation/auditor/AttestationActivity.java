@@ -378,14 +378,8 @@ public class AttestationActivity extends AppCompatActivity {
                         textView.append(result.history);
                     }
                 });
-            } catch (final DataFormatException | GeneralSecurityException | IOException e) {
-                Log.e(TAG, "attestation verification error", e);
-                runOnUiThread(() -> {
-                    setBackgroundResource(R.color.red);
-                    textView.setText(R.string.verify_error);
-                    textView.append(e.getMessage());
-                });
-            } catch (final BufferUnderflowException | NegativeArraySizeException e) {
+            } catch (final DataFormatException | GeneralSecurityException | IOException |
+                           BufferUnderflowException | NegativeArraySizeException e) {
                 Log.e(TAG, "attestation verification error", e);
                 runOnUiThread(() -> {
                     setBackgroundResource(R.color.red);
