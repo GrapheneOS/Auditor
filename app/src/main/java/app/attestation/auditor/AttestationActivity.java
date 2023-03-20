@@ -1,8 +1,11 @@
 package app.attestation.auditor;
 
+import static android.graphics.Color.BLACK;
+import static android.graphics.Color.WHITE;
+
 import android.Manifest;
-import android.app.Activity;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -17,9 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -40,14 +41,13 @@ import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.zip.DataFormatException;
 
-import static android.graphics.Color.BLACK;
-import static android.graphics.Color.WHITE;
+import app.attestation.auditor.databinding.ActivityAttestationBinding;
 
 public class AttestationActivity extends AppCompatActivity {
     private static final String TAG = "AttestationActivity";
@@ -67,9 +67,7 @@ public class AttestationActivity extends AppCompatActivity {
 
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    private TextView textView;
-    private ImageView imageView;
-    private View buttons;
+    private ActivityAttestationBinding binding;
     private Snackbar snackbar;
 
     private enum Stage {
@@ -106,11 +104,11 @@ public class AttestationActivity extends AppCompatActivity {
                         contentsBytes = contents.getBytes(StandardCharsets.ISO_8859_1);
                         if (stage == Stage.Auditee) {
                             stage = Stage.AuditeeGenerate;
-                            buttons.setVisibility(View.GONE);
+                            binding.content.buttons.setVisibility(View.GONE);
                             generateAttestation(contentsBytes);
                         } else if (stage == Stage.Auditor) {
                             stage = Stage.Result;
-                            imageView.setVisibility(View.GONE);
+                            binding.content.imageview.setVisibility(View.GONE);
                             handleAttestation(contentsBytes);
                         } else if (stage == Stage.EnableRemoteVerify) {
                             stage = Stage.None;
@@ -251,13 +249,14 @@ public class AttestationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_attestation);
-        setSupportActionBar(findViewById(R.id.toolbar));
+        binding = ActivityAttestationBinding.inflate(getLayoutInflater());
+        View rootView = binding.getRoot();
+        setContentView(rootView);
+        setSupportActionBar(binding.toolbar);
 
-        buttons = findViewById(R.id.buttons);
-        snackbar = Snackbar.make(findViewById(R.id.content_attestation), "", Snackbar.LENGTH_LONG);
+        snackbar = Snackbar.make(rootView, "", Snackbar.LENGTH_LONG);
 
-        findViewById(R.id.auditee).setOnClickListener((final View view) -> {
+        binding.content.auditee.setOnClickListener((final View view) -> {
             if (!isSupportedAuditee) {
                 snackbar.setText(R.string.unsupported_auditee).show();
                 return;
@@ -266,41 +265,37 @@ public class AttestationActivity extends AppCompatActivity {
             startQrScanner();
         });
 
-        findViewById(R.id.auditor).setOnClickListener(view -> {
+        binding.content.auditor.setOnClickListener(view -> {
             snackbar.dismiss();
             stage = Stage.Auditor;
-            buttons.setVisibility(View.GONE);
+            binding.content.buttons.setVisibility(View.GONE);
             runAuditor();
         });
-
-        textView = findViewById(R.id.textview);
-
-        imageView = findViewById(R.id.imageview);
 
         if (savedInstanceState != null) {
             auditeePairing = savedInstanceState.getBoolean(STATE_AUDITEE_PAIRING);
             auditeeSerializedAttestation = savedInstanceState.getByteArray(STATE_AUDITEE_SERIALIZED_ATTESTATION);
             auditorChallenge = savedInstanceState.getByteArray(STATE_AUDITOR_CHALLENGE);
             stage = Stage.valueOf(savedInstanceState.getString(STATE_STAGE));
-            textView.setText(Html.fromHtml(savedInstanceState.getString(STATE_OUTPUT),
+            binding.content.textview.setText(Html.fromHtml(savedInstanceState.getString(STATE_OUTPUT),
                     Html.FROM_HTML_MODE_LEGACY));
             backgroundResource = savedInstanceState.getInt(STATE_BACKGROUND_RESOURCE);
         }
 
-        final ViewTreeObserver vto = imageView.getViewTreeObserver();
+        final ViewTreeObserver vto = binding.content.imageview.getViewTreeObserver();
         vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
-                imageView.getViewTreeObserver().removeOnPreDrawListener(this);
+                binding.content.imageview.getViewTreeObserver().removeOnPreDrawListener(this);
                 if (stage != Stage.None) {
-                    buttons.setVisibility(View.GONE);
+                    binding.content.buttons.setVisibility(View.GONE);
                     if (stage == Stage.AuditeeResults) {
                         auditeeShowAttestation(auditeeSerializedAttestation);
                     } else if (stage == Stage.Auditor) {
                         runAuditor();
                     }
                 }
-                findViewById(R.id.content_attestation).setBackgroundResource(backgroundResource);
+                binding.content.getRoot().setBackgroundResource(backgroundResource);
                 return true;
             }
         });
@@ -315,35 +310,32 @@ public class AttestationActivity extends AppCompatActivity {
         savedInstanceState.putByteArray(STATE_AUDITEE_SERIALIZED_ATTESTATION, auditeeSerializedAttestation);
         savedInstanceState.putByteArray(STATE_AUDITOR_CHALLENGE, auditorChallenge);
         savedInstanceState.putString(STATE_STAGE, stage.name());
-        savedInstanceState.putString(STATE_OUTPUT, Html.toHtml((Spanned) textView.getText(),
+        savedInstanceState.putString(STATE_OUTPUT, Html.toHtml((Spanned) binding.content.textview.getText(),
                 Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE));
         savedInstanceState.putInt(STATE_BACKGROUND_RESOURCE, backgroundResource);
     }
 
     private void chooseBestLayout(final byte[] data) {
-        final View content = findViewById(R.id.content_attestation);
-        final LinearLayout resultLayout = findViewById(R.id.result);
-
-        final ViewTreeObserver vto = content.getViewTreeObserver();
+        final ViewTreeObserver vto = binding.content.getRoot().getViewTreeObserver();
         vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
-                content.getViewTreeObserver().removeOnPreDrawListener(this);
-                if (content.getHeight() - textView.getHeight() >
-                        content.getWidth() - textView.getWidth()) {
-                    resultLayout.setOrientation(LinearLayout.VERTICAL);
+                binding.content.getRoot().getViewTreeObserver().removeOnPreDrawListener(this);
+                if (binding.content.getRoot().getHeight() - binding.content.textview.getHeight() >
+                        binding.content.getRoot().getWidth() - binding.content.textview.getWidth()) {
+                    binding.content.result.setOrientation(LinearLayout.VERTICAL);
 
-                    final ViewTreeObserver vto = imageView.getViewTreeObserver();
+                    final ViewTreeObserver vto = binding.content.imageview.getViewTreeObserver();
                     vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                         @Override
                         public boolean onPreDraw() {
-                            imageView.getViewTreeObserver().removeOnPreDrawListener(this);
-                            imageView.setImageBitmap(createQrCode(data));
+                            binding.content.imageview.getViewTreeObserver().removeOnPreDrawListener(this);
+                            binding.content.imageview.setImageBitmap(createQrCode(data));
                             return true;
                         }
                     });
                 } else {
-                    imageView.setImageBitmap(createQrCode(data));
+                    binding.content.imageview.setImageBitmap(createQrCode(data));
                 }
                 return true;
             }
@@ -355,27 +347,27 @@ public class AttestationActivity extends AppCompatActivity {
             auditorChallenge = AttestationProtocol.getChallengeMessage(this);
         }
         Log.d(TAG, "sending random challenge: " + Utils.logFormatBytes(auditorChallenge));
-        textView.setText(R.string.qr_code_scan_hint_auditor);
+        binding.content.textview.setText(R.string.qr_code_scan_hint_auditor);
         chooseBestLayout(auditorChallenge);
-        imageView.setOnClickListener(view -> startQrScanner());
+        binding.content.imageview.setOnClickListener(view -> startQrScanner());
     }
 
     private void handleAttestation(final byte[] serialized) {
         Log.d(TAG, "received attestation: " + Utils.logFormatBytes(serialized));
-        textView.setText(R.string.verifying_attestation);
+        binding.content.textview.setText(R.string.verifying_attestation);
         executor.submit(() -> {
             try {
                 final AttestationProtocol.VerificationResult result = AttestationProtocol.verifySerialized(this, serialized, auditorChallenge);
                 runOnUiThread(() -> {
                     setBackgroundResource(result.strong ? R.color.green : R.color.orange);
-                    textView.setText(result.strong ? R.string.verify_strong : R.string.verify_basic);
-                    textView.append(getText(R.string.hardware_enforced));
-                    textView.append(result.teeEnforced);
-                    textView.append(getText(R.string.os_enforced));
-                    textView.append(result.osEnforced);
+                    binding.content.textview.setText(result.strong ? R.string.verify_strong : R.string.verify_basic);
+                    binding.content.textview.append(getText(R.string.hardware_enforced));
+                    binding.content.textview.append(result.teeEnforced);
+                    binding.content.textview.append(getText(R.string.os_enforced));
+                    binding.content.textview.append(result.osEnforced);
                     if (!result.history.isEmpty()) {
-                        textView.append(getText(R.string.history));
-                        textView.append(result.history);
+                        binding.content.textview.append(getText(R.string.history));
+                        binding.content.textview.append(result.history);
                     }
                 });
             } catch (final DataFormatException | GeneralSecurityException | IOException |
@@ -383,8 +375,8 @@ public class AttestationActivity extends AppCompatActivity {
                 Log.e(TAG, "attestation verification error", e);
                 runOnUiThread(() -> {
                     setBackgroundResource(R.color.red);
-                    textView.setText(R.string.verify_error);
-                    textView.append(e.getMessage());
+                    binding.content.textview.setText(R.string.verify_error);
+                    binding.content.textview.append(e.getMessage());
                 });
             }
         });
@@ -392,7 +384,7 @@ public class AttestationActivity extends AppCompatActivity {
 
     private void generateAttestation(final byte[] challenge) {
         Log.d(TAG, "received random challenge: " + Utils.logFormatBytes(challenge));
-        textView.setText(R.string.generating_attestation);
+        binding.content.textview.setText(R.string.generating_attestation);
         executor.submit(() -> {
             try {
                 final AttestationProtocol.AttestationResult result =
@@ -406,8 +398,8 @@ public class AttestationActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     stage = Stage.Result;
                     setBackgroundResource(R.color.red);
-                    textView.setText(R.string.generate_error);
-                    textView.append(e.getMessage());
+                    binding.content.textview.setText(R.string.generate_error);
+                    binding.content.textview.append(e.getMessage());
                 });
             }
         });
@@ -418,9 +410,9 @@ public class AttestationActivity extends AppCompatActivity {
         auditeeSerializedAttestation = serialized;
         stage = Stage.AuditeeResults;
         if (auditeePairing) {
-            textView.setText(R.string.qr_code_scan_hint_auditee_pairing);
+            binding.content.textview.setText(R.string.qr_code_scan_hint_auditee_pairing);
         } else {
-            textView.setText(R.string.qr_code_scan_hint_auditee);
+            binding.content.textview.setText(R.string.qr_code_scan_hint_auditee);
         }
         chooseBestLayout(serialized);
     }
@@ -431,7 +423,7 @@ public class AttestationActivity extends AppCompatActivity {
             final QRCodeWriter writer = new QRCodeWriter();
             final Map<EncodeHintType,Object> hints = new EnumMap<>(EncodeHintType.class);
             hints.put(EncodeHintType.CHARACTER_SET, StandardCharsets.ISO_8859_1);
-            final int size = Math.min(imageView.getWidth(), imageView.getHeight());
+            final int size = Math.min(binding.content.imageview.getWidth(), binding.content.imageview.getHeight());
             result = writer.encode(new String(contents, StandardCharsets.ISO_8859_1), BarcodeFormat.QR_CODE,
                     size, size, hints);
         } catch (WriterException e) {
@@ -487,9 +479,8 @@ public class AttestationActivity extends AppCompatActivity {
     }
 
     private void setBackgroundResource(final int resid) {
-        final View content = findViewById(R.id.content_attestation);
         backgroundResource = resid;
-        content.setBackgroundResource(resid);
+        binding.content.getRoot().setBackgroundResource(resid);
     }
 
     @Override
@@ -610,7 +601,7 @@ public class AttestationActivity extends AppCompatActivity {
             auditeeSerializedAttestation = null;
             auditorChallenge = null;
             stage = Stage.None;
-            textView.setText("");
+            binding.content.textview.setText("");
             backgroundResource = 0;
             recreate();
             return;

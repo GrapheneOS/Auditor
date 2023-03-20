@@ -21,6 +21,7 @@ import androidx.camera.core.CameraProvider
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
+import app.attestation.auditor.databinding.ActivityQrscannerBinding
 import com.google.android.material.snackbar.Snackbar
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executors
@@ -34,23 +35,24 @@ class QRScannerActivity : AppCompatActivity() {
     private var cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
     private lateinit var cameraController: LifecycleCameraController
 
+    // Public as it is referenced in QRCodeImageAnalyzer
+    lateinit var binding: ActivityQrscannerBinding
+
     private val handler = Handler(Looper.getMainLooper())
     private val executor = Executors.newSingleThreadExecutor()
 
     private var focusTimerActive = false
 
-    private lateinit var overlayView: QROverlay
     private lateinit var camera: Camera
-    lateinit var contentFrame: PreviewView
 
     private val runnable = Runnable {
         val factory: MeteringPointFactory = SurfaceOrientedMeteringPointFactory(
-            contentFrame.width.toFloat(), contentFrame.height.toFloat()
+            binding.contentFrame.width.toFloat(), binding.contentFrame.height.toFloat()
         )
 
         val autoFocusPoint = factory.createPoint(
-            contentFrame.width / 2.0f,
-            contentFrame.height / 2.0f, QROverlay.SIZE_FACTOR
+            binding.contentFrame.width / 2.0f,
+            binding.contentFrame.height / 2.0f, QROverlay.SIZE_FACTOR
         )
 
         camera.cameraControl.startFocusAndMetering(
@@ -71,21 +73,21 @@ class QRScannerActivity : AppCompatActivity() {
 
     public override fun onCreate(state: Bundle?) {
         super.onCreate(state)
-        setContentView(R.layout.activity_qrscanner)
+        binding = ActivityQrscannerBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
-        contentFrame = findViewById(R.id.content_frame)
-        contentFrame.scaleType = PreviewView.ScaleType.FIT_CENTER
+        binding.contentFrame.scaleType = PreviewView.ScaleType.FIT_CENTER
 
         cameraController = LifecycleCameraController(this)
         cameraController.bindToLifecycle(this)
         cameraController.cameraSelector = cameraSelector
         cameraController.setEnabledUseCases(CameraController.IMAGE_ANALYSIS)
 
-        overlayView = findViewById(R.id.overlay)
-        overlayView.viewTreeObserver.addOnGlobalLayoutListener(object :
+        binding.overlay.viewTreeObserver.addOnGlobalLayoutListener(object :
             ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
-                overlayView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                binding.overlay.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 startCamera()
             }
         })
@@ -111,7 +113,7 @@ class QRScannerActivity : AppCompatActivity() {
     }
 
     fun getOverlayView(): QROverlay {
-        return overlayView
+        return binding.overlay
     }
 
     private fun startCamera() {
@@ -122,14 +124,14 @@ class QRScannerActivity : AppCompatActivity() {
                 try {
                     cameraProvider = cameraProviderFuture.get()
                 } catch (exception: ExecutionException) {
-                    Snackbar.make(overlayView, R.string.camera_provider_init_failure, Snackbar.LENGTH_LONG).show()
+                    Snackbar.make(binding.overlay, R.string.camera_provider_init_failure, Snackbar.LENGTH_LONG).show()
                     return
                 }
 
                 val preview = Preview.Builder()
                     .build()
                     .also {
-                        it.setSurfaceProvider(contentFrame.surfaceProvider)
+                        it.setSurfaceProvider(binding.contentFrame.surfaceProvider)
                     }
 
                 val imageAnalysis = ImageAnalysis.Builder()
@@ -157,7 +159,7 @@ class QRScannerActivity : AppCompatActivity() {
                     camera =
                         cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis)
                 } catch (exception: IllegalArgumentException) {
-                    Snackbar.make(overlayView, R.string.bind_failure, Snackbar.LENGTH_LONG).show()
+                    Snackbar.make(binding.overlay, R.string.bind_failure, Snackbar.LENGTH_LONG).show()
                     return
                 }
                 startFocusTimer()
