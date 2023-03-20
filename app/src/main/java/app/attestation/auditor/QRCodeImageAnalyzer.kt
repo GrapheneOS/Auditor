@@ -49,11 +49,11 @@ class QRCodeImageAnalyzer(
         val previewHeight: Int
 
         if (rotationDegrees == 0 || rotationDegrees == 180) {
-            previewWidth = mActivity.contentFrame.width
-            previewHeight = mActivity.contentFrame.height
+            previewWidth = mActivity.binding.contentFrame.width
+            previewHeight = mActivity.binding.contentFrame.height
         } else {
-            previewWidth = mActivity.contentFrame.height
-            previewHeight = mActivity.contentFrame.width
+            previewWidth = mActivity.binding.contentFrame.height
+            previewHeight = mActivity.binding.contentFrame.width
         }
 
         val scaleFactor = if (previewWidth < previewHeight) {
