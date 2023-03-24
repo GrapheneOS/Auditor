@@ -19,14 +19,14 @@
             android:theme="@style/AppTheme">
 
         <activity android:name=".AttestationActivity"
-                android:theme="@style/AppTheme.NoActionBar"
                 android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".QRScannerActivity" />
+        <activity android:name=".QRScannerActivity"
+            android:theme="@style/AppTheme.QRScanner" />
 
         <receiver android:name=".BootReceiver"
                 android:exported="false">
