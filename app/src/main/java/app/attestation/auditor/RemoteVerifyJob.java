@@ -76,12 +76,15 @@ public class RemoteVerifyJob extends JobService {
     }
 
     static void schedule(final Context context, int interval) {
-        if (interval < MIN_INTERVAL) {
-            interval = MIN_INTERVAL;
-            Log.e(TAG, "invalid interval " + interval + " clamped to MIN_INTERVAL " + MIN_INTERVAL);
-        } else if (interval > MAX_INTERVAL) {
-            interval = MAX_INTERVAL;
-            Log.e(TAG, "invalid interval " + interval + " clamped to MAX_INTERVAL " + MAX_INTERVAL);
+        boolean scheduleNow = interval == -1; // if interval = -1, the job needs to be scheduled now and only once.
+        if (!scheduleNow) {
+            if (interval < MIN_INTERVAL) {
+                interval = MIN_INTERVAL;
+                Log.e(TAG, "invalid interval " + interval + " clamped to MIN_INTERVAL " + MIN_INTERVAL);
+            } else if (interval > MAX_INTERVAL) {
+                interval = MAX_INTERVAL;
+                Log.e(TAG, "invalid interval " + interval + " clamped to MAX_INTERVAL " + MAX_INTERVAL);
+            }
         }
         final JobScheduler scheduler = context.getSystemService(JobScheduler.class);
         final JobInfo jobInfo = scheduler.getPendingJob(PERIODIC_JOB_ID);
@@ -91,7 +94,8 @@ public class RemoteVerifyJob extends JobService {
                 jobInfo.getEstimatedNetworkDownloadBytes() == ESTIMATED_DOWNLOAD_BYTES &&
                 jobInfo.getEstimatedNetworkUploadBytes() == ESTIMATED_UPLOAD_BYTES &&
                 jobInfo.getIntervalMillis() == intervalMillis &&
-                jobInfo.getFlexMillis() == flexMillis) {
+                jobInfo.getFlexMillis() == flexMillis &&
+                !scheduleNow) {
             Log.d(TAG, "job already registered");
             return;
         }
@@ -112,10 +116,13 @@ public class RemoteVerifyJob extends JobService {
             }
         }
         final JobInfo.Builder builder = new JobInfo.Builder(PERIODIC_JOB_ID, serviceName)
-                .setPeriodic(intervalMillis, flexMillis)
                 .setPersisted(true)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                 .setEstimatedNetworkBytes(ESTIMATED_DOWNLOAD_BYTES, ESTIMATED_UPLOAD_BYTES);
+
+        if(!scheduleNow) {
+            builder.setPeriodic(intervalMillis, flexMillis);
+        }
         if (scheduler.schedule(builder.build()) == JobScheduler.RESULT_FAILURE) {
             throw new RuntimeException("job schedule failed");
         }

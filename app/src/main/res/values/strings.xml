@@ -20,11 +20,13 @@
     <string name="action_clear_auditor">Clear Auditor pairings</string>
     <string name="action_enable_remote_verify">Enable remote verification</string>
     <string name="action_disable_remote_verify">Disable remote verification</string>
+    <string name="action_remote_verify_now">Remote verify Now</string>
     <string name="action_submit_sample">Submit sample data</string>
     <string name="action_help">Help</string>
 
     <string name="enable_remote_verify_success">Scheduled regular remote verification</string>
     <string name="disable_remote_verify_success">Disabled remote verification</string>
+    <string name="remote_verify_now">Scheduled immeidate remote verification</string>
     <string name="schedule_submit_sample_success">Scheduled submitting sample data</string>
     <string name="clear_auditee_pairings_success">Cleared Auditee pairings</string>
     <string name="clear_auditee_pairings_failure">Failed to fully clear Auditee pairings</string>
