@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 
 public class BootReceiver extends BroadcastReceiver {
-    @SuppressLint("UnsafeProtectedBroadcastReceiver")
+    @SuppressLint("UnsafeProtectedBroadcastReceiver") // not exported
     @Override
     public void onReceive(final Context context, final Intent intent) {
         RemoteVerifyJob.restore(context);
