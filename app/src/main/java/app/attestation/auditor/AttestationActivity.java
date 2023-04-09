@@ -52,7 +52,7 @@ import app.attestation.auditor.databinding.ActivityAttestationBinding;
 public class AttestationActivity extends AppCompatActivity {
     private static final String TAG = "AttestationActivity";
 
-    private static final String TUTORIAL_URL = "https://attestation.app/tutorial";
+    private static final String TUTORIAL_URL = "https://" + RemoteVerifyJob.DOMAIN + "/tutorial";
 
     private static final String STATE_AUDITEE_PAIRING = "auditee_pairing";
     private static final String STATE_AUDITEE_SERIALIZED_ATTESTATION = "auditee_serialized_attestation";
