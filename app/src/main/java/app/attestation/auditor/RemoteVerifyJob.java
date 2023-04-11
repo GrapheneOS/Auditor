@@ -55,7 +55,8 @@ public class RemoteVerifyJob extends JobService {
     static final String KEY_INTERVAL = "remote_interval";
     private static final int NOTIFICATION_ID = 1;
     private static final String NOTIFICATION_CHANNEL_SUCCESS_ID = "remote_verification";
-    private static final String NOTIFICATION_CHANNEL_FAILURE_ID = "remote_verification_failure";
+    private static final String NOTIFICATION_CHANNEL_FAILURE_ID = "remote_verification_failure_importance_low";
+    private static final String NOTIFICATION_CHANNEL_FAILURE_ID_OLD = "remote_verification_failure";
 
     static final ExecutorService executor = Executors.newSingleThreadExecutor();
     private Future<?> task;
@@ -213,9 +214,14 @@ public class RemoteVerifyJob extends JobService {
             successChannel.setShowBadge(false);
             channels.add(successChannel);
 
+            // We decided to set the failure notification channel to a higher importance.
+            // The notification channel importance cannot be updated to a higher importance,
+            // so we remove the old notification channel and create a new one.
+            manager.deleteNotificationChannel(NOTIFICATION_CHANNEL_FAILURE_ID_OLD);
+
             final NotificationChannel failureChannel = new NotificationChannel(NOTIFICATION_CHANNEL_FAILURE_ID,
                     context.getString(R.string.remote_verification_notification_failure_channel),
-                    NotificationManager.IMPORTANCE_MIN);
+                    NotificationManager.IMPORTANCE_LOW);
             failureChannel.setShowBadge(false);
             channels.add(failureChannel);
 
