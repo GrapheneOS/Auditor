@@ -88,9 +88,8 @@ public class RemoteVerifyJob extends JobService {
         final long intervalMillis = interval * 1000;
         final long flexMillis = intervalMillis / 10;
         if (jobInfo != null &&
-                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
-                        jobInfo.getEstimatedNetworkDownloadBytes() == ESTIMATED_DOWNLOAD_BYTES &&
-                        jobInfo.getEstimatedNetworkUploadBytes() == ESTIMATED_UPLOAD_BYTES) &&
+                jobInfo.getEstimatedNetworkDownloadBytes() == ESTIMATED_DOWNLOAD_BYTES &&
+                jobInfo.getEstimatedNetworkUploadBytes() == ESTIMATED_UPLOAD_BYTES &&
                 jobInfo.getIntervalMillis() == intervalMillis &&
                 jobInfo.getFlexMillis() == flexMillis) {
             Log.d(TAG, "job already registered");
@@ -100,10 +99,8 @@ public class RemoteVerifyJob extends JobService {
         if (jobInfo == null) {
             final JobInfo.Builder builder = new JobInfo.Builder(FIRST_RUN_JOB_ID, serviceName)
                     .setPersisted(true)
-                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                builder.setEstimatedNetworkBytes(ESTIMATED_DOWNLOAD_BYTES, ESTIMATED_UPLOAD_BYTES);
-            }
+                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                    .setEstimatedNetworkBytes(ESTIMATED_DOWNLOAD_BYTES, ESTIMATED_UPLOAD_BYTES);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 builder.setExpedited(true);
             }
@@ -117,10 +114,8 @@ public class RemoteVerifyJob extends JobService {
         final JobInfo.Builder builder = new JobInfo.Builder(PERIODIC_JOB_ID, serviceName)
                 .setPeriodic(intervalMillis, flexMillis)
                 .setPersisted(true)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            builder.setEstimatedNetworkBytes(ESTIMATED_DOWNLOAD_BYTES, ESTIMATED_UPLOAD_BYTES);
-        }
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setEstimatedNetworkBytes(ESTIMATED_DOWNLOAD_BYTES, ESTIMATED_UPLOAD_BYTES);
         if (scheduler.schedule(builder.build()) == JobScheduler.RESULT_FAILURE) {
             throw new RuntimeException("job schedule failed");
         }

@@ -63,10 +63,8 @@ public class SubmitSampleJob extends JobService {
         final JobScheduler scheduler = context.getSystemService(JobScheduler.class);
         final JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, serviceName)
                 .setPersisted(true)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            builder.setEstimatedNetworkBytes(ESTIMATED_DOWNLOAD_BYTES, ESTIMATED_UPLOAD_BYTES);
-        }
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setEstimatedNetworkBytes(ESTIMATED_DOWNLOAD_BYTES, ESTIMATED_UPLOAD_BYTES);
         if (scheduler.schedule(builder.build()) == JobScheduler.RESULT_FAILURE) {
             throw new RuntimeException("job schedule failed");
         }
@@ -96,17 +94,15 @@ public class SubmitSampleJob extends JobService {
                 keyStore.deleteEntry(KEYSTORE_ALIAS_SAMPLE);
 
                 Certificate[] strongBoxCerts = null;
-                if (Build.VERSION.SDK_INT >= 28) {
-                    try {
-                        builder.setIsStrongBoxBacked(true);
-                        AttestationProtocol.generateKeyPair(builder.build());
-                        strongBoxCerts = keyStore.getCertificateChain(KEYSTORE_ALIAS_SAMPLE);
-                        keyStore.deleteEntry(KEYSTORE_ALIAS_SAMPLE);
-                    } catch (final StrongBoxUnavailableException ignored) {
-                    } catch (final IOException e) {
-                        if (!(e.getCause() instanceof StrongBoxUnavailableException)) {
-                            throw e;
-                        }
+                try {
+                    builder.setIsStrongBoxBacked(true);
+                    AttestationProtocol.generateKeyPair(builder.build());
+                    strongBoxCerts = keyStore.getCertificateChain(KEYSTORE_ALIAS_SAMPLE);
+                    keyStore.deleteEntry(KEYSTORE_ALIAS_SAMPLE);
+                } catch (final StrongBoxUnavailableException ignored) {
+                } catch (final IOException e) {
+                    if (!(e.getCause() instanceof StrongBoxUnavailableException)) {
+                        throw e;
                     }
                 }
 
