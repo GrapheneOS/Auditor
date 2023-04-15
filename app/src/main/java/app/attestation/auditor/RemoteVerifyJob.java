@@ -145,8 +145,6 @@ public class RemoteVerifyJob extends JobService {
                 input.readFully(challengeMessage);
                 input.close();
 
-                Log.d(TAG, "received random challenge: " + Utils.logFormatBytes(challengeMessage));
-
                 final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
                 final long userId = preferences.getLong(KEY_USER_ID, -1);
                 if (userId == -1) {

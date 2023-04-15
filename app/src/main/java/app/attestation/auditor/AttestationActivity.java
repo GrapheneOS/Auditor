@@ -346,14 +346,12 @@ public class AttestationActivity extends AppCompatActivity {
         if (auditorChallenge == null) {
             auditorChallenge = AttestationProtocol.getChallengeMessage(this);
         }
-        Log.d(TAG, "sending random challenge: " + Utils.logFormatBytes(auditorChallenge));
         binding.content.textview.setText(R.string.qr_code_scan_hint_auditor);
         chooseBestLayout(auditorChallenge);
         binding.content.imageview.setOnClickListener(view -> startQrScanner());
     }
 
     private void handleAttestation(final byte[] serialized) {
-        Log.d(TAG, "received attestation: " + Utils.logFormatBytes(serialized));
         binding.content.textview.setText(R.string.verifying_attestation);
         executor.submit(() -> {
             try {
@@ -383,7 +381,6 @@ public class AttestationActivity extends AppCompatActivity {
     }
 
     private void generateAttestation(final byte[] challenge) {
-        Log.d(TAG, "received random challenge: " + Utils.logFormatBytes(challenge));
         binding.content.textview.setText(R.string.generating_attestation);
         executor.submit(() -> {
             try {
@@ -406,7 +403,6 @@ public class AttestationActivity extends AppCompatActivity {
     }
 
     private void auditeeShowAttestation(final byte[] serialized) {
-        Log.d(TAG, "sending attestation: " + Utils.logFormatBytes(serialized));
         auditeeSerializedAttestation = serialized;
         stage = Stage.AuditeeResults;
         if (auditeePairing) {
