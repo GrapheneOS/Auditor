@@ -116,7 +116,7 @@ dependencies {
     // work around conflict
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
 
-    val cameraVersion = "1.3.0-alpha05"
+    val cameraVersion = "1.3.0-alpha06"
     implementation("androidx.camera:camera-core:$cameraVersion")
     implementation("androidx.camera:camera-camera2:$cameraVersion")
     implementation("androidx.camera:camera-lifecycle:$cameraVersion")
