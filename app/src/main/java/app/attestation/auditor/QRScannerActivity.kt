@@ -9,15 +9,17 @@ import android.util.Size
 import android.view.ViewTreeObserver
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.Camera
+import androidx.camera.core.CameraProvider
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.FocusMeteringAction
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.MeteringPointFactory
 import androidx.camera.core.Preview
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.core.SurfaceOrientedMeteringPointFactory
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.CameraController
-import androidx.camera.core.CameraProvider
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
@@ -134,9 +136,11 @@ class QRScannerActivity : AppCompatActivity() {
                         it.setSurfaceProvider(binding.contentFrame.surfaceProvider)
                     }
 
-                val imageAnalysis = ImageAnalysis.Builder()
-                    .setTargetResolution(Size(960, 960))
-                    .build()
+                val strategy = ResolutionStrategy(Size(960, 960),
+                    ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER)
+
+                val imageAnalysis = ImageAnalysis.Builder().setResolutionSelector(
+                    ResolutionSelector.Builder().setResolutionStrategy(strategy).build()).build()
 
                 imageAnalysis.setAnalyzer(
                     executor,
