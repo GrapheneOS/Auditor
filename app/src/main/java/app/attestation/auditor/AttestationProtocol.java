@@ -244,9 +244,9 @@ class AttestationProtocol {
     private static final byte AUDITOR_APP_VARIANT_DEBUG = 2;
     private static final int AUDITOR_APP_MINIMUM_VERSION = 47;
     private static final int OS_VERSION_MINIMUM = 100000;
-    private static final int OS_PATCH_LEVEL_MINIMUM = 201801;
-    private static final int VENDOR_PATCH_LEVEL_MINIMUM = 201808;
-    private static final int BOOT_PATCH_LEVEL_MINIMUM = 201809;
+    private static final int OS_PATCH_LEVEL_MINIMUM = 201909;
+    private static final int VENDOR_PATCH_LEVEL_MINIMUM = 20190905;
+    private static final int BOOT_PATCH_LEVEL_MINIMUM = 20190905;
 
     // Split displayed fingerprint into groups of 4 characters
     private static final int FINGERPRINT_SPLIT_INTERVAL = 4;
