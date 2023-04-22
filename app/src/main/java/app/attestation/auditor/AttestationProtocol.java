@@ -308,19 +308,6 @@ class AttestationProtocol {
             R.string.device_sm_n975u,
             R.string.device_sm_t510);
 
-    private static final ImmutableMap<String, String> fingerprintsMigration = ImmutableMap
-            .<String, String>builder()
-            // GrapheneOS Pixel 3
-            .put("0F9A9CC8ADE73064A54A35C5509E77994E3AA37B6FB889DD53AF82C3C570C5CF", // v2
-                    "213AA4392BF7CABB9676C2680E134FB5FD3E5937D7E607B4EB907CB0A9D9E400") // v1
-            // GrapheneOS Pixel 3 XL
-            .put("06DD526EE9B1CB92AA19D9835B68B4FF1A48A3AD31D813F27C9A7D6C271E9451", // v2
-                    "60D551860CC7FD32A9DC65FB3BCEB87A5E5C1F88928026F454A234D69B385580") // v1
-            // Stock OS Pixel 3 and Pixel 3 XL
-            .put("61FDA12B32ED84214A9CF13D1AFFB7AA80BD8A268A861ED4BB7A15170F1AB00C", // v2
-                    "B799391AFAE3B35522D1EDC5C70A3746B097BDD1CABD59F72BB049705C7A03EF") // v1
-            .build();
-
     private static final ImmutableMap<String, DeviceInfo> fingerprintsCustomOS = ImmutableMap
             .<String, DeviceInfo>builder()
             // GrapheneOS
@@ -328,13 +315,9 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_2, 2, 3, true, true, false, R.string.os_graphene))
             .put("B6851E9B9C0EBB7185420BD0E79D20A84CB15AB0B018505EFFAA4A72B9D9DAC7",
                     new DeviceInfo(R.string.device_pixel_2_xl, 2, 3, true, true, false, R.string.os_graphene))
-            .put("213AA4392BF7CABB9676C2680E134FB5FD3E5937D7E607B4EB907CB0A9D9E400", // v1
+            .put("0F9A9CC8ADE73064A54A35C5509E77994E3AA37B6FB889DD53AF82C3C570C5CF",
                     new DeviceInfo(R.string.device_pixel_3, 3, 4, false /* uses new API */, true, true, R.string.os_graphene))
-            .put("0F9A9CC8ADE73064A54A35C5509E77994E3AA37B6FB889DD53AF82C3C570C5CF", // v2
-                    new DeviceInfo(R.string.device_pixel_3, 3, 4, false /* uses new API */, true, true, R.string.os_graphene))
-            .put("60D551860CC7FD32A9DC65FB3BCEB87A5E5C1F88928026F454A234D69B385580", // v1
-                    new DeviceInfo(R.string.device_pixel_3_xl, 3, 4, false /* uses new API */, true, true, R.string.os_graphene))
-            .put("06DD526EE9B1CB92AA19D9835B68B4FF1A48A3AD31D813F27C9A7D6C271E9451", // v2
+            .put("06DD526EE9B1CB92AA19D9835B68B4FF1A48A3AD31D813F27C9A7D6C271E9451",
                     new DeviceInfo(R.string.device_pixel_3_xl, 3, 4, false /* uses new API */, true, true, R.string.os_graphene))
             .put("8FF8B9B4F831114963669E04EA4F849F33F3744686A0B33B833682746645ABC8",
                     new DeviceInfo(R.string.device_pixel_3a, 3, 4, false /* uses new API */, true, true, R.string.os_graphene))
@@ -385,9 +368,7 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_2, 2, 3, true, true, false, R.string.os_stock))
             .put("171616EAEF26009FC46DC6D89F3D24217E926C81A67CE65D2E3A9DC27040C7AB",
                     new DeviceInfo(R.string.device_pixel_2_xl, 2, 3, true, true, false, R.string.os_stock))
-            .put("B799391AFAE3B35522D1EDC5C70A3746B097BDD1CABD59F72BB049705C7A03EF", // v1
-                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 4, false /* uses new API */, true, true, R.string.os_stock))
-            .put("61FDA12B32ED84214A9CF13D1AFFB7AA80BD8A268A861ED4BB7A15170F1AB00C", // v2
+            .put("61FDA12B32ED84214A9CF13D1AFFB7AA80BD8A268A861ED4BB7A15170F1AB00C",
                     new DeviceInfo(R.string.device_pixel_3_generic, 3, 4, false /* uses new API */, true, true, R.string.os_stock))
             .put("E75B86C52C7496255A95FB1E2B1C044BFA9D5FE34DD1E4EEBD752EEF0EA89875",
                     new DeviceInfo(R.string.device_pixel_3a_generic, 3, 4, false /* uses new API */, true, true, R.string.os_stock))
@@ -1106,12 +1087,7 @@ class AttestationProtocol {
 
             final String pinnedVerifiedBootKey = preferences.getString(KEY_PINNED_VERIFIED_BOOT_KEY, null);
             if (!verified.verifiedBootKey.equals(pinnedVerifiedBootKey)) {
-                final String legacyFingerprint = fingerprintsMigration.get(verified.verifiedBootKey);
-                if (legacyFingerprint != null && legacyFingerprint.equals(pinnedVerifiedBootKey)) {
-                    Log.d(TAG, "migration from legacy fingerprint " + legacyFingerprint + " to " + verified.verifiedBootKey);
-                } else {
-                    throw new GeneralSecurityException("pinned verified boot key mismatch");
-                }
+                throw new GeneralSecurityException("pinned verified boot key mismatch");
             }
             if (verified.osVersion != DEVELOPER_PREVIEW_OS_VERSION &&
                     verified.osVersion < preferences.getInt(KEY_PINNED_OS_VERSION, Integer.MAX_VALUE)) {
@@ -1144,8 +1120,6 @@ class AttestationProtocol {
                     new Date(preferences.getLong(KEY_VERIFIED_TIME_LAST, 0))));
 
             final SharedPreferences.Editor editor = preferences.edit();
-            // handle migration to v2 verified boot key fingerprint
-            editor.putString(KEY_PINNED_VERIFIED_BOOT_KEY, verified.verifiedBootKey);
             editor.putInt(KEY_PINNED_OS_VERSION, verified.osVersion);
             editor.putInt(KEY_PINNED_OS_PATCH_LEVEL, verified.osPatchLevel);
             if (verified.vendorPatchLevel != 0) {
