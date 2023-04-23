@@ -549,7 +549,7 @@ public class AttestationActivity extends AppCompatActivity {
         else if (itemId == R.id.action_remote_verify_now) {
             if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},
-                        PERMISSIONS_REQUEST_POST_NOTIFICATIONS_SUBMIT_SAMPLE);
+                        PERMISSIONS_REQUEST_POST_NOTIFICATIONS_REMOTE_VERIFY);
             } else {
                 RemoteVerifyJob.schedule(this, -1);
                 snackbar.setText(R.string.remote_verify_now).show();

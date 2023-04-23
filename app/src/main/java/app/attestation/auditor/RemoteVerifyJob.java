@@ -39,6 +39,8 @@ public class RemoteVerifyJob extends JobService {
     private static final String TAG = "RemoteVerifyJob";
     private static final int PERIODIC_JOB_ID = 0;
     private static final int FIRST_RUN_JOB_ID = 1;
+
+    private static final int FIRE_ONCE_JOB_ID = 2;
     static final String DOMAIN = "attestation.app";
     private static final String CHALLENGE_URL = "https://" + DOMAIN + "/challenge";
     private static final String VERIFY_URL = "https://" + DOMAIN + "/verify";
@@ -115,13 +117,24 @@ public class RemoteVerifyJob extends JobService {
                 throw new RuntimeException("job schedule failed");
             }
         }
-        final JobInfo.Builder builder = new JobInfo.Builder(PERIODIC_JOB_ID, serviceName)
+        final JobInfo.Builder builder = scheduleNow ?
+                new JobInfo.Builder(FIRE_ONCE_JOB_ID, serviceName)
+                        .setPersisted(true)
+                        .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                : new JobInfo.Builder(PERIODIC_JOB_ID, serviceName)
                 .setPersisted(true)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+<<<<<<< HEAD
                 .setEstimatedNetworkBytes(ESTIMATED_DOWNLOAD_BYTES, ESTIMATED_UPLOAD_BYTES);
 
         if(!scheduleNow) {
             builder.setPeriodic(intervalMillis, flexMillis);
+=======
+                .setPeriodic(intervalMillis, flexMillis);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            builder.setEstimatedNetworkBytes(ESTIMATED_DOWNLOAD_BYTES, ESTIMATED_UPLOAD_BYTES);
+>>>>>>> 9a0a5f1 (review changes)
         }
         if (scheduler.schedule(builder.build()) == JobScheduler.RESULT_FAILURE) {
             throw new RuntimeException("job schedule failed");
