@@ -247,6 +247,7 @@ public class AttestationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AttestationContext.getInstance().initialize(AttestationActivity.this);
 
         binding = ActivityAttestationBinding.inflate(getLayoutInflater());
         View rootView = binding.getRoot();

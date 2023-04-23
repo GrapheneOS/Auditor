@@ -261,6 +261,149 @@ class AttestationProtocol {
         final boolean enforceStrongBox;
         final int osName;
 
+        /// returns a map that provides dynamic lookup of attestationVersion, keymasterVersion, etc., based on the device name
+        /// -- lazily initialized to ensure the main activity has started first
+        private static final ImmutableMap<String, DeviceInfo> deviceMap() {
+            final Resources res = AttestationContext.getInstance().activityContext().getResources();
+            return ImmutableMap
+            .<String, DeviceInfo>builder()
+            .put(deviceName(res, R.string.device_huawei),
+                    new DeviceInfo(R.string.device_huawei, 2, 3, false, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_huawei_honor_7a_pro),
+                    new DeviceInfo(R.string.device_huawei_honor_7a_pro, 2, 3, false, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_nokia),
+                    new DeviceInfo(R.string.device_nokia, 2, 3, true, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_nokia_3_1),
+                    new DeviceInfo(R.string.device_nokia_3_1, 2, 3, false, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_nokia_7_1),
+                    new DeviceInfo(R.string.device_nokia_7_1, 2, 3, true, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_oneplus_6_a6003),
+                    new DeviceInfo(R.string.device_oneplus_6_a6003, 2, 3, true, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_oneplus_6t_a6013),
+                    new DeviceInfo(R.string.device_oneplus_6t_a6013, 3, 4, false /* uses new API */, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_oneplus_7_pro_gm1913),
+                    new DeviceInfo(R.string.device_oneplus_7_pro_gm1913, 3, 4, false /* uses new API */, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_pixel_2),
+                    new DeviceInfo(R.string.device_pixel_2, 2, 3, true, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_pixel_2_xl),
+                    new DeviceInfo(R.string.device_pixel_2_xl, 2, 3, true, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_pixel_3_generic),
+                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 4, false /* uses new API */, true, true, R.string.os))
+            .put(deviceName(res, R.string.device_pixel_3a_generic),
+                    new DeviceInfo(R.string.device_pixel_3a_generic, 3, 4, false /* uses new API */, true, true, R.string.os))
+            .put(deviceName(res, R.string.device_pixel_4_generic),
+                    new DeviceInfo(R.string.device_pixel_4_generic, 3, 4, false /* uses new API */, true, true, R.string.os))
+            .put(deviceName(res, R.string.device_pixel_4a),
+                    new DeviceInfo(R.string.device_pixel_4a, 3, 4, false /* uses new API */, true, true, R.string.os))
+            .put(deviceName(res, R.string.device_pixel_5_generic),
+                    new DeviceInfo(R.string.device_pixel_5_generic, 3, 4, false /* uses new API */, true, true, R.string.os))
+            .put(deviceName(res, R.string.device_pixel_5a),
+                    new DeviceInfo(R.string.device_pixel_5a, 3, 4, false /* uses new API */, true, true, R.string.os))
+            .put(deviceName(res, R.string.device_pixel_6),
+                    new DeviceInfo(R.string.device_pixel_6, 100, 100, false /* uses new API */, true, true, R.string.os))
+            .put(deviceName(res, R.string.device_pixel_6_pro),
+                    new DeviceInfo(R.string.device_pixel_6_pro, 100, 100, false /* uses new API */, true, true, R.string.os))
+            .put(deviceName(res, R.string.device_pixel_6a),
+                    new DeviceInfo(R.string.device_pixel_6a, 100, 100, false /* uses new API */, true, true, R.string.os))
+            .put(deviceName(res, R.string.device_pixel_7),
+                    new DeviceInfo(R.string.device_pixel_7, 200, 200, false /* uses new API */, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_pixel_7_pro),
+                    new DeviceInfo(R.string.device_pixel_7_pro, 200, 200, false /* uses new API */, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_sm_a705fn),
+                    new DeviceInfo(R.string.device_sm_a705fn, 3, 4, false /* uses new API */, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_sm_g960f),
+                    new DeviceInfo(R.string.device_sm_g960f, 1, 2, false, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_sm_g960_na),
+                    new DeviceInfo(R.string.device_sm_g960_na, 1, 2, false, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_sm_g9600),
+                    new DeviceInfo(R.string.device_sm_g9600, 1, 2, false, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_sm_g965f),
+                    new DeviceInfo(R.string.device_sm_g965f, 1, 2, false, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_sm_g965_msm),
+                    new DeviceInfo(R.string.device_sm_g965_msm, 1, 2, false, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_sm_g970f),
+                    new DeviceInfo(R.string.device_sm_g970f, 3, 4, false /* uses new API */, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_sm_g975f),
+                    new DeviceInfo(R.string.device_sm_g975f, 3, 4, false /* uses new API */, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_sm_j260a),
+                    new DeviceInfo(R.string.device_sm_j260a, 1, 2, false, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_sm_j260f),
+                    new DeviceInfo(R.string.device_sm_j260f, 1, 2, false, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_sm_j260t1),
+                    new DeviceInfo(R.string.device_sm_j260t1, 1, 2, false, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_sm_j337a),
+                    new DeviceInfo(R.string.device_sm_j337a, 1, 2, false, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_sm_j337t),
+                    new DeviceInfo(R.string.device_sm_j337t, 1, 2, false, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_sm_j720f),
+                    new DeviceInfo(R.string.device_sm_j720f, 1, 2, false, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_sm_j737t1),
+                    new DeviceInfo(R.string.device_sm_j737t1, 1, 2, false, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_sm_m205f),
+                    new DeviceInfo(R.string.device_sm_m205f, 1, 2, false, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_sm_n960f),
+                    new DeviceInfo(R.string.device_sm_n960f, 1, 2, false, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_sm_n960u),
+                    new DeviceInfo(R.string.device_sm_n960u, 1, 2, false, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_sm_n970f),
+                    new DeviceInfo(R.string.device_sm_n970f, 3, 4, false /* uses new API */, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_sm_n970u),
+                    new DeviceInfo(R.string.device_sm_n970u, 3, 4, false /* uses new API */, true, true, R.string.os))
+            .put(deviceName(res, R.string.device_sm_n975u),
+                    new DeviceInfo(R.string.device_sm_n975u, 3, 4, false /* uses new API */, true, true, R.string.os))
+            .put(deviceName(res, R.string.device_sm_s367vl),
+                    new DeviceInfo(R.string.device_sm_s367vl, 1, 2, false, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_sm_t510),
+                    new DeviceInfo(R.string.device_sm_t510, 3, 4, false /* uses new API */, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_sm_t835),
+                    new DeviceInfo(R.string.device_sm_t835, 1, 2, false, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_sony_xperia_xa2),
+                    new DeviceInfo(R.string.device_sony_xperia_xa2, 2, 3, true, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_sony_xperia_xz1),
+                    new DeviceInfo(R.string.device_sony_xperia_xz1, 2, 3, true, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_sony_xperia_xz2),
+                    new DeviceInfo(R.string.device_sony_xperia_xz2, 2, 3, false, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_sony_xperia_xz2_compact),
+                    new DeviceInfo(R.string.device_sony_xperia_xz2_compact, 2, 3, true, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_blackberry_key2),
+                    new DeviceInfo(R.string.device_blackberry_key2, 2, 3, true, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_bq_aquaris_x2_pro),
+                    new DeviceInfo(R.string.device_bq_aquaris_x2_pro, 2, 3, true, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_xiaomi_mi_a2),
+                    new DeviceInfo(R.string.device_xiaomi_mi_a2, 2, 3, true, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_xiaomi_mi_a2_lite),
+                    new DeviceInfo(R.string.device_xiaomi_mi_a2_lite, 2, 3, true, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_xiaomi_mi_9),
+                    new DeviceInfo(R.string.device_xiaomi_mi_9, 3, 4, false /* uses new API */, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_htc),
+                    new DeviceInfo(R.string.device_htc, 2, 3, true, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_moto_g7),
+                    new DeviceInfo(R.string.device_moto_g7, 3, 4, false /* uses new API */, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_motorola_one_vision),
+                    new DeviceInfo(R.string.device_motorola_one_vision, 2, 3, false, true, false, R.string.os))
+            .put(deviceName(res, R.string.device_vivo_1807),
+                    new DeviceInfo(R.string.device_vivo_1807, 2, 3, true, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_revvl_2),
+                    new DeviceInfo(R.string.device_revvl_2, 2, 3, false, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_oppo_cph1831),
+                    new DeviceInfo(R.string.device_oppo_cph1831, 2, 3, true, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_oppo_cph1903),
+                    new DeviceInfo(R.string.device_oppo_cph1903, 2, 3, true, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_oppo_cph1909),
+                    new DeviceInfo(R.string.device_oppo_cph1909, 2, 3, false, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_lg_q710al),
+                    new DeviceInfo(R.string.device_lg_q710al, 2, 3, false, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_lm_q720),
+                    new DeviceInfo(R.string.device_lm_q720, 3, 4, false /* uses new API */, false, false, R.string.os))
+            .put(deviceName(res, R.string.device_rmx1941),
+                    new DeviceInfo(R.string.device_rmx1941, 2, 3, false, true, false, R.string.os))
+            .build();
+        }
+
+        private static final String deviceName(final Resources res, final int device) {
+            return res.getString(device);
+        } 
+
         DeviceInfo(final int name, final int attestationVersion, final int keymasterVersion,
                 final boolean rollbackResistant, final boolean perUserEncryption,
                 final boolean enforceStrongBox, final int osName) {
@@ -709,7 +852,17 @@ class AttestationProtocol {
         final String verifiedBootKey = BaseEncoding.base16().encode(rootOfTrust.getVerifiedBootKey());
         final DeviceInfo device;
         if (verifiedBootState == RootOfTrust.KM_VERIFIED_BOOT_SELF_SIGNED) {
-            if (attestationSecurityLevel == Attestation.KM_SECURITY_LEVEL_STRONG_BOX) {
+            final Resources res = AttestationContext.getInstance().activityContext().getResources();
+            final String overridenFingerprint = res.getString(R.string.avb_fingerprint_override);
+            if (verifiedBootKey.equals(overridenFingerprint)) {
+                // the fingerprint has been overriden at build time so we need to dynamically look up the device characteristics
+                DeviceInfo partialDevice = DeviceInfo.deviceMap().get(res.getString(R.string.device));
+                if(attestationSecurityLevel == Attestation.KM_SECURITY_LEVEL_STRONG_BOX) {
+                    device = new DeviceInfo(partialDevice.name, partialDevice.attestationVersion, partialDevice.keymasterVersion, partialDevice.rollbackResistant, partialDevice.perUserEncryption, true, partialDevice.osName);
+                } else {
+                    device = new DeviceInfo(partialDevice.name, partialDevice.attestationVersion, partialDevice.keymasterVersion, partialDevice.rollbackResistant, partialDevice.perUserEncryption, false, partialDevice.osName);
+                }
+            } else if (attestationSecurityLevel == Attestation.KM_SECURITY_LEVEL_STRONG_BOX) {
                 device = fingerprintsStrongBoxCustomOS.get(verifiedBootKey);
             } else {
                 device = fingerprintsCustomOS.get(verifiedBootKey);
