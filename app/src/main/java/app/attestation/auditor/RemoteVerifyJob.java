@@ -124,18 +124,9 @@ public class RemoteVerifyJob extends JobService {
                 : new JobInfo.Builder(PERIODIC_JOB_ID, serviceName)
                 .setPersisted(true)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-<<<<<<< HEAD
-                .setEstimatedNetworkBytes(ESTIMATED_DOWNLOAD_BYTES, ESTIMATED_UPLOAD_BYTES);
-
-        if(!scheduleNow) {
-            builder.setPeriodic(intervalMillis, flexMillis);
-=======
+                .setEstimatedNetworkBytes(ESTIMATED_DOWNLOAD_BYTES, ESTIMATED_UPLOAD_BYTES)
                 .setPeriodic(intervalMillis, flexMillis);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            builder.setEstimatedNetworkBytes(ESTIMATED_DOWNLOAD_BYTES, ESTIMATED_UPLOAD_BYTES);
->>>>>>> 9a0a5f1 (review changes)
-        }
         if (scheduler.schedule(builder.build()) == JobScheduler.RESULT_FAILURE) {
             throw new RuntimeException("job schedule failed");
         }
