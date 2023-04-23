@@ -39,9 +39,6 @@ public class RemoteVerifyJob extends JobService {
     private static final String TAG = "RemoteVerifyJob";
     private static final int PERIODIC_JOB_ID = 0;
     private static final int FIRST_RUN_JOB_ID = 1;
-    static final String DOMAIN = "attestation.app";
-    private static final String CHALLENGE_URL = "https://" + DOMAIN + "/challenge";
-    private static final String VERIFY_URL = "https://" + DOMAIN + "/verify";
     private static final int CONNECT_TIMEOUT = 60000;
     private static final int READ_TIMEOUT = 60000;
     private static final int DEFAULT_INTERVAL = 4 * 60 * 60;
@@ -127,6 +124,18 @@ public class RemoteVerifyJob extends JobService {
         scheduler.cancel(FIRST_RUN_JOB_ID);
     }
 
+    final String domain() {
+        return getString(R.string.url);
+    }
+
+    final String challenge_url() {
+        return "https://" + domain() + "/challenge";
+    }
+
+    final String verify_url() {
+        return "https://" + domain() + "/verify";
+    }
+
     @Override
     public boolean onStartJob(final JobParameters params) {
         task = executor.submit(() -> {
@@ -135,7 +144,7 @@ public class RemoteVerifyJob extends JobService {
             HttpURLConnection connection = null;
             String exceptionMessage = null;
             try {
-                connection = (HttpURLConnection) new URL(CHALLENGE_URL).openConnection();
+                connection = (HttpURLConnection) new URL(challenge_url()).openConnection();
                 connection.setConnectTimeout(CONNECT_TIMEOUT);
                 connection.setReadTimeout(READ_TIMEOUT);
                 connection.setRequestMethod("POST");
@@ -158,7 +167,7 @@ public class RemoteVerifyJob extends JobService {
                 final AttestationResult result = AttestationProtocol.generateSerialized(
                         context, challengeMessage, Long.toString(userId), STATE_PREFIX);
 
-                connection = (HttpURLConnection) new URL(VERIFY_URL).openConnection();
+                connection = (HttpURLConnection) new URL(verify_url()).openConnection();
                 connection.setConnectTimeout(CONNECT_TIMEOUT);
                 connection.setReadTimeout(READ_TIMEOUT);
                 connection.setDoOutput(true);

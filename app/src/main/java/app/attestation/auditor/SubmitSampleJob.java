@@ -41,7 +41,6 @@ import java.util.Properties;
 public class SubmitSampleJob extends JobService {
     private static final String TAG = "SubmitSampleJob";
     private static final int JOB_ID = 2;
-    private static final String SUBMIT_URL = "https://" + RemoteVerifyJob.DOMAIN + "/submit";
     private static final int CONNECT_TIMEOUT = 60000;
     private static final int READ_TIMEOUT = 60000;
     private static final int ESTIMATED_DOWNLOAD_BYTES = 4 * 1024;
@@ -70,12 +69,16 @@ public class SubmitSampleJob extends JobService {
         }
     }
 
+    final String submit_url() {
+        return "https://" + getString(R.string.url) + "/submit";
+    }
+
     @Override
     public boolean onStartJob(final JobParameters params) {
         task = executor.submit(() -> {
             HttpURLConnection connection = null;
             try {
-                connection = (HttpURLConnection) new URL(SUBMIT_URL).openConnection();
+                connection = (HttpURLConnection) new URL(submit_url()).openConnection();
                 connection.setConnectTimeout(CONNECT_TIMEOUT);
                 connection.setReadTimeout(READ_TIMEOUT);
                 connection.setDoOutput(true);
