@@ -262,9 +262,8 @@ class AttestationProtocol {
         final int osName;
 
         /// returns a map that provides dynamic lookup of attestationVersion, keymasterVersion, etc., based on the device name
-        /// -- lazily initialized to ensure the main activity has started first
-        private static final ImmutableMap<String, DeviceInfo> deviceMap() {
-            final Resources res = AttestationContext.getInstance().activityContext().getResources();
+        /// -- lazily initialized to ensure app context is available.
+        private static final ImmutableMap<String, DeviceInfo> deviceMap(final Resources res) {
             return ImmutableMap
             .<String, DeviceInfo>builder()
             .put(deviceName(res, R.string.device_huawei),
@@ -769,7 +768,7 @@ class AttestationProtocol {
 
     private static Verified verifyStateless(final Certificate[] certificates,
             final byte[] challenge, final boolean hasPersistentKey, final Certificate root0,
-            final Certificate root1, final Certificate root2) throws GeneralSecurityException {
+            final Certificate root1, final Certificate root2, final Resources res) throws GeneralSecurityException {
 
         verifyCertificateSignatures(certificates, hasPersistentKey);
 
@@ -852,11 +851,10 @@ class AttestationProtocol {
         final String verifiedBootKey = BaseEncoding.base16().encode(rootOfTrust.getVerifiedBootKey());
         final DeviceInfo device;
         if (verifiedBootState == RootOfTrust.KM_VERIFIED_BOOT_SELF_SIGNED) {
-            final Resources res = AttestationContext.getInstance().activityContext().getResources();
             final String overridenFingerprint = res.getString(R.string.avb_fingerprint_override);
             if (verifiedBootKey.equals(overridenFingerprint)) {
                 // the fingerprint has been overriden at build time so we need to dynamically look up the device characteristics
-                DeviceInfo partialDevice = DeviceInfo.deviceMap().get(res.getString(R.string.device_name));
+                DeviceInfo partialDevice = DeviceInfo.deviceMap(res).get(res.getString(R.string.device_name));
                 if(attestationSecurityLevel == Attestation.KM_SECURITY_LEVEL_STRONG_BOX) {
                     device = new DeviceInfo(partialDevice.name, partialDevice.attestationVersion, partialDevice.keymasterVersion, partialDevice.rollbackResistant, partialDevice.perUserEncryption, true, partialDevice.osName);
                 } else {
@@ -1196,7 +1194,8 @@ class AttestationProtocol {
         final Verified verified = verifyStateless(attestationCertificates, challenge, hasPersistentKey,
                 generateCertificate(context.getResources(), R.raw.google_root_0),
                 generateCertificate(context.getResources(), R.raw.google_root_1),
-                generateCertificate(context.getResources(), R.raw.google_root_2));
+                generateCertificate(context.getResources(), R.raw.google_root_2),
+                context.getResources());
 
         final StringBuilder teeEnforced = new StringBuilder();
         final StringBuilder history = new StringBuilder();
@@ -1662,7 +1661,8 @@ class AttestationProtocol {
             final Verified verified = verifyStateless(attestationCertificates, challenge, hasPersistentKey,
                     generateCertificate(context.getResources(), R.raw.google_root_0),
                     generateCertificate(context.getResources(), R.raw.google_root_1),
-                    generateCertificate(context.getResources(), R.raw.google_root_2));
+                    generateCertificate(context.getResources(), R.raw.google_root_2),
+                    context.getResources());
 
             // OS-enforced checks and information
 

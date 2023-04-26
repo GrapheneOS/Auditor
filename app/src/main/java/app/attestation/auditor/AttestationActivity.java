@@ -112,7 +112,7 @@ public class AttestationActivity extends AppCompatActivity {
                             stage = Stage.None;
                             Log.d(TAG, "account: " + contents);
                             final String[] values = contents.split(" ");
-                            final String domain = getString(R.string.url);
+                            final String domain = getString(R.string.base_domain);
                             if (values.length < 4 || !domain.equals(values[0])) {
                                 snackbar.setText(R.string.scanned_invalid_account_qr_code).show();
                                 return;
@@ -247,7 +247,6 @@ public class AttestationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AttestationContext.getInstance().initialize(AttestationActivity.this);
 
         binding = ActivityAttestationBinding.inflate(getLayoutInflater());
         View rootView = binding.getRoot();
@@ -507,8 +506,8 @@ public class AttestationActivity extends AppCompatActivity {
         return true;
     }
 
-    final String tutorial_url() {
-        return "https://" + getString(R.string.url) + "/tutorial";
+    final String tutorialUrl() {
+        return "https://" + getString(R.string.base_domain) + "/tutorial";
     }
 
     @Override
@@ -588,7 +587,7 @@ public class AttestationActivity extends AppCompatActivity {
             }
             return true;
         } else if (itemId == R.id.action_help) {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(tutorial_url())));
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(tutorialUrl())));
             return true;
         }
         return super.onOptionsItemSelected(item);

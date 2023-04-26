@@ -69,8 +69,8 @@ public class SubmitSampleJob extends JobService {
         }
     }
 
-    final String submit_url() {
-        return "https://" + getString(R.string.url) + "/submit";
+    final String submitUrl() {
+        return "https://" + getString(R.string.base_domain) + "/submit";
     }
 
     @Override
@@ -78,7 +78,7 @@ public class SubmitSampleJob extends JobService {
         task = executor.submit(() -> {
             HttpURLConnection connection = null;
             try {
-                connection = (HttpURLConnection) new URL(submit_url()).openConnection();
+                connection = (HttpURLConnection) new URL(submitUrl()).openConnection();
                 connection.setConnectTimeout(CONNECT_TIMEOUT);
                 connection.setReadTimeout(READ_TIMEOUT);
                 connection.setDoOutput(true);

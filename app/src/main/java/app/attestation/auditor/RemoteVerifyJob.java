@@ -125,14 +125,14 @@ public class RemoteVerifyJob extends JobService {
     }
 
     final String domain() {
-        return getString(R.string.url);
+        return getString(R.string.base_domain);
     }
 
-    final String challenge_url() {
+    final String challengeUrl() {
         return "https://" + domain() + "/challenge";
     }
 
-    final String verify_url() {
+    final String verifyUrl() {
         return "https://" + domain() + "/verify";
     }
 
@@ -144,7 +144,7 @@ public class RemoteVerifyJob extends JobService {
             HttpURLConnection connection = null;
             String exceptionMessage = null;
             try {
-                connection = (HttpURLConnection) new URL(challenge_url()).openConnection();
+                connection = (HttpURLConnection) new URL(challengeUrl()).openConnection();
                 connection.setConnectTimeout(CONNECT_TIMEOUT);
                 connection.setReadTimeout(READ_TIMEOUT);
                 connection.setRequestMethod("POST");
@@ -167,7 +167,7 @@ public class RemoteVerifyJob extends JobService {
                 final AttestationResult result = AttestationProtocol.generateSerialized(
                         context, challengeMessage, Long.toString(userId), STATE_PREFIX);
 
-                connection = (HttpURLConnection) new URL(verify_url()).openConnection();
+                connection = (HttpURLConnection) new URL(verifyUrl()).openConnection();
                 connection.setConnectTimeout(CONNECT_TIMEOUT);
                 connection.setReadTimeout(READ_TIMEOUT);
                 connection.setDoOutput(true);
