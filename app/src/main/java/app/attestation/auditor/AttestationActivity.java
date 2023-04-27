@@ -506,8 +506,8 @@ public class AttestationActivity extends AppCompatActivity {
         return true;
     }
 
-    final String tutorialUrl() {
-        return "https://" + getString(R.string.base_domain) + "/tutorial";
+    private String tutorialUrl() {
+        return getString(R.string.base_domain) + "/tutorial";
     }
 
     @Override

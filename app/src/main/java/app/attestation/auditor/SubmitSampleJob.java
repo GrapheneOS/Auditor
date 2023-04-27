@@ -69,8 +69,8 @@ public class SubmitSampleJob extends JobService {
         }
     }
 
-    final String submitUrl() {
-        return "https://" + getString(R.string.base_domain) + "/submit";
+    private String submitUrl() {
+        return getString(R.string.base_domain) + "/submit";
     }
 
     @Override

@@ -124,16 +124,16 @@ public class RemoteVerifyJob extends JobService {
         scheduler.cancel(FIRST_RUN_JOB_ID);
     }
 
-    final String domain() {
+    private String domain() {
         return getString(R.string.base_domain);
     }
 
-    final String challengeUrl() {
-        return "https://" + domain() + "/challenge";
+    private String challengeUrl() {
+        return domain() + "/challenge";
     }
 
-    final String verifyUrl() {
-        return "https://" + domain() + "/verify";
+    private String verifyUrl() {
+        return domain() + "/verify";
     }
 
     @Override
