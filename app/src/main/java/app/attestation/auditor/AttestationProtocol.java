@@ -85,7 +85,7 @@ import static android.security.keystore.KeyProperties.DIGEST_SHA256;
 import static androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_WEAK;
 import static androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS;
 
-public class AttestationProtocol {
+class AttestationProtocol {
     private static final String TAG = "AttestationProtocol";
 
     // Developer previews set osVersion to 0 as a placeholder value.
@@ -287,7 +287,7 @@ public class AttestationProtocol {
     // Split displayed fingerprint into groups of 4 characters
     private static final int FINGERPRINT_SPLIT_INTERVAL = 4;
 
-    public static class DeviceInfoParser implements XmlMapElemParser<String, DeviceInfo> {
+    static class DeviceInfoParser implements XmlMapElemParser<String, DeviceInfo> {
 
         private static ImmutableMap<String, DeviceInfo> getDeviceMap(Context context, int resMap)
                 throws IOException, XmlPullParserException {
@@ -380,15 +380,15 @@ public class AttestationProtocol {
 
     }
 
-    public static class DeviceInfo {
-        public final int name;
-        public final int attestationVersion;
-        public final int keymasterVersion;
-        public final boolean rollbackResistant;
-        public final boolean perUserEncryption;
+    static class DeviceInfo {
+        final int name;
+        final int attestationVersion;
+        final int keymasterVersion;
+        final boolean rollbackResistant;
+        final boolean perUserEncryption;
         // enforce using StrongBox for new pairings
-        public final boolean enforceStrongBox;
-        public final int osName;
+        final boolean enforceStrongBox;
+        final int osName;
 
         DeviceInfo(final int name, final int attestationVersion, final int keymasterVersion,
                 final boolean rollbackResistant, final boolean perUserEncryption,

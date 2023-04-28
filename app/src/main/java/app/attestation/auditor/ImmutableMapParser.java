@@ -17,7 +17,7 @@ interface XmlMapElemParser<K, V> {
     public V parseValue(Context context, XmlResourceParser parser);
 }
 
-public class ImmutableMapParser {
+class ImmutableMapParser {
     public static <K, V> ImmutableMap<K, V> getImmutableMapResource(Context context, int hashMapResId,
             String keyTagName, String valueTagName, XmlMapElemParser<K, V> mapElemParser)
             throws XmlPullParserException, IOException, IllegalArgumentException {
