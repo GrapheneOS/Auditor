@@ -52,8 +52,6 @@ import app.attestation.auditor.databinding.ActivityAttestationBinding;
 public class AttestationActivity extends AppCompatActivity {
     private static final String TAG = "AttestationActivity";
 
-    private static final String TUTORIAL_URL = "https://" + RemoteVerifyJob.DOMAIN + "/tutorial";
-
     private static final String STATE_AUDITEE_PAIRING = "auditee_pairing";
     private static final String STATE_AUDITEE_SERIALIZED_ATTESTATION = "auditee_serialized_attestation";
     private static final String STATE_AUDITOR_CHALLENGE = "auditor_challenge";
@@ -114,7 +112,8 @@ public class AttestationActivity extends AppCompatActivity {
                             stage = Stage.None;
                             Log.d(TAG, "account: " + contents);
                             final String[] values = contents.split(" ");
-                            if (values.length < 4 || !RemoteVerifyJob.DOMAIN.equals(values[0])) {
+                            final String domain = getString(R.string.base_domain);
+                            if (values.length < 4 || !domain.equals(values[0])) {
                                 snackbar.setText(R.string.scanned_invalid_account_qr_code).show();
                                 return;
                             }
@@ -507,6 +506,10 @@ public class AttestationActivity extends AppCompatActivity {
         return true;
     }
 
+    private String tutorialUrl() {
+        return getString(R.string.base_domain) + "/tutorial";
+    }
+
     @Override
     @SuppressLint("InlinedApi")
     public boolean onOptionsItemSelected(final MenuItem item) {
@@ -584,7 +587,7 @@ public class AttestationActivity extends AppCompatActivity {
             }
             return true;
         } else if (itemId == R.id.action_help) {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(TUTORIAL_URL)));
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(tutorialUrl())));
             return true;
         }
         return super.onOptionsItemSelected(item);
