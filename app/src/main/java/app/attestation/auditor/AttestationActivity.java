@@ -200,6 +200,7 @@ public class AttestationActivity extends AppCompatActivity {
             "Pixel 6a",
             "Pixel 7",
             "Pixel 7 Pro",
+            "Pixel 7a",
             "POCOPHONE F1",
             "POT-LX3",
             "REVVL 2",
