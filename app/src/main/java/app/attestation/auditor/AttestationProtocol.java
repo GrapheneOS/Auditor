@@ -124,7 +124,7 @@ class AttestationProtocol {
 
     private static final boolean PREFER_STRONGBOX = true;
     private static final boolean USE_ATTEST_KEY = true;
-    private static final boolean ALLOW_ATTEST_KEY_DOWNGRADE = true;
+    private static final boolean ALLOW_ATTEST_KEY_DOWNGRADE = false;
 
     // Challenge message:
     //
