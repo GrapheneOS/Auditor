@@ -621,6 +621,12 @@ class AttestationProtocol {
         }
     }
 
+    private static byte[] readRawResource(final Context context, final int id) throws IOException {
+        try (final InputStream stream = context.getResources().openRawResource(id)) {
+            return ByteStreams.toByteArray(stream);
+        }
+    }
+
     private static X509Certificate generateCertificate(final InputStream in)
             throws CertificateException {
         return (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(in);
@@ -1295,9 +1301,7 @@ class AttestationProtocol {
 
         final Certificate[] certificates;
         final int dictionary = R.raw.deflate_dictionary_3;
-        try (final InputStream stream = context.getResources().openRawResource(dictionary)) {
-            certificates = decodeChain(ByteStreams.toByteArray(stream), compressedChain);
-        }
+        certificates = decodeChain(readRawResource(context, dictionary), compressedChain);
 
         final byte[] fingerprint = new byte[FINGERPRINT_LENGTH];
         deserializer.get(fingerprint);
@@ -1585,9 +1589,7 @@ class AttestationProtocol {
 
             final byte[] compressed;
             final int dictionary = R.raw.deflate_dictionary_3;
-            try (final InputStream stream = context.getResources().openRawResource(dictionary)) {
-                compressed = encodeChain(ByteStreams.toByteArray(stream), attestationCertificates);
-            }
+            compressed = encodeChain(readRawResource(context, dictionary), attestationCertificates);
 
             if (compressed.length > Short.MAX_VALUE) {
                 throw new RuntimeException("compressed chain too long");
