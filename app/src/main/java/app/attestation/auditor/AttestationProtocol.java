@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.os.Build;
 import android.os.UserManager;
 import android.provider.Settings;
@@ -632,23 +631,15 @@ class AttestationProtocol {
         return (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(in);
     }
 
-    private static X509Certificate generateCertificate(final Resources resources, final int id)
-            throws CertificateException, IOException {
-        try (final InputStream stream = resources.openRawResource(id)) {
-            return generateCertificate(stream);
-        }
-    }
-
     private static Verified verifyStateless(final Certificate[] certificates,
-            final byte[] challenge, final boolean hasPersistentKey, final Certificate root0,
-            final Certificate root1, final Certificate root2) throws GeneralSecurityException {
+            final byte[] challenge, final boolean hasPersistentKey, final byte[][] validRoots)
+            throws GeneralSecurityException {
 
         verifyCertificateSignatures(certificates, hasPersistentKey);
 
         // check that the root certificate is a valid key attestation root
-        if (!Arrays.equals(root0.getEncoded(), certificates[certificates.length - 1].getEncoded()) &&
-                !Arrays.equals(root1.getEncoded(), certificates[certificates.length - 1].getEncoded()) &&
-                !Arrays.equals(root2.getEncoded(), certificates[certificates.length - 1].getEncoded())) {
+        final byte[] root = certificates[certificates.length - 1].getEncoded();
+        if (!Arrays.stream(validRoots).anyMatch(v -> Arrays.equals(v, root))) {
             throw new GeneralSecurityException("root certificate is not a valid key attestation root");
         }
 
@@ -1056,9 +1047,9 @@ class AttestationProtocol {
         }
 
         final Verified verified = verifyStateless(attestationCertificates, challenge, hasPersistentKey,
-                generateCertificate(context.getResources(), R.raw.google_root_0),
-                generateCertificate(context.getResources(), R.raw.google_root_1),
-                generateCertificate(context.getResources(), R.raw.google_root_2));
+                new byte[][]{readRawResource(context, R.raw.google_root_0),
+                    readRawResource(context, R.raw.google_root_1),
+                    readRawResource(context, R.raw.google_root_2)});
 
         final StringBuilder teeEnforced = new StringBuilder();
         final StringBuilder history = new StringBuilder();
@@ -1520,9 +1511,9 @@ class AttestationProtocol {
 
             // sanity check on the device being verified before sending it off to the verifying device
             final Verified verified = verifyStateless(attestationCertificates, challenge, hasPersistentKey,
-                    generateCertificate(context.getResources(), R.raw.google_root_0),
-                    generateCertificate(context.getResources(), R.raw.google_root_1),
-                    generateCertificate(context.getResources(), R.raw.google_root_2));
+                    new byte[][]{readRawResource(context, R.raw.google_root_0),
+                        readRawResource(context, R.raw.google_root_1),
+                        readRawResource(context, R.raw.google_root_2)});
 
             // OS-enforced checks and information
 
