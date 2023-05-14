@@ -82,9 +82,6 @@ import static androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS;
 class AttestationProtocol {
     private static final String TAG = "AttestationProtocol";
 
-    // Developer previews set osVersion to 0 as a placeholder value.
-    private static final int DEVELOPER_PREVIEW_OS_VERSION = 0;
-
     // Settings.Global.ADD_USERS_WHEN_LOCKED is a private API
     private static final String ADD_USERS_WHEN_LOCKED = "add_users_when_locked";
 
@@ -732,11 +729,7 @@ class AttestationProtocol {
 
         // OS version sanity checks
         final int osVersion = teeEnforced.getOsVersion();
-        if (osVersion == DEVELOPER_PREVIEW_OS_VERSION) {
-            if (!BuildConfig.DEBUG) {
-                throw new GeneralSecurityException("OS version is not a production release");
-            }
-        } else if (osVersion < OS_VERSION_MINIMUM) {
+        if (osVersion < OS_VERSION_MINIMUM) {
             throw new GeneralSecurityException("OS version too old: " + osVersion);
         }
         final int osPatchLevel = teeEnforced.getOsPatchLevel();
@@ -965,16 +958,11 @@ class AttestationProtocol {
         builder.append(context.getString(R.string.device, context.getString(verified.device)));
         builder.append(context.getString(R.string.os, context.getString(verified.osName)));
 
-        if (verified.osVersion == DEVELOPER_PREVIEW_OS_VERSION) {
-            builder.append(context.getString(R.string.os_version,
-                    context.getString(R.string.os_version_developer_preview)));
-        } else {
-            final String osVersion = String.format(Locale.US, "%06d", verified.osVersion);
-            builder.append(context.getString(R.string.os_version,
-                        Integer.parseInt(osVersion.substring(0, 2)) + "." +
-                        Integer.parseInt(osVersion.substring(2, 4)) + "." +
-                        Integer.parseInt(osVersion.substring(4, 6))));
-        }
+        final String osVersion = String.format(Locale.US, "%06d", verified.osVersion);
+        builder.append(context.getString(R.string.os_version,
+                    Integer.parseInt(osVersion.substring(0, 2)) + "." +
+                    Integer.parseInt(osVersion.substring(2, 4)) + "." +
+                    Integer.parseInt(osVersion.substring(4, 6))));
 
         builder.append(context.getString(R.string.os_patch_level, formatPatchLevel(verified.osPatchLevel)));
 
@@ -1089,8 +1077,7 @@ class AttestationProtocol {
             if (!verified.verifiedBootKey.equals(pinnedVerifiedBootKey)) {
                 throw new GeneralSecurityException("pinned verified boot key mismatch");
             }
-            if (verified.osVersion != DEVELOPER_PREVIEW_OS_VERSION &&
-                    verified.osVersion < preferences.getInt(KEY_PINNED_OS_VERSION, Integer.MAX_VALUE)) {
+            if (verified.osVersion < preferences.getInt(KEY_PINNED_OS_VERSION, Integer.MAX_VALUE)) {
                 throw new GeneralSecurityException("OS version downgrade detected");
             }
             if (verified.osPatchLevel < preferences.getInt(KEY_PINNED_OS_PATCH_LEVEL, Integer.MAX_VALUE)) {

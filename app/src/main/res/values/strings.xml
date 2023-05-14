@@ -64,7 +64,6 @@
     <string name="device">Pinned device: %s\n</string>
     <string name="os">Pinned OS: %s (unmodified official release)\n</string>
     <string name="os_version">Pinned OS version: %s\n</string>
-    <string name="os_version_developer_preview">not a production release</string>
     <string name="os_patch_level">Pinned OS patch level: %s\n</string>
     <string name="vendor_patch_level">Pinned vendor patch level: %s\n</string>
     <string name="boot_patch_level">Pinned boot patch level: %s\n</string>
