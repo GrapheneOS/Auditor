@@ -1049,7 +1049,8 @@ class AttestationProtocol {
         final Verified verified = verifyStateless(attestationCertificates, challenge, hasPersistentKey,
                 new byte[][]{readRawResource(context, R.raw.google_root_0),
                     readRawResource(context, R.raw.google_root_1),
-                    readRawResource(context, R.raw.google_root_2)});
+                    readRawResource(context, R.raw.google_root_2),
+                    readRawResource(context, R.raw.google_root_3)});
 
         final StringBuilder teeEnforced = new StringBuilder();
         final StringBuilder history = new StringBuilder();
@@ -1513,7 +1514,8 @@ class AttestationProtocol {
             final Verified verified = verifyStateless(attestationCertificates, challenge, hasPersistentKey,
                     new byte[][]{readRawResource(context, R.raw.google_root_0),
                         readRawResource(context, R.raw.google_root_1),
-                        readRawResource(context, R.raw.google_root_2)});
+                        readRawResource(context, R.raw.google_root_2),
+                        readRawResource(context, R.raw.google_root_3)});
 
             // OS-enforced checks and information
 
