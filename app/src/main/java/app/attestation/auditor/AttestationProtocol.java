@@ -121,7 +121,6 @@ class AttestationProtocol {
     private static final int FINGERPRINT_LENGTH = FINGERPRINT_HASH_FUNCTION.bits() / 8;
 
     private static final boolean PREFER_STRONGBOX = true;
-    private static final boolean USE_ATTEST_KEY = true;
 
     // Challenge message:
     //
@@ -1417,8 +1416,7 @@ class AttestationProtocol {
         final String attestationKeystoreAlias;
         final boolean useStrongBox;
         @SuppressLint("InlinedApi")
-        final boolean canUseAttestKey = (alwaysHasAttestKey || pm.hasSystemFeature(PackageManager.FEATURE_KEYSTORE_APP_ATTEST_KEY))
-                && USE_ATTEST_KEY;
+        final boolean canUseAttestKey = (alwaysHasAttestKey || pm.hasSystemFeature(PackageManager.FEATURE_KEYSTORE_APP_ATTEST_KEY));
         final boolean useAttestKey;
         if (hasPersistentKey) {
             final String freshKeyStoreAlias = statePrefix + KEYSTORE_ALIAS_FRESH;
