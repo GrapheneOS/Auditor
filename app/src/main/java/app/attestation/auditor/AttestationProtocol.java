@@ -876,6 +876,11 @@ class AttestationProtocol {
             attestKey = true;
         } catch (final Attestation.KeyDescriptionMissingException e) {}
 
+        // enforce attest key for new pairings with devices supporting it
+        if (!hasPersistentKey && attestationVersion >= 100 && !attestKey) {
+            throw new GeneralSecurityException("missing per-pairing attest key for device supporting it");
+        }
+
         for (int i = 2; i < certificates.length; i++) {
             try {
                 new Attestation((X509Certificate) certificates[i]);
