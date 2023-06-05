@@ -1473,7 +1473,7 @@ class AttestationProtocol {
             }
 
             // sanity check on the device being verified before sending it off to the verifying device
-            final Verified verified = verifyStateless(attestationCertificates, challenge, hasPersistentKey,
+            verifyStateless(attestationCertificates, challenge, hasPersistentKey,
                     new byte[][]{readRawResource(context, R.raw.google_root_0),
                         readRawResource(context, R.raw.google_root_1),
                         readRawResource(context, R.raw.google_root_2),
