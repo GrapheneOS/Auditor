@@ -111,7 +111,7 @@ dependencies {
     implementation("com.google.android.material:material:1.9.0")
     implementation("com.google.guava:guava:32.0.1-android")
     implementation("com.google.zxing:core:3.5.1")
-    implementation("org.bouncycastle:bcprov-jdk18on:1.73")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.74")
 
     // work around conflict
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
