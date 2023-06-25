@@ -1,3 +1,3 @@
-This library code is based on code from the [Android Compatibility Test
-Suite](https://android.googlesource.com/platform/cts/+/57d89b24d452e7188ce4bf90be36e983118a3359/tests/security/src/android/keystore/cts)
+This library code is based on code from the [Android Key 
+Attestation](https://github.com/google/android-key-attestation/blob/4b9aabe954448bdbbfc7f61d5c5cffa6bda62ab8/server/src/main/java/com/google/android/attestation)
 and is Apache2 licensed. Various changes have been made to it here.
