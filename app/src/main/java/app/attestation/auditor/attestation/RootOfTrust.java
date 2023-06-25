@@ -1,11 +1,10 @@
-/*
- * Copyright (C) 2016 The Android Open Source Project
+/* Copyright 2019, The Android Open Source Project, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,98 +15,130 @@
 
 package app.attestation.auditor.attestation;
 
-import androidx.annotation.NonNull;
+import static app.attestation.auditor.attestation.Constants.KM_VERIFIED_BOOT_STATE_FAILED;
+import static app.attestation.auditor.attestation.Constants.KM_VERIFIED_BOOT_STATE_SELF_SIGNED;
+import static app.attestation.auditor.attestation.Constants.KM_VERIFIED_BOOT_STATE_UNVERIFIED;
+import static app.attestation.auditor.attestation.Constants.KM_VERIFIED_BOOT_STATE_VERIFIED;
+import static app.attestation.auditor.attestation.Constants.ROOT_OF_TRUST_DEVICE_LOCKED_INDEX;
+import static app.attestation.auditor.attestation.Constants.ROOT_OF_TRUST_VERIFIED_BOOT_HASH_INDEX;
+import static app.attestation.auditor.attestation.Constants.ROOT_OF_TRUST_VERIFIED_BOOT_KEY_INDEX;
+import static app.attestation.auditor.attestation.Constants.ROOT_OF_TRUST_VERIFIED_BOOT_STATE_INDEX;
 
-import com.google.common.io.BaseEncoding;
-
+import java.util.Optional;
+import org.bouncycastle.asn1.ASN1Boolean;
 import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1Enumerated;
+import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.DEROctetString;
+import org.bouncycastle.asn1.DERSequence;
 
-import java.security.cert.CertificateParsingException;
-
+/** This collection of values defines key information about the device's status. */
 public class RootOfTrust {
-    private static final int VERIFIED_BOOT_KEY_INDEX = 0;
-    private static final int DEVICE_LOCKED_INDEX = 1;
-    private static final int VERIFIED_BOOT_STATE_INDEX = 2;
-    private static final int VERIFIED_BOOT_HASH_INDEX = 3;
 
-    public static final int KM_VERIFIED_BOOT_VERIFIED = 0;
-    public static final int KM_VERIFIED_BOOT_SELF_SIGNED = 1;
-    public static final int KM_VERIFIED_BOOT_UNVERIFIED = 2;
-    public static final int KM_VERIFIED_BOOT_FAILED = 3;
+  public final byte[] verifiedBootKey;
+  public final boolean deviceLocked;
+  public final VerifiedBootState verifiedBootState;
+  public final Optional<byte[]> verifiedBootHash;
 
-    private final byte[] verifiedBootKey;
-    private final boolean deviceLocked;
-    private final int verifiedBootState;
-    private final byte[] verifiedBootHash;
+  private RootOfTrust(ASN1Sequence rootOfTrust, int attestationVersion) {
+    this.verifiedBootKey =
+        ((ASN1OctetString) rootOfTrust.getObjectAt(ROOT_OF_TRUST_VERIFIED_BOOT_KEY_INDEX))
+            .getOctets();
+    this.deviceLocked =
+        ASN1Parsing.getBooleanFromAsn1(rootOfTrust.getObjectAt(ROOT_OF_TRUST_DEVICE_LOCKED_INDEX));
+    this.verifiedBootState =
+        verifiedBootStateToEnum(
+            ASN1Parsing.getIntegerFromAsn1(
+                rootOfTrust.getObjectAt(ROOT_OF_TRUST_VERIFIED_BOOT_STATE_INDEX)));
+    this.verifiedBootHash =
+        attestationVersion >= 3
+            ? Optional.of(
+                ASN1OctetString.getInstance(
+                        rootOfTrust.getObjectAt(ROOT_OF_TRUST_VERIFIED_BOOT_HASH_INDEX))
+                    .getOctets())
+            : Optional.empty();
+  }
 
-    public RootOfTrust(ASN1Encodable asn1Encodable) throws CertificateParsingException {
-        this(asn1Encodable, true);
+  private RootOfTrust(
+      byte[] verifiedBootKey,
+      boolean deviceLocked,
+      VerifiedBootState verifiedBootState,
+      Optional<byte[]> verifiedBootHash) {
+    this.verifiedBootKey = verifiedBootKey;
+    this.deviceLocked = deviceLocked;
+    this.verifiedBootState = verifiedBootState;
+    this.verifiedBootHash = verifiedBootHash;
+  }
+
+  static RootOfTrust createRootOfTrust(ASN1Sequence rootOfTrust, int attestationVersion) {
+    return new RootOfTrust(rootOfTrust, attestationVersion);
+  }
+
+  public static RootOfTrust create(
+      byte[] verifiedBootKey,
+      boolean deviceLocked,
+      VerifiedBootState verifiedBootState,
+      Optional<byte[]> verifiedBootHash) {
+    return new RootOfTrust(verifiedBootKey, deviceLocked, verifiedBootState, verifiedBootHash);
+  }
+
+  private static VerifiedBootState verifiedBootStateToEnum(int securityLevel) {
+    switch (securityLevel) {
+      case KM_VERIFIED_BOOT_STATE_VERIFIED:
+        return VerifiedBootState.VERIFIED;
+      case KM_VERIFIED_BOOT_STATE_SELF_SIGNED:
+        return VerifiedBootState.SELF_SIGNED;
+      case KM_VERIFIED_BOOT_STATE_UNVERIFIED:
+        return VerifiedBootState.UNVERIFIED;
+      case KM_VERIFIED_BOOT_STATE_FAILED:
+        return VerifiedBootState.FAILED;
+      default:
+        throw new IllegalArgumentException("Invalid verified boot state.");
     }
+  }
 
-    public RootOfTrust(ASN1Encodable asn1Encodable, boolean strictParsing)
-            throws CertificateParsingException {
-        if (!(asn1Encodable instanceof ASN1Sequence)) {
-            throw new CertificateParsingException("Expected sequence for root of trust, found "
-                    + asn1Encodable.getClass().getName());
-        }
-
-        ASN1Sequence sequence = (ASN1Sequence) asn1Encodable;
-        verifiedBootKey =
-                Asn1Utils.getByteArrayFromAsn1(sequence.getObjectAt(VERIFIED_BOOT_KEY_INDEX));
-        deviceLocked = Asn1Utils.getBooleanFromAsn1(
-                sequence.getObjectAt(DEVICE_LOCKED_INDEX), strictParsing);
-        verifiedBootState =
-                Asn1Utils.getIntegerFromAsn1(sequence.getObjectAt(VERIFIED_BOOT_STATE_INDEX));
-        if (sequence.size() < 4) {
-            verifiedBootHash = null;
-            return;
-        }
-        verifiedBootHash =
-                Asn1Utils.getByteArrayFromAsn1(sequence.getObjectAt(VERIFIED_BOOT_HASH_INDEX));
+  private static int verifiedBootStateToInt(VerifiedBootState verifiedBootState) {
+    switch (verifiedBootState) {
+      case VERIFIED:
+        return KM_VERIFIED_BOOT_STATE_VERIFIED;
+      case SELF_SIGNED:
+        return KM_VERIFIED_BOOT_STATE_SELF_SIGNED;
+      case UNVERIFIED:
+        return KM_VERIFIED_BOOT_STATE_UNVERIFIED;
+      case FAILED:
+        return KM_VERIFIED_BOOT_STATE_FAILED;
     }
+    throw new IllegalArgumentException("Invalid verified boot state.");
+  }
 
-    public static String verifiedBootStateToString(int verifiedBootState) {
-        switch (verifiedBootState) {
-            case KM_VERIFIED_BOOT_VERIFIED:
-                return "Verified";
-            case KM_VERIFIED_BOOT_SELF_SIGNED:
-                return "Self-signed";
-            case KM_VERIFIED_BOOT_UNVERIFIED:
-                return "Unverified";
-            case KM_VERIFIED_BOOT_FAILED:
-                return "Failed";
-            default:
-                return "Unknown";
-        }
-    }
+  /**
+   * This provides the device's current boot state, which represents the level of protection
+   * provided to the user and to apps after the device finishes booting.
+   */
+  public enum VerifiedBootState {
+    VERIFIED,
+    SELF_SIGNED,
+    UNVERIFIED,
+    FAILED
+  }
 
-    public byte[] getVerifiedBootKey() {
-        return verifiedBootKey;
+  public ASN1Sequence toAsn1Sequence() {
+    ASN1Encodable[] rootOfTrustElements;
+    byte[] verifiedBootHash = this.verifiedBootHash.orElse(null);
+    if (verifiedBootHash != null) {
+      rootOfTrustElements = new ASN1Encodable[4];
+      rootOfTrustElements[ROOT_OF_TRUST_VERIFIED_BOOT_HASH_INDEX] =
+          new DEROctetString(verifiedBootHash);
+    } else {
+      rootOfTrustElements = new ASN1Encodable[3];
     }
-
-    public boolean isDeviceLocked() {
-        return deviceLocked;
-    }
-
-    public int getVerifiedBootState() {
-        return verifiedBootState;
-    }
-
-    public byte[] getVerifiedBootHash() {
-        return verifiedBootHash;
-    }
-
-    @NonNull
-    @Override
-    public String toString() {
-        return "\nVerified boot Key: " +
-                (verifiedBootKey != null ?
-                        BaseEncoding.base64().encode(verifiedBootKey) :
-                        "null") +
-                "\nDevice locked: " +
-                deviceLocked +
-                "\nVerified boot state: " +
-                verifiedBootStateToString(verifiedBootState);
-    }
+    rootOfTrustElements[ROOT_OF_TRUST_VERIFIED_BOOT_KEY_INDEX] =
+        new DEROctetString(this.verifiedBootKey);
+    rootOfTrustElements[ROOT_OF_TRUST_DEVICE_LOCKED_INDEX] =
+        ASN1Boolean.getInstance(this.deviceLocked);
+    rootOfTrustElements[ROOT_OF_TRUST_VERIFIED_BOOT_STATE_INDEX] =
+        new ASN1Enumerated(verifiedBootStateToInt(this.verifiedBootState));
+    return new DERSequence(rootOfTrustElements);
+  }
 }
