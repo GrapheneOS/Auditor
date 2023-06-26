@@ -66,10 +66,10 @@ import java.util.zip.Inflater;
 
 import javax.security.auth.x500.X500Principal;
 
-import app.attestation.auditor.attestation.Attestation;
 import app.attestation.auditor.attestation.AttestationApplicationId;
-import app.attestation.auditor.attestation.AttestationPackageInfo;
+import app.attestation.auditor.attestation.AttestationApplicationId.AttestationPackageInfo;
 import app.attestation.auditor.attestation.AuthorizationList;
+import app.attestation.auditor.attestation.ParsedAttestationRecord;
 import app.attestation.auditor.attestation.RootOfTrust;
 
 import static android.security.keystore.KeyProperties.DIGEST_SHA256;
@@ -637,7 +637,7 @@ class AttestationProtocol {
 
     private static Verified verifyStateless(final Certificate[] certificates,
             final byte[] challenge, final boolean hasPersistentKey, final byte[][] validRoots)
-            throws GeneralSecurityException {
+            throws GeneralSecurityException, IOException {
 
         verifyCertificateSignatures(certificates, hasPersistentKey);
 
@@ -647,39 +647,45 @@ class AttestationProtocol {
             throw new GeneralSecurityException("root certificate is not a valid key attestation root");
         }
 
-        final Attestation attestation = new Attestation((X509Certificate) certificates[0]);
+        final ParsedAttestationRecord attestation;
+        try {
+            attestation = ParsedAttestationRecord.createParsedAttestationRecord(List.of((X509Certificate) certificates[0]));
+        } catch (final ParsedAttestationRecord.KeyDescriptionMissingException e) {
+            throw new GeneralSecurityException(e);
+        }
 
-        final int attestationSecurityLevel = attestation.getAttestationSecurityLevel();
+        final ParsedAttestationRecord.SecurityLevel attestationSecurityLevelEnum = attestation.attestationSecurityLevel;
 
         // enforce hardware-based attestation
-        if (attestationSecurityLevel != Attestation.KM_SECURITY_LEVEL_TRUSTED_ENVIRONMENT &&
-                attestationSecurityLevel != Attestation.KM_SECURITY_LEVEL_STRONG_BOX) {
+        if (attestationSecurityLevelEnum != ParsedAttestationRecord.SecurityLevel.TRUSTED_ENVIRONMENT &&
+                attestationSecurityLevelEnum != ParsedAttestationRecord.SecurityLevel.STRONG_BOX) {
             throw new GeneralSecurityException("attestation security level is not valid");
         }
-        if (attestation.getKeymasterSecurityLevel() != attestationSecurityLevel) {
+        if (attestation.keymasterSecurityLevel != attestationSecurityLevelEnum) {
             throw new GeneralSecurityException("keymaster security level does not match attestation security level");
         }
 
         // prevent replay attacks
-        if (!Arrays.equals(attestation.getAttestationChallenge(), challenge)) {
+        if (!Arrays.equals(attestation.attestationChallenge, challenge)) {
             throw new GeneralSecurityException("challenge mismatch");
         }
 
         // enforce communicating with the Auditor app via OS level security
-        final AuthorizationList softwareEnforced = attestation.getSoftwareEnforced();
-        final AttestationApplicationId attestationApplicationId = softwareEnforced.getAttestationApplicationId();
-        final List<AttestationPackageInfo> infos = attestationApplicationId.getAttestationPackageInfos();
+        final AuthorizationList softwareEnforced = attestation.softwareEnforced;
+        final AttestationApplicationId attestationApplicationId = softwareEnforced.attestationApplicationId
+                .orElseThrow(() -> new GeneralSecurityException("key has no applicationId supplied"));
+        final List<AttestationPackageInfo> infos = attestationApplicationId.packageInfos;
         if (infos.size() != 1) {
             throw new GeneralSecurityException("invalid number of attestation packages");
         }
         final AttestationPackageInfo info = infos.get(0);
-        final List<byte[]> signatureDigests = attestationApplicationId.getSignatureDigests();
+        final List<byte[]> signatureDigests = attestationApplicationId.signatureDigests;
         if (signatureDigests.size() != 1) {
             throw new GeneralSecurityException("invalid number of Auditor app signatures");
         }
         final String signatureDigest = BaseEncoding.base16().encode(signatureDigests.get(0));
         final byte appVariant;
-        final String packageName = info.getPackageName();
+        final String packageName = info.packageName;
         if (AUDITOR_APP_PACKAGE_NAME_RELEASE.equals(packageName)) {
             if (!AUDITOR_APP_SIGNATURE_DIGEST_RELEASE.equals(signatureDigest)) {
                 throw new GeneralSecurityException("invalid Auditor app signing key");
@@ -701,32 +707,32 @@ class AttestationProtocol {
         } else {
             throw new GeneralSecurityException("invalid Auditor app package name: " + packageName);
         }
-        final int appVersion = Math.toIntExact(info.getVersion()); // int for compatibility
+        final int appVersion = Math.toIntExact(info.version); // int for compatibility
         if (appVersion < AUDITOR_APP_MINIMUM_VERSION) {
             throw new GeneralSecurityException("Auditor app is too old: " + appVersion);
         }
 
-        final AuthorizationList teeEnforced = attestation.getTeeEnforced();
+        final AuthorizationList teeEnforced = attestation.teeEnforced;
 
         // verified boot security checks
-        final RootOfTrust rootOfTrust = teeEnforced.getRootOfTrust();
+        final RootOfTrust rootOfTrust = teeEnforced.rootOfTrust.orElse(null);
         if (rootOfTrust == null) {
             throw new GeneralSecurityException("missing root of trust");
         }
-        if (!rootOfTrust.isDeviceLocked()) {
+        if (!rootOfTrust.deviceLocked) {
             throw new GeneralSecurityException("device is not locked");
         }
-        final int verifiedBootState = rootOfTrust.getVerifiedBootState();
-        final String verifiedBootKey = BaseEncoding.base16().encode(rootOfTrust.getVerifiedBootKey());
+        final RootOfTrust.VerifiedBootState verifiedBootState = rootOfTrust.verifiedBootState;
+        final String verifiedBootKey = BaseEncoding.base16().encode(rootOfTrust.verifiedBootKey);
         final DeviceInfo device;
-        if (verifiedBootState == RootOfTrust.KM_VERIFIED_BOOT_SELF_SIGNED) {
-            if (attestationSecurityLevel == Attestation.KM_SECURITY_LEVEL_STRONG_BOX) {
+        if (verifiedBootState == RootOfTrust.VerifiedBootState.SELF_SIGNED) {
+            if (attestationSecurityLevelEnum == ParsedAttestationRecord.SecurityLevel.STRONG_BOX) {
                 device = fingerprintsStrongBoxCustomOS.get(verifiedBootKey);
             } else {
                 device = fingerprintsCustomOS.get(verifiedBootKey);
             }
-        } else if (verifiedBootState == RootOfTrust.KM_VERIFIED_BOOT_VERIFIED) {
-            if (attestationSecurityLevel == Attestation.KM_SECURITY_LEVEL_STRONG_BOX) {
+        } else if (verifiedBootState == RootOfTrust.VerifiedBootState.VERIFIED) {
+            if (attestationSecurityLevelEnum == ParsedAttestationRecord.SecurityLevel.STRONG_BOX) {
                 device = fingerprintsStrongBoxStock.get(verifiedBootKey);
             } else {
                 device = fingerprintsStock.get(verifiedBootKey);
@@ -741,151 +747,143 @@ class AttestationProtocol {
 
         // enforce StrongBox for new pairings with devices supporting it
         if (!hasPersistentKey && device.enforceStrongBox &&
-                attestationSecurityLevel != Attestation.KM_SECURITY_LEVEL_STRONG_BOX) {
+                attestationSecurityLevelEnum != ParsedAttestationRecord.SecurityLevel.STRONG_BOX) {
             throw new GeneralSecurityException("non-StrongBox security level for device supporting it");
         }
 
         // OS version sanity checks
-        final int osVersion = teeEnforced.getOsVersion();
+        final int osVersion = teeEnforced.osVersion.orElse(0);
         if (osVersion < OS_VERSION_MINIMUM) {
             throw new GeneralSecurityException("OS version too old: " + osVersion);
         }
-        final int osPatchLevel = teeEnforced.getOsPatchLevel();
+        final int osPatchLevel = teeEnforced.osPatchLevel.orElse(0);
         if (osPatchLevel < OS_PATCH_LEVEL_MINIMUM) {
             throw new GeneralSecurityException("OS patch level too old: " + osPatchLevel);
         }
-        final int vendorPatchLevel;
-        if (teeEnforced.getVendorPatchLevel() == null) {
-            vendorPatchLevel = 0;
-        } else {
-            vendorPatchLevel = teeEnforced.getVendorPatchLevel();
-            if (vendorPatchLevel < VENDOR_PATCH_LEVEL_MINIMUM && !extraPatchLevelMissing.contains(device.name)) {
-                throw new GeneralSecurityException("Vendor patch level too old: " + vendorPatchLevel);
-            }
+        final int vendorPatchLevel = teeEnforced.vendorPatchLevel.orElse(0);
+        if (vendorPatchLevel < VENDOR_PATCH_LEVEL_MINIMUM && !extraPatchLevelMissing.contains(device.name)) {
+            throw new GeneralSecurityException("Vendor patch level too old: " + vendorPatchLevel);
         }
-        final int bootPatchLevel;
-        if (teeEnforced.getBootPatchLevel() == null) {
-            bootPatchLevel = 0;
-        } else {
-            bootPatchLevel = teeEnforced.getBootPatchLevel();
-            if (bootPatchLevel < BOOT_PATCH_LEVEL_MINIMUM && !extraPatchLevelMissing.contains(device.name)) {
-                throw new GeneralSecurityException("Boot patch level too old: " + bootPatchLevel);
-            }
+        final int bootPatchLevel = teeEnforced.bootPatchLevel.orElse(0);
+        if (bootPatchLevel < BOOT_PATCH_LEVEL_MINIMUM && !extraPatchLevelMissing.contains(device.name)) {
+            throw new GeneralSecurityException("Boot patch level too old: " + bootPatchLevel);
         }
 
         // key sanity checks
-        if (!teeEnforced.getPurposes().equals(
-                ImmutableSet.of(AuthorizationList.KM_PURPOSE_SIGN, AuthorizationList.KM_PURPOSE_VERIFY))) {
+        if (!teeEnforced.purpose.equals(
+                ImmutableSet.of(AuthorizationList.OperationPurpose.SIGN, AuthorizationList.OperationPurpose.VERIFY))) {
             throw new GeneralSecurityException("key has invalid purposes");
         }
-        if (teeEnforced.getOrigin() != AuthorizationList.KM_ORIGIN_GENERATED) {
+        if (teeEnforced.origin.orElseThrow(() -> new GeneralSecurityException("key has missing origin")) != AuthorizationList.KeyOrigin.GENERATED) {
             throw new GeneralSecurityException("key not origin generated");
         }
-        if (teeEnforced.isAllApplications()) {
+        if (teeEnforced.allApplications) {
             throw new GeneralSecurityException("expected key only usable by Auditor app");
         }
-        if (device.rollbackResistant && !teeEnforced.isRollbackResistant()) {
+        if (device.rollbackResistant && !teeEnforced.rollbackResistant) {
             throw new GeneralSecurityException("expected rollback resistant key");
         }
 
         // version sanity checks
-        final int attestationVersion = attestation.getAttestationVersion();
+        final int attestationVersion = attestation.attestationVersion;
         Log.d(TAG, "attestationVersion: " + attestationVersion);
         if (attestationVersion < device.attestationVersion) {
             throw new GeneralSecurityException("attestation version " + attestationVersion + " below " + device.attestationVersion);
         }
-        final int keymasterVersion = attestation.getKeymasterVersion();
+        final int keymasterVersion = attestation.keymasterVersion;
         Log.d(TAG, "keymasterVersion: " + keymasterVersion);
         if (keymasterVersion < device.keymasterVersion) {
             throw new GeneralSecurityException("keymaster version " + keymasterVersion + " below " + device.keymasterVersion);
         }
 
-        final byte[] verifiedBootHash = rootOfTrust.getVerifiedBootHash();
+        final byte[] verifiedBootHash = rootOfTrust.verifiedBootHash.orElse(null);
         if (attestationVersion >= 3 && verifiedBootHash == null) {
             throw new GeneralSecurityException("verifiedBootHash expected for attestation version >= 3");
         }
 
         boolean attestKey = false;
         try {
-            final Attestation attestation1 = new Attestation((X509Certificate) certificates[1]);
+            final ParsedAttestationRecord attestation1 = ParsedAttestationRecord.createParsedAttestationRecord(
+                    List.of((X509Certificate) certificates[1]));
 
-            if (attestation1.getAttestationSecurityLevel() != attestation.getAttestationSecurityLevel()) {
+            if (attestation1.attestationSecurityLevel != attestation.attestationSecurityLevel) {
                 throw new GeneralSecurityException("attest key attestation security level does not match");
             }
 
-            if (attestation1.getKeymasterSecurityLevel() != attestation.getKeymasterSecurityLevel()) {
+            if (attestation1.keymasterSecurityLevel != attestation.keymasterSecurityLevel) {
                 throw new GeneralSecurityException("attest key keymaster security level does not match");
             }
 
-            final AuthorizationList teeEnforced1 = attestation1.getTeeEnforced();
+            final AuthorizationList teeEnforced1 = attestation1.teeEnforced;
 
             // verified boot security checks
-            final RootOfTrust rootOfTrust1 = teeEnforced1.getRootOfTrust();
+            final RootOfTrust rootOfTrust1 = teeEnforced1.rootOfTrust.orElse(null);
             if (rootOfTrust1 == null) {
                 throw new GeneralSecurityException("attest key missing root of trust");
             }
-            if (rootOfTrust1.isDeviceLocked() != rootOfTrust.isDeviceLocked()) {
+            if (rootOfTrust1.deviceLocked != rootOfTrust.deviceLocked) {
                 throw new GeneralSecurityException("attest key lock state does not match");
             }
-            if (rootOfTrust1.getVerifiedBootState() != rootOfTrust.getVerifiedBootState()) {
+            if (rootOfTrust1.verifiedBootState != rootOfTrust.verifiedBootState) {
                 throw new GeneralSecurityException("attest key verified boot state does not match");
             }
-            if (!Arrays.equals(rootOfTrust1.getVerifiedBootKey(), rootOfTrust.getVerifiedBootKey())) {
+            if (!Arrays.equals(rootOfTrust1.verifiedBootKey, rootOfTrust.verifiedBootKey)) {
                 throw new GeneralSecurityException("attest key verified boot key does not match");
             }
 
             // key sanity checks
-            if (!teeEnforced1.getPurposes().equals(ImmutableSet.of(AuthorizationList.KM_PURPOSE_ATTEST_KEY))) {
+            if (!teeEnforced1.purpose.equals(ImmutableSet.of(AuthorizationList.OperationPurpose.ATTEST_KEY))) {
                 throw new GeneralSecurityException("attest key has invalid purposes");
             }
-            if (teeEnforced1.getOrigin() != AuthorizationList.KM_ORIGIN_GENERATED) {
+            if (teeEnforced1.origin.orElse(null) != AuthorizationList.KeyOrigin.GENERATED) {
                 throw new GeneralSecurityException("attest key not origin generated");
             }
-            if (teeEnforced1.isAllApplications()) {
+            if (teeEnforced1.allApplications) {
                 throw new GeneralSecurityException("expected attest key only usable by Auditor app");
             }
-            if (device.rollbackResistant && !teeEnforced1.isRollbackResistant()) {
+            if (device.rollbackResistant && !teeEnforced1.rollbackResistant) {
                 throw new GeneralSecurityException("expected rollback resistant attest key");
             }
 
             if (!hasPersistentKey) {
-                if (!Arrays.equals(attestation1.getAttestationChallenge(), attestation.getAttestationChallenge())) {
+                if (!Arrays.equals(attestation1.attestationChallenge, attestation.attestationChallenge)) {
                     throw new GeneralSecurityException("attest key challenge does not match");
                 }
 
-                if (!attestation1.getSoftwareEnforced().getAttestationApplicationId().equals(attestationApplicationId)) {
+                if (!attestation1.softwareEnforced.attestationApplicationId.orElseThrow(() ->
+                        new GeneralSecurityException("missing attest key application")).equals(attestationApplicationId)) {
                     throw new GeneralSecurityException("attest key application does not match");
                 }
 
                 // version sanity checks
-                if (attestation1.getAttestationVersion() != attestation.getAttestationVersion()) {
+                if (attestation1.attestationVersion != attestation.attestationVersion) {
                     throw new GeneralSecurityException("attest key attestation version does not match");
                 }
-                if (attestation1.getKeymasterVersion() != attestation.getKeymasterVersion()) {
+                if (attestation1.keymasterVersion != attestation.keymasterVersion) {
                     throw new GeneralSecurityException("attest key keymaster version does not match");
                 }
 
                 // OS version sanity checks
-                if (!teeEnforced1.getOsVersion().equals(teeEnforced.getOsVersion())) {
+                if (!teeEnforced1.osVersion.equals(teeEnforced.osVersion)) {
                     throw new GeneralSecurityException("attest key OS version does not match");
                 }
-                if (!teeEnforced1.getOsPatchLevel().equals(teeEnforced.getOsPatchLevel())) {
+                if (!teeEnforced1.osPatchLevel.equals(teeEnforced.osPatchLevel)) {
                     throw new GeneralSecurityException("attest key OS patch level does not match");
                 }
-                if (!teeEnforced1.getVendorPatchLevel().equals(teeEnforced.getVendorPatchLevel())) {
+                if (!teeEnforced1.vendorPatchLevel.equals(teeEnforced.vendorPatchLevel)) {
                     throw new GeneralSecurityException("attest key vendor patch level does not match");
                 }
-                if (!teeEnforced1.getBootPatchLevel().equals(teeEnforced.getBootPatchLevel())) {
+                if (!teeEnforced1.bootPatchLevel.equals(teeEnforced.bootPatchLevel)) {
                     throw new GeneralSecurityException("attest key boot patch level does not match");
                 }
 
-                if (!Arrays.equals(rootOfTrust1.getVerifiedBootHash(), rootOfTrust.getVerifiedBootHash())) {
+                if (!Arrays.equals(rootOfTrust1.verifiedBootHash.orElse(new byte[0]), rootOfTrust.verifiedBootHash.orElse(new byte[0]))) {
                     throw new GeneralSecurityException("attest key verified boot hash does not match");
                 }
             }
 
             attestKey = true;
-        } catch (final Attestation.KeyDescriptionMissingException e) {}
+        } catch (final ParsedAttestationRecord.KeyDescriptionMissingException ignored) {}
 
         // enforce attest key for new pairings with devices supporting it
         if (!hasPersistentKey && attestationVersion >= 100 && !attestKey) {
@@ -894,8 +892,8 @@ class AttestationProtocol {
 
         for (int i = 2; i < certificates.length; i++) {
             try {
-                new Attestation((X509Certificate) certificates[i]);
-            } catch (final Attestation.KeyDescriptionMissingException e) {
+                ParsedAttestationRecord.createParsedAttestationRecord(List.of((X509Certificate) certificates[i]));
+            } catch (final ParsedAttestationRecord.KeyDescriptionMissingException  e) {
                 continue;
             }
             throw new GeneralSecurityException("only initial key and attest key should have attestation extension");
@@ -903,7 +901,7 @@ class AttestationProtocol {
 
         return new Verified(device.name, verifiedBootKey, verifiedBootHash, device.osName,
                 osVersion, osPatchLevel, vendorPatchLevel, bootPatchLevel, appVersion, appVariant,
-                attestationSecurityLevel, attestKey);
+                ParsedAttestationRecord.securityLevelToInt(attestationSecurityLevelEnum), attestKey);
     }
 
     // Only checks expiry beyond the initial certificate for the initial pairing since the
@@ -957,7 +955,7 @@ class AttestationProtocol {
         builder.append(context.getString(R.string.identity, splitFingerprint.toString()));
 
         final String securityLevel;
-        if (verified.securityLevel == Attestation.KM_SECURITY_LEVEL_STRONG_BOX) {
+        if (verified.securityLevel == ParsedAttestationRecord.securityLevelToInt(ParsedAttestationRecord.SecurityLevel.STRONG_BOX)) {
             if (verified.attestKey && !attestKeyMigration) {
                 securityLevel = context.getString(R.string.security_level_strongbox_attest_key);
             } else {
@@ -1114,7 +1112,8 @@ class AttestationProtocol {
             if (verified.appVariant < pinnedAppVariant) {
                 throw new GeneralSecurityException("App version downgraded");
             }
-            if (verified.securityLevel != preferences.getInt(KEY_PINNED_SECURITY_LEVEL, Attestation.KM_SECURITY_LEVEL_TRUSTED_ENVIRONMENT)) {
+            if (verified.securityLevel != preferences.getInt(KEY_PINNED_SECURITY_LEVEL,
+                    ParsedAttestationRecord.securityLevelToInt(ParsedAttestationRecord.SecurityLevel.TRUSTED_ENVIRONMENT))) {
                 throw new GeneralSecurityException("Security level mismatch");
             }
 
