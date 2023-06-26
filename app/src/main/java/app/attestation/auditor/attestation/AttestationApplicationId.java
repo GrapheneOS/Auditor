@@ -34,7 +34,6 @@ import org.bouncycastle.asn1.ASN1Set;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.DERSet;
-import org.jspecify.nullness.Nullable;
 
 /**
  * This data structure reflects the Android platform's belief as to which apps are allowed to use
@@ -95,7 +94,7 @@ public class AttestationApplicationId {
   }
 
   @Override
-  public boolean equals(@Nullable Object object) {
+  public boolean equals(Object object) {
     if (object instanceof AttestationApplicationId) {
       AttestationApplicationId that = (AttestationApplicationId) object;
       return this.packageInfos.equals(that.packageInfos)
@@ -141,7 +140,7 @@ public class AttestationApplicationId {
     }
 
     @Override
-    public boolean equals(@Nullable Object object) {
+    public boolean equals(Object object) {
       if (object instanceof AttestationPackageInfo) {
         AttestationPackageInfo that = (AttestationPackageInfo) object;
         return this.packageName.equals(that.packageName) && this.version == that.version;
