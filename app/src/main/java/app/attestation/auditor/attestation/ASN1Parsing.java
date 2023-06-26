@@ -24,7 +24,14 @@ import org.bouncycastle.asn1.ASN1Integer;
 class ASN1Parsing {
 
   static boolean getBooleanFromAsn1(ASN1Encodable asn1Value) {
+    return getBooleanFromAsn1(asn1Value, true);
+  }
+
+  static boolean getBooleanFromAsn1(ASN1Encodable asn1Value, boolean strict) {
     if (asn1Value instanceof ASN1Boolean) {
+      if (strict) {
+        return Utils.getBooleanFromAsn1Strict((ASN1Boolean) asn1Value);
+      }
       return ((ASN1Boolean) asn1Value).isTrue();
     } else {
       throw new IllegalArgumentException(
@@ -33,10 +40,14 @@ class ASN1Parsing {
   }
 
   static int getIntegerFromAsn1(ASN1Encodable asn1Value) {
+    return getIntegerFromAsn1(asn1Value, true);
+  }
+
+  static int getIntegerFromAsn1(ASN1Encodable asn1Value, boolean strict) {
     if (asn1Value instanceof ASN1Integer) {
-      return ((ASN1Integer) asn1Value).getValue().intValueExact();
+      return Utils.intValueFromBigInteger(((ASN1Integer) asn1Value).getValue(), strict);
     } else if (asn1Value instanceof ASN1Enumerated) {
-      return ((ASN1Enumerated) asn1Value).getValue().intValueExact();
+      return Utils.intValueFromBigInteger(((ASN1Enumerated) asn1Value).getValue(), strict);
     } else {
       throw new IllegalArgumentException(
           "Integer value expected; found " + asn1Value.getClass().getName() + " instead.");
