@@ -168,7 +168,7 @@ public class ParsedAttestationRecord {
     }
   }
 
-  private static int securityLevelToInt(SecurityLevel securityLevel) {
+  public static int securityLevelToInt(SecurityLevel securityLevel) {
     switch (securityLevel) {
       case SOFTWARE:
         return KM_SECURITY_LEVEL_SOFTWARE;
