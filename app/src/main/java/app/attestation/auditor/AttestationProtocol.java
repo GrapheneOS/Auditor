@@ -193,7 +193,7 @@ class AttestationProtocol {
     // the outer signature and the rest of the chain for pinning the expected chain. It enforces
     // downgrade protection for the OS version/patch (bootloader/TEE enforced) and app version (OS
     // enforced) by keeping them updated.
-    private static final byte PROTOCOL_VERSION = 4;
+    private static final byte PROTOCOL_VERSION = 5;
     private static final byte PROTOCOL_VERSION_MINIMUM = 4;
     // can become longer in the future, but this is the minimum length
     static final byte CHALLENGE_MESSAGE_LENGTH = 1 + CHALLENGE_LENGTH * 2;
@@ -1287,7 +1287,7 @@ class AttestationProtocol {
         deserializer.get(compressedChain);
 
         final Certificate[] certificates;
-        final int dictionary = R.raw.deflate_dictionary_3;
+        final int dictionary = version < 5 ? R.raw.deflate_dictionary_3 : R.raw.deflate_dictionary_4;
         certificates = decodeChain(readRawResource(context, dictionary), compressedChain);
 
         final byte[] fingerprint = new byte[FINGERPRINT_LENGTH];
@@ -1555,7 +1555,7 @@ class AttestationProtocol {
             serializer.put(version);
 
             final byte[] compressed;
-            final int dictionary = R.raw.deflate_dictionary_3;
+            final int dictionary = version < 5 ? R.raw.deflate_dictionary_3 : R.raw.deflate_dictionary_4;
             compressed = encodeChain(readRawResource(context, dictionary), attestationCertificates);
 
             if (compressed.length > Short.MAX_VALUE) {
