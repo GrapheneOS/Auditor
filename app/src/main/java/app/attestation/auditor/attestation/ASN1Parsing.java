@@ -53,4 +53,6 @@ class ASN1Parsing {
           "Integer value expected; found " + asn1Value.getClass().getName() + " instead.");
     }
   }
+
+  private ASN1Parsing() {}
 }
