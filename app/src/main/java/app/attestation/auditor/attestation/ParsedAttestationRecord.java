@@ -103,7 +103,7 @@ public class ParsedAttestationRecord {
   }
 
   public static ParsedAttestationRecord createParsedAttestationRecord(List<X509Certificate> certs)
-      throws IOException {
+      throws KeyDescriptionMissingException, IOException {
 
     // Parse the attestation record that is closest to the root. This prevents an adversary from
     // attesting an attestation record of their choice with an otherwise trusted chain using the
@@ -120,7 +120,13 @@ public class ParsedAttestationRecord {
       }
     }
 
-    throw new IllegalArgumentException("Couldn't find the keystore attestation extension data.");
+    throw new KeyDescriptionMissingException("Couldn't find the keystore attestation extension data.");
+  }
+
+  public static class KeyDescriptionMissingException extends Exception {
+    private KeyDescriptionMissingException(final String message) {
+      super(message);
+    }
   }
 
   public static ParsedAttestationRecord create(ASN1Sequence extensionData, PublicKey attestedKey) {
