@@ -37,7 +37,6 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
@@ -48,7 +47,6 @@ import java.security.ProviderException;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Signature;
-import java.security.SignatureException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
@@ -919,8 +917,7 @@ class AttestationProtocol {
                     ((X509Certificate) certChain[i - 1]).checkValidity();
                 }
                 certChain[i - 1].verify(certChain[i].getPublicKey());
-            } catch (InvalidKeyException | CertificateException | NoSuchAlgorithmException
-                    | NoSuchProviderException | SignatureException e) {
+            } catch (final GeneralSecurityException e) {
                 throw new GeneralSecurityException("Failed to verify certificate "
                         + certChain[i - 1] + " with public key " + certChain[i].getPublicKey(), e);
             }
