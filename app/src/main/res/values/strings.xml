@@ -176,4 +176,7 @@
 
     <string name="os_stock">Stock</string>
     <string name="os_graphene">GrapheneOS</string>
+
+    <string name="generic_device_name_unknown">Unknown non-Pixel device</string>
+    <string name="generic_device_os_stock">Stock (Generic)</string>
 </resources>
