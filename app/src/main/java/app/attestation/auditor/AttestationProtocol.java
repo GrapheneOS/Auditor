@@ -666,7 +666,7 @@ class AttestationProtocol {
         return (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(in);
     }
 
-    private static Verified verifyStateless(final Certificate[] certificates,
+    private static Verified verifyStateless(final Context context, final Certificate[] certificates,
             final byte[] challenge, final boolean hasPersistentKey, final byte[][] validRoots)
             throws GeneralSecurityException, IOException {
 
@@ -1110,7 +1110,7 @@ class AttestationProtocol {
                     "\nIf the initial pairing was simply not completed, clear the pairing data on either the Auditee or the Auditor via the menu and try again.\n");
         }
 
-        final Verified verified = verifyStateless(attestationCertificates, challenge, hasPersistentKey,
+        final Verified verified = verifyStateless(context, attestationCertificates, challenge, hasPersistentKey,
                 new byte[][]{readRawResource(context, R.raw.google_root_0),
                     readRawResource(context, R.raw.google_root_1),
                     readRawResource(context, R.raw.google_root_2),
@@ -1551,7 +1551,7 @@ class AttestationProtocol {
             }
 
             // sanity check on the device being verified before sending it off to the verifying device
-            verifyStateless(attestationCertificates, challenge, hasPersistentKey,
+            verifyStateless(context, attestationCertificates, challenge, hasPersistentKey,
                     new byte[][]{readRawResource(context, R.raw.google_root_0),
                         readRawResource(context, R.raw.google_root_1),
                         readRawResource(context, R.raw.google_root_2),
