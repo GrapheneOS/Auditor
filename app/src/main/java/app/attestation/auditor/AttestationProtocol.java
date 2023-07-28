@@ -623,7 +623,7 @@ class AttestationProtocol {
     }
 
     private static class Verified {
-        final int device;
+        final String device;
         final String verifiedBootKey;
         final byte[] verifiedBootHash;
         final int osName;
@@ -636,7 +636,7 @@ class AttestationProtocol {
         final int securityLevel;
         final boolean attestKey;
 
-        Verified(final int device, final String verifiedBootKey, final byte[] verifiedBootHash,
+        Verified(final String device, final String verifiedBootKey, final byte[] verifiedBootHash,
                 final int osName, final int osVersion, final int osPatchLevel,
                 final int vendorPatchLevel, final int bootPatchLevel, final int appVersion, final byte appVariant,
                 final int securityLevel, final boolean attestKey) {
@@ -781,6 +781,8 @@ class AttestationProtocol {
                 attestationSecurityLevelEnum != ParsedAttestationRecord.SecurityLevel.STRONG_BOX) {
             throw new GeneralSecurityException("non-StrongBox security level for device supporting it");
         }
+
+        final String deviceName = context.getString(device.name);
 
         // OS version sanity checks
         final int osVersion = teeEnforced.osVersion.orElse(0);
@@ -958,7 +960,7 @@ class AttestationProtocol {
             throw new GeneralSecurityException("only initial key and attest key should have attestation extension");
         }
 
-        return new Verified(device.name, verifiedBootKey, verifiedBootHash, device.osName,
+        return new Verified(deviceName, verifiedBootKey, verifiedBootHash, device.osName,
                 osVersion, osPatchLevel, vendorPatchLevel, bootPatchLevel, appVersion, appVariant,
                 ParsedAttestationRecord.securityLevelToInt(attestationSecurityLevelEnum), attestKey);
     }
@@ -1031,7 +1033,7 @@ class AttestationProtocol {
         }
         builder.append(context.getString(R.string.security_level, securityLevel));
 
-        builder.append(context.getString(R.string.device, context.getString(verified.device)));
+        builder.append(context.getString(R.string.device, verified.device));
         builder.append(context.getString(R.string.os, context.getString(verified.osName)));
 
         final String osVersion = String.format(Locale.US, "%06d", verified.osVersion);
