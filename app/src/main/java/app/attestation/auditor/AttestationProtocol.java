@@ -896,6 +896,32 @@ class AttestationProtocol {
                     throw new GeneralSecurityException("attest key keymaster version does not match");
                 }
 
+                // device info sanity checks
+                if (!Arrays.equals(teeEnforced1.attestationIdManufacturer.orElse(new byte[0]),
+                        teeEnforced.attestationIdManufacturer.orElse(new byte[0]))) {
+                    throw new GeneralSecurityException("attest key manufacturer info does not match");
+                }
+
+                if (!Arrays.equals(teeEnforced1.attestationIdModel.orElse(new byte[0]),
+                        teeEnforced.attestationIdModel.orElse(new byte[0]))) {
+                    throw new GeneralSecurityException("attest key model info does not match");
+                }
+
+                if (!Arrays.equals(teeEnforced1.attestationIdBrand.orElse(new byte[0]),
+                        teeEnforced.attestationIdBrand.orElse(new byte[0]))) {
+                    throw new GeneralSecurityException("attest key brand info does not match");
+                }
+
+                if (!Arrays.equals(teeEnforced1.attestationIdDevice.orElse(new byte[0]),
+                        teeEnforced.attestationIdDevice.orElse(new byte[0]))) {
+                    throw new GeneralSecurityException("attest key brand device info does not match");
+                }
+
+                if (!Arrays.equals(teeEnforced1.attestationIdProduct.orElse(new byte[0]),
+                        teeEnforced.attestationIdProduct.orElse(new byte[0]))) {
+                    throw new GeneralSecurityException("attest key product info does not match");
+                }
+
                 // OS version sanity checks
                 if (!teeEnforced1.osVersion.equals(teeEnforced.osVersion)) {
                     throw new GeneralSecurityException("attest key OS version does not match");
