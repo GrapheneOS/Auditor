@@ -116,7 +116,7 @@ class AttestationProtocol {
     private static final int FINGERPRINT_LENGTH = FINGERPRINT_HASH_FUNCTION.bits() / 8;
 
     private static final boolean PREFER_STRONGBOX = true;
-    private static final boolean PREFER_CHECK_VALIDITY_LEAF_CERT = true;
+    private static final boolean PREFER_CHECK_VALIDITY_LEAF_CERT = false;
 
     // Challenge message:
     //
