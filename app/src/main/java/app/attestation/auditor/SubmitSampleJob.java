@@ -42,8 +42,8 @@ public class SubmitSampleJob extends JobService {
     private static final String TAG = "SubmitSampleJob";
     private static final int JOB_ID = 2;
     private static final String SUBMIT_URL = "https://" + RemoteVerifyJob.DOMAIN + "/submit";
-    private static final int CONNECT_TIMEOUT = 60000;
-    private static final int READ_TIMEOUT = 60000;
+    private static final int CONNECT_TIMEOUT = 30000;
+    private static final int READ_TIMEOUT = 30000;
     private static final int ESTIMATED_DOWNLOAD_BYTES = 4 * 1024;
     private static final int ESTIMATED_UPLOAD_BYTES = 16 * 1024;
     private static final int NOTIFICATION_ID = 2;
