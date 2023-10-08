@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -300,6 +301,23 @@ public class AttestationActivity extends AppCompatActivity {
                 }
                 binding.content.getRoot().setBackgroundResource(backgroundResource);
                 return true;
+            }
+        });
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (stage == Stage.AuditeeResults || stage == Stage.Auditor ||
+                        stage == Stage.Result) {
+                    auditeeSerializedAttestation = null;
+                    auditorChallenge = null;
+                    stage = Stage.None;
+                    binding.content.textview.setText("");
+                    backgroundResource = 0;
+                    recreate();
+                } else {
+                    finish();
+                }
             }
         });
 
@@ -591,20 +609,5 @@ public class AttestationActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (stage == Stage.AuditeeResults || stage == Stage.Auditor ||
-                stage == Stage.Result) {
-            auditeeSerializedAttestation = null;
-            auditorChallenge = null;
-            stage = Stage.None;
-            binding.content.textview.setText("");
-            backgroundResource = 0;
-            recreate();
-            return;
-        }
-        super.onBackPressed();
     }
 }
