@@ -53,6 +53,7 @@ public class RemoteVerifyJob extends JobService {
     static final String KEY_USER_ID = "remote_user_id";
     static final String KEY_SUBSCRIBE_KEY = "remote_subscribe_key";
     static final String KEY_INTERVAL = "remote_interval";
+    private static final String KEY_INCREMENTAL = "remote_incremental";
     private static final int NOTIFICATION_ID = 1;
     private static final String NOTIFICATION_CHANNEL_SUCCESS_ID = "remote_verification";
     private static final String NOTIFICATION_CHANNEL_FAILURE_ID = "remote_verification_failure_2";
@@ -83,10 +84,17 @@ public class RemoteVerifyJob extends JobService {
             interval = MAX_INTERVAL;
             Log.e(TAG, "invalid interval " + interval + " clamped to MAX_INTERVAL " + MAX_INTERVAL);
         }
-        final JobScheduler scheduler = context.getSystemService(JobScheduler.class);
-        final JobInfo jobInfo = scheduler.getPendingJob(PERIODIC_JOB_ID);
+
         final long intervalMillis = interval * 1000;
         final long flexMillis = intervalMillis / 10;
+
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        final JobScheduler scheduler = context.getSystemService(JobScheduler.class);
+
+        JobInfo jobInfo = null;
+        if (Build.VERSION.INCREMENTAL.equals(preferences.getString(KEY_INCREMENTAL, null))) {
+            jobInfo = scheduler.getPendingJob(PERIODIC_JOB_ID);
+        }
         if (jobInfo != null &&
                 jobInfo.getEstimatedNetworkDownloadBytes() == ESTIMATED_DOWNLOAD_BYTES &&
                 jobInfo.getEstimatedNetworkUploadBytes() == ESTIMATED_UPLOAD_BYTES &&
@@ -119,6 +127,7 @@ public class RemoteVerifyJob extends JobService {
         if (scheduler.schedule(builder.build()) == JobScheduler.RESULT_FAILURE) {
             throw new RuntimeException("job schedule failed");
         }
+        preferences.edit().putString(KEY_INCREMENTAL, Build.VERSION.INCREMENTAL).apply();
     }
 
     static void cancel(final Context context) {
