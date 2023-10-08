@@ -113,9 +113,6 @@ dependencies {
     implementation("com.google.zxing:core:3.5.2")
     implementation("org.bouncycastle:bcprov-jdk18on:1.76")
 
-    // work around conflict
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
-
     val cameraVersion = "1.3.0-rc02"
     implementation("androidx.camera:camera-core:$cameraVersion")
     implementation("androidx.camera:camera-camera2:$cameraVersion")
