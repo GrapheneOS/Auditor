@@ -204,6 +204,8 @@ public class AttestationActivity extends AppCompatActivity {
             "Pixel 7a",
             "Pixel Tablet",
             "Pixel Fold",
+            "Pixel 8",
+            "Pixel 8 Pro",
             "POCOPHONE F1",
             "POT-LX3",
             "REVVL 2",
