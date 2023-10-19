@@ -1419,8 +1419,9 @@ class AttestationProtocol {
     @TargetApi(31)
     static void generateAttestKey(final String alias, final byte[] challenge, final boolean useStrongBox) throws
             GeneralSecurityException, IOException {
-        generateKeyPair(getKeyBuilder(alias, KeyProperties.PURPOSE_ATTEST_KEY,
-                useStrongBox, challenge, false).build());
+        KeyGenParameterSpec.Builder builder =
+                getKeyBuilder(alias, KeyProperties.PURPOSE_ATTEST_KEY, useStrongBox, challenge, false);
+        maybeGenerateKeyPairWithDeviceProperties(builder);
     }
 
     static Certificate getCertificate(final KeyStore keyStore, final String alias)
@@ -1532,7 +1533,7 @@ class AttestationProtocol {
         if (useAttestKey) {
             setAttestKeyAlias(builder, attestKeystoreAlias);
         }
-        generateKeyPair(builder.build());
+        maybeGenerateKeyPairWithDeviceProperties(builder);
 
         try {
             final byte[] fingerprint =
