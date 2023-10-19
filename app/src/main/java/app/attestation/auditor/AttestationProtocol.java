@@ -239,6 +239,7 @@ class AttestationProtocol {
 
     private static final int AUDITOR_APP_MINIMUM_VERSION = 47;
     private static final int OS_VERSION_MINIMUM = 100000;
+    private static final int OS_VERSION_MINIMUM_WITH_DEVICE_INFO_ATTESTATION_SUPPORT = 120000;
     private static final int OS_PATCH_LEVEL_MINIMUM = 201909;
     private static final int VENDOR_PATCH_LEVEL_MINIMUM = 20190905;
     private static final int BOOT_PATCH_LEVEL_MINIMUM = 20190905;
@@ -1053,6 +1054,22 @@ class AttestationProtocol {
         builder.append(context.getString(R.string.security_level, securityLevel));
 
         builder.append(context.getString(R.string.device, verified.device));
+
+        final String deviceInfoAttestation;
+        if (verified.osName == R.string.generic_device_os_stock) {
+            deviceInfoAttestation = context.getString(R.string.generic_device_info_attestation_supported);
+        } else if (context.getString(R.string.generic_device_name_unknown).equals(verified.device)) {
+            if (verified.osVersion >= OS_VERSION_MINIMUM_WITH_DEVICE_INFO_ATTESTATION_SUPPORT) {
+                deviceInfoAttestation = context.getString(R.string.generic_device_info_attestation_unsupported_error);
+            } else {
+                deviceInfoAttestation = context.getString(R.string.generic_device_info_attestation_unsupported_os_version);
+            }
+        } else {
+            deviceInfoAttestation = context.getString(R.string.generic_device_info_attestation_support_unknown);
+        }
+
+        builder.append(context.getString(R.string.pinned_generic_device_info_attestation, deviceInfoAttestation));
+
         builder.append(context.getString(R.string.os, context.getString(verified.osName)));
 
         final String osVersion = String.format(Locale.US, "%06d", verified.osVersion);
