@@ -263,10 +263,6 @@ public class AttestationActivity extends AppCompatActivity {
         snackbar = Snackbar.make(rootView, "", Snackbar.LENGTH_LONG);
 
         binding.content.auditee.setOnClickListener((final View view) -> {
-            if (!isSupportedAuditee) {
-                snackbar.setText(R.string.unsupported_auditee).show();
-                return;
-            }
             stage = Stage.Auditee;
             startQrScanner();
         });
@@ -513,7 +509,7 @@ public class AttestationActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.menu_attestation, menu);
-        menu.findItem(R.id.action_clear_auditee).setEnabled(isSupportedAuditee);
+        menu.findItem(R.id.action_clear_auditee).setEnabled(true);
         canSubmitSample = potentialSupportedAuditee() && !BuildConfig.DEBUG;
         menu.findItem(R.id.action_submit_sample).setEnabled(canSubmitSample);
         return true;
@@ -523,7 +519,7 @@ public class AttestationActivity extends AppCompatActivity {
     public boolean onPrepareOptionsMenu(final Menu menu) {
         final boolean isRemoteVerifyEnabled = RemoteVerifyJob.isEnabled(this);
         menu.findItem(R.id.action_enable_remote_verify)
-                .setEnabled(isSupportedAuditee && !isRemoteVerifyEnabled);
+                .setEnabled(!isRemoteVerifyEnabled);
         menu.findItem(R.id.action_disable_remote_verify).setEnabled(isRemoteVerifyEnabled);
         menu.findItem(R.id.action_submit_sample).setEnabled(canSubmitSample &&
                 !SubmitSampleJob.isScheduled(this));
