@@ -1658,6 +1658,30 @@ class AttestationProtocol {
         }
     }
 
+    private static void maybeGenerateKeyPairWithDeviceProperties(
+            final KeyGenParameterSpec.Builder builder) throws IOException,
+            InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            builder.setDevicePropertiesAttestationIncluded(true);
+            try {
+                generateKeyPair(builder.build());
+            } catch (IOException e) {
+                if (e.getCause() instanceof ProviderException pe) {
+                    if (pe.getCause() instanceof android.security.KeyStoreException ke) {
+                        if (KeyStoreExceptionUtils.isUnableToAttestDeviceInfoError(ke)) {
+                            builder.setDevicePropertiesAttestationIncluded(false);
+                            generateKeyPair(builder.build());
+                            return;
+                        }
+                    }
+                }
+                throw e;
+            }
+        } else {
+            generateKeyPair(builder.build());
+        }
+    }
+
     static void generateKeyPair(final KeyGenParameterSpec spec)
             throws NoSuchAlgorithmException, NoSuchProviderException,
             InvalidAlgorithmParameterException, IOException {
