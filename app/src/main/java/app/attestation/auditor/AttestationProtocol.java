@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyFactory;
@@ -59,6 +60,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
@@ -782,7 +784,24 @@ class AttestationProtocol {
             throw new GeneralSecurityException("non-StrongBox security level for device supporting it");
         }
 
-        final String deviceName = context.getString(device.name);
+        // Device info check
+        final String manufacturer = new String(teeEnforced.attestationIdManufacturer.orElse(new byte[0]), StandardCharsets.UTF_8);
+        final String model = new String(teeEnforced.attestationIdModel.orElse(new byte[0]), StandardCharsets.UTF_8);
+        final String deviceNameTee = manufacturer.isEmpty() && model.isEmpty() ? "" : manufacturer + " " + model;
+        final String deviceName;
+        if (device.isGeneric()) {
+            deviceName = deviceNameTee.isBlank() ? context.getString(R.string.generic_device_name_unknown) : deviceNameTee;
+        } else {
+            final String deviceNameRes = context.getString(device.name);
+            if (!deviceNameRes.startsWith(manufacturer)) {
+                throw new GeneralSecurityException("pinned device name must start with manufacturer name");
+            }
+            if (Stream.of(deviceNameRes.substring(manufacturer.length() + 1)
+                    .split(" / ")).noneMatch(str -> str.startsWith(model))) {
+                throw new GeneralSecurityException("model device name not found");
+            }
+            deviceName = deviceNameTee.isBlank() ? deviceNameRes : deviceNameTee;
+        }
 
         // OS version sanity checks
         final int osVersion = teeEnforced.osVersion.orElse(0);
