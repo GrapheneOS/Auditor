@@ -84,7 +84,7 @@
     <string name="device_admin_non_system">yes, with non-system apps</string>
     <string name="adb_enabled">Android Debug Bridge enabled: %s\n</string>
     <string name="add_users_when_locked">Add users from lock screen: %s\n</string>
-    <string name="deny_new_usb">Disallow new USB peripherals when locked: %s\n</string>
+    <string name="deny_new_usb">Deny new USB peripherals when locked: %s\n</string>
     <string name="oem_unlock_allowed">OEM unlocking allowed: %s\n</string>
     <string name="system_user">Main user account: %s\n</string>
 
