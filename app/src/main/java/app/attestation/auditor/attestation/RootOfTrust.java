@@ -24,6 +24,8 @@ import static app.attestation.auditor.attestation.Constants.ROOT_OF_TRUST_VERIFI
 import static app.attestation.auditor.attestation.Constants.ROOT_OF_TRUST_VERIFIED_BOOT_KEY_INDEX;
 import static app.attestation.auditor.attestation.Constants.ROOT_OF_TRUST_VERIFIED_BOOT_STATE_INDEX;
 
+import com.google.errorprone.annotations.Immutable;
+import com.google.protobuf.ByteString;
 import java.util.Optional;
 import org.bouncycastle.asn1.ASN1Boolean;
 import org.bouncycastle.asn1.ASN1Encodable;
@@ -34,17 +36,19 @@ import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERSequence;
 
 /** This collection of values defines key information about the device's status. */
+@Immutable
 public class RootOfTrust {
 
-  public final byte[] verifiedBootKey;
+  public final ByteString verifiedBootKey;
   public final boolean deviceLocked;
   public final VerifiedBootState verifiedBootState;
-  public final Optional<byte[]> verifiedBootHash;
+  public final Optional<ByteString> verifiedBootHash;
 
   private RootOfTrust(ASN1Sequence rootOfTrust, int attestationVersion) {
     this.verifiedBootKey =
-        ((ASN1OctetString) rootOfTrust.getObjectAt(ROOT_OF_TRUST_VERIFIED_BOOT_KEY_INDEX))
-            .getOctets();
+        ByteString.copyFrom(
+            ((ASN1OctetString) rootOfTrust.getObjectAt(ROOT_OF_TRUST_VERIFIED_BOOT_KEY_INDEX))
+                .getOctets());
     this.deviceLocked =
         ASN1Parsing.getBooleanFromAsn1(rootOfTrust.getObjectAt(ROOT_OF_TRUST_DEVICE_LOCKED_INDEX));
     this.verifiedBootState =
@@ -54,17 +58,18 @@ public class RootOfTrust {
     this.verifiedBootHash =
         attestationVersion >= 3
             ? Optional.of(
-                ASN1OctetString.getInstance(
-                        rootOfTrust.getObjectAt(ROOT_OF_TRUST_VERIFIED_BOOT_HASH_INDEX))
-                    .getOctets())
+                ByteString.copyFrom(
+                    ASN1OctetString.getInstance(
+                            rootOfTrust.getObjectAt(ROOT_OF_TRUST_VERIFIED_BOOT_HASH_INDEX))
+                        .getOctets()))
             : Optional.empty();
   }
 
   private RootOfTrust(
-      byte[] verifiedBootKey,
+      ByteString verifiedBootKey,
       boolean deviceLocked,
       VerifiedBootState verifiedBootState,
-      Optional<byte[]> verifiedBootHash) {
+      Optional<ByteString> verifiedBootHash) {
     this.verifiedBootKey = verifiedBootKey;
     this.deviceLocked = deviceLocked;
     this.verifiedBootState = verifiedBootState;
@@ -76,10 +81,10 @@ public class RootOfTrust {
   }
 
   public static RootOfTrust create(
-      byte[] verifiedBootKey,
+      ByteString verifiedBootKey,
       boolean deviceLocked,
       VerifiedBootState verifiedBootState,
-      Optional<byte[]> verifiedBootHash) {
+      Optional<ByteString> verifiedBootHash) {
     return new RootOfTrust(verifiedBootKey, deviceLocked, verifiedBootState, verifiedBootHash);
   }
 
@@ -125,16 +130,16 @@ public class RootOfTrust {
 
   public ASN1Sequence toAsn1Sequence() {
     ASN1Encodable[] rootOfTrustElements;
-    byte[] verifiedBootHash = this.verifiedBootHash.orElse(null);
+    ByteString verifiedBootHash = this.verifiedBootHash.orElse(null);
     if (verifiedBootHash != null) {
       rootOfTrustElements = new ASN1Encodable[4];
       rootOfTrustElements[ROOT_OF_TRUST_VERIFIED_BOOT_HASH_INDEX] =
-          new DEROctetString(verifiedBootHash);
+          new DEROctetString(verifiedBootHash.toByteArray());
     } else {
       rootOfTrustElements = new ASN1Encodable[3];
     }
     rootOfTrustElements[ROOT_OF_TRUST_VERIFIED_BOOT_KEY_INDEX] =
-        new DEROctetString(this.verifiedBootKey);
+        new DEROctetString(this.verifiedBootKey.toByteArray());
     rootOfTrustElements[ROOT_OF_TRUST_DEVICE_LOCKED_INDEX] =
         ASN1Boolean.getInstance(this.deviceLocked);
     rootOfTrustElements[ROOT_OF_TRUST_VERIFIED_BOOT_STATE_INDEX] =

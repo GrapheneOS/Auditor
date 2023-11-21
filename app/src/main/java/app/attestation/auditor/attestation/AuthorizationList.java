@@ -68,6 +68,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.Immutable;
+import com.google.protobuf.ByteString;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -99,6 +101,7 @@ import org.bouncycastle.asn1.DERTaggedObject;
  * set of expected values to verify that a key pair is still valid for use in your app.
  */
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+@Immutable
 public class AuthorizationList {
   /** Specifies the types of user authenticators that may be used to authorize this key. */
   public enum UserAuthType {
@@ -351,7 +354,7 @@ public class AuthorizationList {
   public final boolean trustedConfirmationRequired;
   public final boolean unlockedDeviceRequired;
   public final boolean allApplications;
-  public final Optional<byte[]> applicationId;
+  public final Optional<ByteString> applicationId;
   public final Optional<Instant> creationDateTime;
   public final Optional<KeyOrigin> origin;
   public final boolean rollbackResistant;
@@ -359,16 +362,16 @@ public class AuthorizationList {
   public final Optional<Integer> osVersion;
   public final Optional<Integer> osPatchLevel;
   public final Optional<AttestationApplicationId> attestationApplicationId;
-  public final Optional<byte[]> attestationApplicationIdBytes;
-  public final Optional<byte[]> attestationIdBrand;
-  public final Optional<byte[]> attestationIdDevice;
-  public final Optional<byte[]> attestationIdProduct;
-  public final Optional<byte[]> attestationIdSerial;
-  public final Optional<byte[]> attestationIdImei;
-  public final Optional<byte[]> attestationIdSecondImei;
-  public final Optional<byte[]> attestationIdMeid;
-  public final Optional<byte[]> attestationIdManufacturer;
-  public final Optional<byte[]> attestationIdModel;
+  public final Optional<ByteString> attestationApplicationIdBytes;
+  public final Optional<ByteString> attestationIdBrand;
+  public final Optional<ByteString> attestationIdDevice;
+  public final Optional<ByteString> attestationIdProduct;
+  public final Optional<ByteString> attestationIdSerial;
+  public final Optional<ByteString> attestationIdImei;
+  public final Optional<ByteString> attestationIdSecondImei;
+  public final Optional<ByteString> attestationIdMeid;
+  public final Optional<ByteString> attestationIdManufacturer;
+  public final Optional<ByteString> attestationIdModel;
   public final Optional<Integer> vendorPatchLevel;
   public final Optional<Integer> bootPatchLevel;
   public final boolean individualAttestation;
@@ -545,7 +548,8 @@ public class AuthorizationList {
       authorizationMap.put(
           currentTag, ASN1Util.getExplicitContextBaseObject(taggedEntry, taggedEntry.getTagNo()));
     }
-    return new ParsedAuthorizationMap(authorizationMap, ImmutableList.copyOf(unorderedTags));
+    return new ParsedAuthorizationMap(
+        ImmutableMap.copyOf(authorizationMap), ImmutableList.copyOf(unorderedTags));
   }
 
   @VisibleForTesting
@@ -711,9 +715,9 @@ public class AuthorizationList {
   }
 
   private static void addOptionalOctetString(
-      int tag, Optional<byte[]> entry, ASN1EncodableVector vector) {
+      int tag, Optional<ByteString> entry, ASN1EncodableVector vector) {
     if (entry.isPresent()) {
-      vector.add(new DERTaggedObject(tag, new DEROctetString(entry.get())));
+      vector.add(new DERTaggedObject(tag, new DEROctetString(entry.get().toByteArray())));
     }
   }
 
@@ -734,7 +738,7 @@ public class AuthorizationList {
   private static void addOptionalAttestationApplicationId(
       int tag,
       Optional<AttestationApplicationId> objectEntry,
-      Optional<byte[]> byteEntry,
+      Optional<ByteString> byteEntry,
       ASN1EncodableVector vector) {
     if (objectEntry.isPresent()) {
       try {
@@ -778,7 +782,7 @@ public class AuthorizationList {
     boolean trustedConfirmationRequired;
     boolean unlockedDeviceRequired;
     boolean allApplications;
-    byte[] applicationId;
+    ByteString applicationId;
     Instant creationDateTime;
     KeyOrigin origin;
     boolean rollbackResistant;
@@ -786,16 +790,16 @@ public class AuthorizationList {
     Integer osVersion;
     Integer osPatchLevel;
     AttestationApplicationId attestationApplicationId;
-    byte[] attestationApplicationIdBytes;
-    byte[] attestationIdBrand;
-    byte[] attestationIdDevice;
-    byte[] attestationIdProduct;
-    byte[] attestationIdSerial;
-    byte[] attestationIdImei;
-    byte[] attestationIdSecondImei;
-    byte[] attestationIdMeid;
-    byte[] attestationIdManufacturer;
-    byte[] attestationIdModel;
+    ByteString attestationApplicationIdBytes;
+    ByteString attestationIdBrand;
+    ByteString attestationIdDevice;
+    ByteString attestationIdProduct;
+    ByteString attestationIdSerial;
+    ByteString attestationIdImei;
+    ByteString attestationIdSecondImei;
+    ByteString attestationIdMeid;
+    ByteString attestationIdManufacturer;
+    ByteString attestationIdModel;
     Integer vendorPatchLevel;
     Integer bootPatchLevel;
     boolean individualAttestation;
@@ -917,7 +921,7 @@ public class AuthorizationList {
     }
 
     @CanIgnoreReturnValue
-    public Builder setApplicationId(byte[] applicationId) {
+    public Builder setApplicationId(ByteString applicationId) {
       this.applicationId = applicationId;
       return this;
     }
@@ -965,61 +969,61 @@ public class AuthorizationList {
     }
 
     @CanIgnoreReturnValue
-    public Builder setAttestationApplicationIdBytes(byte[] attestationApplicationIdBytes) {
+    public Builder setAttestationApplicationIdBytes(ByteString attestationApplicationIdBytes) {
       this.attestationApplicationIdBytes = attestationApplicationIdBytes;
       return this;
     }
 
     @CanIgnoreReturnValue
-    public Builder setAttestationIdBrand(byte[] attestationIdBrand) {
+    public Builder setAttestationIdBrand(ByteString attestationIdBrand) {
       this.attestationIdBrand = attestationIdBrand;
       return this;
     }
 
     @CanIgnoreReturnValue
-    public Builder setAttestationIdDevice(byte[] attestationIdDevice) {
+    public Builder setAttestationIdDevice(ByteString attestationIdDevice) {
       this.attestationIdDevice = attestationIdDevice;
       return this;
     }
 
     @CanIgnoreReturnValue
-    public Builder setAttestationIdProduct(byte[] attestationIdProduct) {
+    public Builder setAttestationIdProduct(ByteString attestationIdProduct) {
       this.attestationIdProduct = attestationIdProduct;
       return this;
     }
 
     @CanIgnoreReturnValue
-    public Builder setAttestationIdSerial(byte[] attestationIdSerial) {
+    public Builder setAttestationIdSerial(ByteString attestationIdSerial) {
       this.attestationIdSerial = attestationIdSerial;
       return this;
     }
 
     @CanIgnoreReturnValue
-    public Builder setAttestationIdImei(byte[] attestationIdImei) {
+    public Builder setAttestationIdImei(ByteString attestationIdImei) {
       this.attestationIdImei = attestationIdImei;
       return this;
     }
 
     @CanIgnoreReturnValue
-    public Builder setAttestationIdSecondImei(byte[] attestationIdSecondImei) {
+    public Builder setAttestationIdSecondImei(ByteString attestationIdSecondImei) {
       this.attestationIdSecondImei = attestationIdSecondImei;
       return this;
     }
 
     @CanIgnoreReturnValue
-    public Builder setAttestationIdMeid(byte[] attestationIdMeid) {
+    public Builder setAttestationIdMeid(ByteString attestationIdMeid) {
       this.attestationIdMeid = attestationIdMeid;
       return this;
     }
 
     @CanIgnoreReturnValue
-    public Builder setAttestationIdManufacturer(byte[] attestationIdManufacturer) {
+    public Builder setAttestationIdManufacturer(ByteString attestationIdManufacturer) {
       this.attestationIdManufacturer = attestationIdManufacturer;
       return this;
     }
 
     @CanIgnoreReturnValue
-    public Builder setAttestationIdModel(byte[] attestationIdModel) {
+    public Builder setAttestationIdModel(ByteString attestationIdModel) {
       this.attestationIdModel = attestationIdModel;
       return this;
     }
@@ -1059,11 +1063,11 @@ public class AuthorizationList {
    * tags and a list of unordered authorization tags found in this authorization list.
    */
   private static class ParsedAuthorizationMap {
-    private final Map<Integer, ASN1Object> authorizationMap;
+    private final ImmutableMap<Integer, ASN1Object> authorizationMap;
     private final ImmutableList<Integer> unorderedTags;
 
     private ParsedAuthorizationMap(
-        Map<Integer, ASN1Object> authorizationMap, ImmutableList<Integer> unorderedTags) {
+        ImmutableMap<Integer, ASN1Object> authorizationMap, ImmutableList<Integer> unorderedTags) {
       this.authorizationMap = authorizationMap;
       this.unorderedTags = unorderedTags;
     }
@@ -1111,10 +1115,11 @@ public class AuthorizationList {
       return findAuthorizationListEntry(tag).isPresent();
     }
 
-    private Optional<byte[]> findOptionalByteArrayAuthorizationListEntry(int tag) {
+    private Optional<ByteString> findOptionalByteArrayAuthorizationListEntry(int tag) {
       return findAuthorizationListEntry(tag)
           .map(ASN1OctetString.class::cast)
-          .map(ASN1OctetString::getOctets);
+          .map(ASN1OctetString::getOctets)
+          .map(ByteString::copyFrom);
     }
 
     private ImmutableSet<UserAuthType> findUserAuthType(int tag) {
