@@ -28,6 +28,8 @@ import static app.attestation.auditor.attestation.Constants.SW_ENFORCED_INDEX;
 import static app.attestation.auditor.attestation.Constants.TEE_ENFORCED_INDEX;
 import static app.attestation.auditor.attestation.Constants.UNIQUE_ID_INDEX;
 
+import com.google.errorprone.annotations.Immutable;
+import com.google.protobuf.ByteString;
 import java.io.IOException;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
@@ -42,16 +44,19 @@ import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERSequence;
 
 /** Java representation of Key Attestation extension data. */
+@Immutable
 public class ParsedAttestationRecord {
 
   public final int attestationVersion;
   public final SecurityLevel attestationSecurityLevel;
   public final int keymasterVersion;
   public final SecurityLevel keymasterSecurityLevel;
-  public final byte[] attestationChallenge;
-  public final byte[] uniqueId;
+  public final ByteString attestationChallenge;
+  public final ByteString uniqueId;
   public final AuthorizationList softwareEnforced;
   public final AuthorizationList teeEnforced;
+
+  @SuppressWarnings("Immutable")
   public final PublicKey attestedKey;
 
   private ParsedAttestationRecord(ASN1Sequence extensionData, PublicKey attestedKey) {
@@ -68,15 +73,19 @@ public class ParsedAttestationRecord {
             ASN1Parsing.getIntegerFromAsn1(
                 extensionData.getObjectAt(KEYMASTER_SECURITY_LEVEL_INDEX)));
     this.attestationChallenge =
-        ((ASN1OctetString) extensionData.getObjectAt(ATTESTATION_CHALLENGE_INDEX)).getOctets();
-    this.uniqueId = ((ASN1OctetString) extensionData.getObjectAt(UNIQUE_ID_INDEX)).getOctets();
+        ByteString.copyFrom(
+            ASN1OctetString.getInstance(extensionData.getObjectAt(ATTESTATION_CHALLENGE_INDEX))
+                .getOctets());
+    this.uniqueId =
+        ByteString.copyFrom(
+            ASN1OctetString.getInstance(extensionData.getObjectAt(UNIQUE_ID_INDEX)).getOctets());
     this.softwareEnforced =
         AuthorizationList.createAuthorizationList(
-            ((ASN1Sequence) extensionData.getObjectAt(SW_ENFORCED_INDEX)).toArray(),
+            ASN1Sequence.getInstance(extensionData.getObjectAt(SW_ENFORCED_INDEX)).toArray(),
             attestationVersion);
     this.teeEnforced =
         AuthorizationList.createAuthorizationList(
-            ((ASN1Sequence) extensionData.getObjectAt(TEE_ENFORCED_INDEX)).toArray(),
+            ASN1Sequence.getInstance(extensionData.getObjectAt(TEE_ENFORCED_INDEX)).toArray(),
             attestationVersion);
     this.attestedKey = attestedKey;
   }
@@ -86,8 +95,8 @@ public class ParsedAttestationRecord {
       SecurityLevel attestationSecurityLevel,
       int keymasterVersion,
       SecurityLevel keymasterSecurityLevel,
-      byte[] attestationChallenge,
-      byte[] uniqueId,
+      ByteString attestationChallenge,
+      ByteString uniqueId,
       AuthorizationList softwareEnforced,
       AuthorizationList teeEnforced,
       PublicKey attestedKey) {
@@ -138,8 +147,8 @@ public class ParsedAttestationRecord {
       SecurityLevel attestationSecurityLevel,
       int keymasterVersion,
       SecurityLevel keymasterSecurityLevel,
-      byte[] attestationChallenge,
-      byte[] uniqueId,
+      ByteString attestationChallenge,
+      ByteString uniqueId,
       AuthorizationList softwareEnforced,
       AuthorizationList teeEnforced,
       PublicKey attestedKey) {
@@ -204,8 +213,9 @@ public class ParsedAttestationRecord {
     vector[KEYMASTER_VERSION_INDEX] = new ASN1Integer(this.keymasterVersion);
     vector[KEYMASTER_SECURITY_LEVEL_INDEX] =
         new ASN1Enumerated(securityLevelToInt(this.keymasterSecurityLevel));
-    vector[ATTESTATION_CHALLENGE_INDEX] = new DEROctetString(this.attestationChallenge);
-    vector[UNIQUE_ID_INDEX] = new DEROctetString(this.uniqueId);
+    vector[ATTESTATION_CHALLENGE_INDEX] =
+        new DEROctetString(this.attestationChallenge.toByteArray());
+    vector[UNIQUE_ID_INDEX] = new DEROctetString(this.uniqueId.toByteArray());
     if (this.softwareEnforced != null) {
       vector[SW_ENFORCED_INDEX] = this.softwareEnforced.toAsn1Sequence();
     }
