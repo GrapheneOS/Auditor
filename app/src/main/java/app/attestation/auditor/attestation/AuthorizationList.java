@@ -60,6 +60,7 @@ import static app.attestation.auditor.attestation.Constants.KM_TAG_USAGE_EXPIRE_
 import static app.attestation.auditor.attestation.Constants.KM_TAG_USER_AUTH_TYPE;
 import static app.attestation.auditor.attestation.Constants.KM_TAG_VENDOR_PATCH_LEVEL;
 import static app.attestation.auditor.attestation.Constants.UINT32_MAX;
+import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 //import static com.google.common.collect.Streams.stream;
 
@@ -74,9 +75,8 @@ import com.google.protobuf.ByteString;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -534,22 +534,28 @@ public class AuthorizationList {
   }
 
   private static ParsedAuthorizationMap getAuthorizationMap(ASN1Encodable[] authorizationList) {
-    Map<Integer, ASN1Object> authorizationMap = new HashMap<>();
+    // authorizationMap must retain the order of authorizationList, otherwise
+    // the code searching for out of order tags below will break. Helpfully
+    // a ImmutableMap preserves insertion order.
+    //
+    // https://guava.dev/releases/23.0/api/docs/com/google/common/collect/ImmutableCollection.html
+    ImmutableMap<Integer, ASN1Object> authorizationMap =
+        Arrays.stream(authorizationList)
+            .map(ASN1TaggedObject::getInstance)
+            .collect(
+                toImmutableMap(
+                    ASN1TaggedObject::getTagNo,
+                    obj -> ASN1Util.getExplicitContextBaseObject(obj, obj.getTagNo())));
+
     List<Integer> unorderedTags = new ArrayList<>();
-    int currentTag = 0;
     int previousTag = 0;
-    for (ASN1Encodable entry : authorizationList) {
-      ASN1TaggedObject taggedEntry = ASN1TaggedObject.getInstance(entry);
-      previousTag = currentTag;
-      currentTag = taggedEntry.getTagNo();
+    for (int currentTag : authorizationMap.keySet()) {
       if (previousTag > currentTag) {
         unorderedTags.add(previousTag);
       }
-      authorizationMap.put(
-          currentTag, ASN1Util.getExplicitContextBaseObject(taggedEntry, taggedEntry.getTagNo()));
+      previousTag = currentTag;
     }
-    return new ParsedAuthorizationMap(
-        ImmutableMap.copyOf(authorizationMap), ImmutableList.copyOf(unorderedTags));
+    return new ParsedAuthorizationMap(authorizationMap, ImmutableList.copyOf(unorderedTags));
   }
 
   @VisibleForTesting
