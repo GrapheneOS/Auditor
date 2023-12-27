@@ -60,8 +60,8 @@ import static app.attestation.auditor.attestation.Constants.KM_TAG_USAGE_EXPIRE_
 import static app.attestation.auditor.attestation.Constants.KM_TAG_USER_AUTH_TYPE;
 import static app.attestation.auditor.attestation.Constants.KM_TAG_VENDOR_PATCH_LEVEL;
 import static app.attestation.auditor.attestation.Constants.UINT32_MAX;
-//import static com.google.common.collect.ImmutableSet.toImmutableSet;
-//import static com.google.common.collect.Streams.stream;
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
+import static com.google.common.collect.Streams.stream;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
@@ -373,17 +373,21 @@ public class AuthorizationList {
   private AuthorizationList(ASN1Encodable[] authorizationList, int attestationVersion) {
     Map<Integer, ASN1Object> authorizationMap = getAuthorizationMap(authorizationList);
     this.purpose =
-        Utils.collectToImmutableSet(findIntegerSetAuthorizationListEntry(authorizationMap, KM_TAG_PURPOSE).stream()
-            .flatMap(key -> Utils.streamOfNullable(ASN1_TO_OPERATION_PURPOSE.get(key))));
+        findIntegerSetAuthorizationListEntry(authorizationMap, KM_TAG_PURPOSE).stream()
+            .flatMap(key -> Utils.streamOfNullable(ASN1_TO_OPERATION_PURPOSE.get(key)))
+            .collect(toImmutableSet());
     this.algorithm =
         findOptionalIntegerAuthorizationListEntry(authorizationMap, KM_TAG_ALGORITHM)
             .map(ASN1_TO_ALGORITHM::get);
     this.keySize = findOptionalIntegerAuthorizationListEntry(authorizationMap, KM_TAG_KEY_SIZE);
-    this.digest = Utils.collectToImmutableSet(findIntegerSetAuthorizationListEntry(authorizationMap, KM_TAG_DIGEST).stream()
-            .flatMap(key -> Utils.streamOfNullable(ASN1_TO_DIGEST_MODE.get(key))));
+    this.digest =
+        findIntegerSetAuthorizationListEntry(authorizationMap, KM_TAG_DIGEST).stream()
+            .flatMap(key -> Utils.streamOfNullable(ASN1_TO_DIGEST_MODE.get(key)))
+            .collect(toImmutableSet());
     this.padding =
-        Utils.collectToImmutableSet(findIntegerSetAuthorizationListEntry(authorizationMap, KM_TAG_PADDING).stream()
-            .flatMap(key -> Utils.streamOfNullable(ASN1_TO_PADDING_MODE.get(key))));
+        findIntegerSetAuthorizationListEntry(authorizationMap, KM_TAG_PADDING).stream()
+            .flatMap(key -> Utils.streamOfNullable(ASN1_TO_PADDING_MODE.get(key)))
+            .collect(toImmutableSet());
     this.ecCurve =
         findOptionalIntegerAuthorizationListEntry(authorizationMap, KM_TAG_EC_CURVE)
             .map(ASN1_TO_EC_CURVE::get);
@@ -544,7 +548,7 @@ public class AuthorizationList {
     if (asn1Set == null) {
       return ImmutableSet.of();
     }
-    return Utils.collectToImmutableSet(java.util.Arrays.stream(asn1Set.toArray()).map(ASN1Parsing::getIntegerFromAsn1));
+    return stream(asn1Set).map(ASN1Parsing::getIntegerFromAsn1).collect(toImmutableSet());
   }
 
   private static Optional<Duration> findOptionalDurationSecondsAuthorizationListEntry(
@@ -651,20 +655,23 @@ public class AuthorizationList {
     ASN1EncodableVector vector = new ASN1EncodableVector();
     addOptionalIntegerSet(
         KM_TAG_PURPOSE,
-        Utils.collectToImmutableSet(this.purpose.stream()
-            .flatMap(key -> Utils.streamOfNullable(OPERATION_PURPOSE_TO_ASN1.get(key)))),
+        this.purpose.stream()
+            .flatMap(key -> Utils.streamOfNullable(OPERATION_PURPOSE_TO_ASN1.get(key)))
+            .collect(toImmutableSet()),
         vector);
     addOptionalInteger(KM_TAG_ALGORITHM, this.algorithm.map(ALGORITHM_TO_ASN1::get), vector);
     addOptionalInteger(KM_TAG_KEY_SIZE, this.keySize, vector);
     addOptionalIntegerSet(
         KM_TAG_DIGEST,
-        Utils.collectToImmutableSet(this.digest.stream()
-            .flatMap(key -> Utils.streamOfNullable(DIGEST_MODE_TO_ASN1.get(key)))),
+        this.digest.stream()
+            .flatMap(key -> Utils.streamOfNullable(DIGEST_MODE_TO_ASN1.get(key)))
+            .collect(toImmutableSet()),
         vector);
     addOptionalIntegerSet(
         KM_TAG_PADDING,
-        Utils.collectToImmutableSet(this.padding.stream()
-            .flatMap(key -> Utils.streamOfNullable(PADDING_MODE_TO_ASN1.get(key)))),
+        this.padding.stream()
+            .flatMap(key -> Utils.streamOfNullable(PADDING_MODE_TO_ASN1.get(key)))
+            .collect(toImmutableSet()),
         vector);
     addOptionalInteger(KM_TAG_EC_CURVE, this.ecCurve.map(EC_CURVE_TO_ASN1::get), vector);
     addOptionalLong(KM_TAG_RSA_PUBLIC_EXPONENT, this.rsaPublicExponent, vector);
