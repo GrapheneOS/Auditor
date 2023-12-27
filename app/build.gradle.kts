@@ -110,7 +110,7 @@ dependencies {
     implementation("androidx.biometric:biometric:1.1.0")
     implementation("androidx.preference:preference:1.2.1")
     implementation("com.google.android.material:material:1.11.0")
-    implementation("com.google.guava:guava:33.0.0-android")
+    implementation("com.google.guava:guava:33.0.0-jre")
     implementation("com.google.zxing:core:3.5.2")
     implementation("org.bouncycastle:bcprov-jdk18on:1.77")
 
@@ -119,4 +119,13 @@ dependencies {
     implementation("androidx.camera:camera-camera2:$cameraVersion")
     implementation("androidx.camera:camera-lifecycle:$cameraVersion")
     implementation("androidx.camera:camera-view:$cameraVersion")
+
+    constraints {
+        add("implementation", "com.google.guava:guava:33.0.0-jre") {
+            attributes {
+                attribute(TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
+                    objects.named(TargetJvmEnvironment.STANDARD_JVM))
+            }
+        }
+    }
 }
