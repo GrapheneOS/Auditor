@@ -1,11 +1,8 @@
 package app.attestation.auditor.attestation;
 
-import com.google.common.collect.ImmutableSet;
-
 import org.bouncycastle.asn1.ASN1Boolean;
 
 import java.math.BigInteger;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -34,10 +31,6 @@ class Utils {
             return false;
         }
         throw new IllegalArgumentException("DER-encoded boolean values must contain either 0x00 or 0xFF");
-    }
-
-    static <T> ImmutableSet<T> collectToImmutableSet(Stream<T> stream) {
-        return ImmutableSet.<T>builder().addAll(stream.collect(Collectors.toSet())).build();
     }
 
     private Utils() {}
