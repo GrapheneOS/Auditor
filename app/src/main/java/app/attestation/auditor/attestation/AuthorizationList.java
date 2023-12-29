@@ -383,7 +383,11 @@ public class AuthorizationList {
 
     this.purpose =
         parsedAuthorizationMap.findIntegerSetAuthorizationListEntry(KM_TAG_PURPOSE).stream()
+            // Auditor-change START: Provide a Java-17 API compatibility layer for Stream.ofNullable calls.
+
             .flatMap(key -> Utils.streamOfNullable(ASN1_TO_OPERATION_PURPOSE.get(key)))
+
+            // Auditor-change END: Provide a Java-17 API compatibility layer for Stream.ofNullable calls.
             .collect(toImmutableSet());
     this.algorithm =
         parsedAuthorizationMap.findOptionalIntegerAuthorizationListEntry(KM_TAG_ALGORITHM)
@@ -391,11 +395,15 @@ public class AuthorizationList {
     this.keySize = parsedAuthorizationMap.findOptionalIntegerAuthorizationListEntry(KM_TAG_KEY_SIZE);
     this.digest =
         parsedAuthorizationMap.findIntegerSetAuthorizationListEntry(KM_TAG_DIGEST).stream()
+            // Auditor-change START: Provide a Java-17 API compatibility layer for Stream.ofNullable calls.
             .flatMap(key -> Utils.streamOfNullable(ASN1_TO_DIGEST_MODE.get(key)))
+            // Auditor-change END: Provide a Java-17 API compatibility layer for Stream.ofNullable calls.
             .collect(toImmutableSet());
     this.padding =
         parsedAuthorizationMap.findIntegerSetAuthorizationListEntry(KM_TAG_PADDING).stream()
+            // Auditor-change START: Provide a Java-17 API compatibility layer for Stream.ofNullable calls.
             .flatMap(key -> Utils.streamOfNullable(ASN1_TO_PADDING_MODE.get(key)))
+            // Auditor-change END: Provide a Java-17 API compatibility layer for Stream.ofNullable calls.
             .collect(toImmutableSet());
     this.ecCurve =
         parsedAuthorizationMap.findOptionalIntegerAuthorizationListEntry(KM_TAG_EC_CURVE)
@@ -619,7 +627,10 @@ public class AuthorizationList {
     addOptionalIntegerSet(
         KM_TAG_PURPOSE,
         this.purpose.stream()
+            // Auditor-change START: Provide a Java-17 API compatibility layer for Stream.ofNullable calls.
+
             .flatMap(key -> Utils.streamOfNullable(OPERATION_PURPOSE_TO_ASN1.get(key)))
+            // Auditor-change END: Provide a Java-17 API compatibility layer for Stream.ofNullable calls.
             .collect(toImmutableSet()),
         vector);
     addOptionalInteger(KM_TAG_ALGORITHM, this.algorithm.map(ALGORITHM_TO_ASN1::get), vector);
@@ -627,13 +638,17 @@ public class AuthorizationList {
     addOptionalIntegerSet(
         KM_TAG_DIGEST,
         this.digest.stream()
+            // Auditor-change START: Provide a Java-17 API compatibility layer for Stream.ofNullable calls.
             .flatMap(key -> Utils.streamOfNullable(DIGEST_MODE_TO_ASN1.get(key)))
+            // Auditor-change END: Provide a Java-17 API compatibility layer for Stream.ofNullable calls.
             .collect(toImmutableSet()),
         vector);
     addOptionalIntegerSet(
         KM_TAG_PADDING,
         this.padding.stream()
+            // Auditor-change START: Provide a Java-17 API compatibility layer for Stream.ofNullable calls.
             .flatMap(key -> Utils.streamOfNullable(PADDING_MODE_TO_ASN1.get(key)))
+            // Auditor-change END: Provide a Java-17 API compatibility layer for Stream.ofNullable calls.
             .collect(toImmutableSet()),
         vector);
     addOptionalInteger(KM_TAG_EC_CURVE, this.ecCurve.map(EC_CURVE_TO_ASN1::get), vector);
