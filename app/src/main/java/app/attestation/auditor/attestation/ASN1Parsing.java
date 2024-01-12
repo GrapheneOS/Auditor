@@ -24,14 +24,18 @@ import org.bouncycastle.asn1.ASN1Integer;
 class ASN1Parsing {
 
   static boolean getBooleanFromAsn1(ASN1Encodable asn1Value) {
+    // Auditor-change START [1/2]: Provide a strict-by-default parsing of ASN1Encodable for boolean.
     return getBooleanFromAsn1(asn1Value, true);
   }
 
   static boolean getBooleanFromAsn1(ASN1Encodable asn1Value, boolean strict) {
+    // Auditor-change END [1/2]: Provide a strict-by-default parsing of ASN1Encodable for boolean.
     if (asn1Value instanceof ASN1Boolean) {
+    // Auditor-change START [2/2]: Provide a strict-by-default parsing of ASN1Encodable for boolean.
       if (strict) {
         return Utils.getBooleanFromAsn1Strict((ASN1Boolean) asn1Value);
       }
+    // Auditor-change END [2/2]: Provide a strict-by-default parsing of ASN1Encodable for boolean.
       return ((ASN1Boolean) asn1Value).isTrue();
     } else {
       throw new IllegalArgumentException(
@@ -39,6 +43,7 @@ class ASN1Parsing {
     }
   }
 
+  // Auditor-change START: Provide a strict-by-default parsing of ASN1Encodable for integer.
   static int getIntegerFromAsn1(ASN1Encodable asn1Value) {
     return getIntegerFromAsn1(asn1Value, true);
   }
@@ -53,4 +58,7 @@ class ASN1Parsing {
           "Integer value expected; found " + asn1Value.getClass().getName() + " instead.");
     }
   }
+  // Auditor-change END: Provide a strict-by-default parsing of ASN1Encodable for integer.
+
+  private ASN1Parsing() {}
 }
