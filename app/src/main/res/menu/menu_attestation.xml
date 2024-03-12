@@ -14,6 +14,9 @@
     <item android:id="@+id/action_disable_remote_verify"
             android:title="@string/action_disable_remote_verify"
             app:showAsAction="never" />
+    <item android:id="@+id/action_remote_verify_now"
+        android:title="@string/action_remote_verify_now"
+        app:showAsAction="never" />
     <item android:id="@+id/action_submit_sample"
             android:title="@string/action_submit_sample"
             app:showAsAction="never" />

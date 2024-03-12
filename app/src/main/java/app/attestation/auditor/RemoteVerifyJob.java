@@ -39,6 +39,8 @@ public class RemoteVerifyJob extends JobService {
     private static final String TAG = "RemoteVerifyJob";
     private static final int PERIODIC_JOB_ID = 0;
     private static final int FIRST_RUN_JOB_ID = 1;
+
+    private static final int FIRE_ONCE_JOB_ID = 2;
     static final String DOMAIN = "attestation.app";
     private static final String CHALLENGE_URL = "https://" + DOMAIN + "/challenge";
     private static final String VERIFY_URL = "https://" + DOMAIN + "/verify";
@@ -77,12 +79,15 @@ public class RemoteVerifyJob extends JobService {
     }
 
     static void schedule(final Context context, int interval) {
-        if (interval < MIN_INTERVAL) {
-            interval = MIN_INTERVAL;
-            Log.e(TAG, "invalid interval " + interval + " clamped to MIN_INTERVAL " + MIN_INTERVAL);
-        } else if (interval > MAX_INTERVAL) {
-            interval = MAX_INTERVAL;
-            Log.e(TAG, "invalid interval " + interval + " clamped to MAX_INTERVAL " + MAX_INTERVAL);
+        boolean scheduleNow = interval == -1; // if interval = -1, the job needs to be scheduled now and only once.
+        if (!scheduleNow) {
+            if (interval < MIN_INTERVAL) {
+                interval = MIN_INTERVAL;
+                Log.e(TAG, "invalid interval " + interval + " clamped to MIN_INTERVAL " + MIN_INTERVAL);
+            } else if (interval > MAX_INTERVAL) {
+                interval = MAX_INTERVAL;
+                Log.e(TAG, "invalid interval " + interval + " clamped to MAX_INTERVAL " + MAX_INTERVAL);
+            }
         }
 
         final long intervalMillis = interval * 1000;
@@ -99,7 +104,8 @@ public class RemoteVerifyJob extends JobService {
                 jobInfo.getEstimatedNetworkDownloadBytes() == ESTIMATED_DOWNLOAD_BYTES &&
                 jobInfo.getEstimatedNetworkUploadBytes() == ESTIMATED_UPLOAD_BYTES &&
                 jobInfo.getIntervalMillis() == intervalMillis &&
-                jobInfo.getFlexMillis() == flexMillis) {
+                jobInfo.getFlexMillis() == flexMillis &&
+                !scheduleNow) {
             Log.d(TAG, "job already registered");
             return;
         }
@@ -119,11 +125,16 @@ public class RemoteVerifyJob extends JobService {
                 throw new RuntimeException("job schedule failed");
             }
         }
-        final JobInfo.Builder builder = new JobInfo.Builder(PERIODIC_JOB_ID, serviceName)
-                .setPeriodic(intervalMillis, flexMillis)
+        final JobInfo.Builder builder = scheduleNow ?
+                new JobInfo.Builder(FIRE_ONCE_JOB_ID, serviceName)
+                        .setPersisted(true)
+                        .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                : new JobInfo.Builder(PERIODIC_JOB_ID, serviceName)
                 .setPersisted(true)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .setEstimatedNetworkBytes(ESTIMATED_DOWNLOAD_BYTES, ESTIMATED_UPLOAD_BYTES);
+                .setEstimatedNetworkBytes(ESTIMATED_DOWNLOAD_BYTES, ESTIMATED_UPLOAD_BYTES)
+                .setPeriodic(intervalMillis, flexMillis);
+
         if (scheduler.schedule(builder.build()) == JobScheduler.RESULT_FAILURE) {
             throw new RuntimeException("job schedule failed");
         }
