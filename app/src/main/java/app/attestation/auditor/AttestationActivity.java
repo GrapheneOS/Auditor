@@ -140,108 +140,6 @@ public class AttestationActivity extends AppCompatActivity {
                 }
             });
 
-    private static final boolean isSupportedAuditee = ImmutableSet.of(
-            "ALP-L29",
-            "AUM-L29",
-            "Aquaris X2 Pro",
-            "BBF100-1",
-            "BBF100-6",
-            "BKL-L04",
-            "BKL-L09",
-            "CLT-L29",
-            "COL-L29",
-            "DUB-LX3",
-            "CPH1831",
-            "CPH1903",
-            "CPH1909",
-            "EML-L09",
-            "EXODUS 1",
-            "G8341",
-            "G8342",
-            "G8441",
-            "GM1913",
-            "H3113",
-            "H3123",
-            "H4113",
-            "H8216",
-            "H8314",
-            "H8324",
-            "HTC 2Q55100",
-            "JKM-LX3",
-            "LLD-L31",
-            "LG-Q710AL",
-            "LM-Q720",
-            "LYA-L29",
-            "Mi A2",
-            "Mi A2 Lite",
-            "MI 9",
-            "moto g(7)",
-            "motorola one vision",
-            "Nokia 3.1",
-            "Nokia 6.1",
-            "Nokia 6.1 Plus",
-            "Nokia 7.1",
-            "Nokia 7 plus",
-            "ONEPLUS A6003",
-            "ONEPLUS A6013",
-            "Pixel 2",
-            "Pixel 2 XL",
-            "Pixel 3",
-            "Pixel 3 XL",
-            "Pixel 3a",
-            "Pixel 3a XL",
-            "Pixel 4",
-            "Pixel 4 XL",
-            "Pixel 4a",
-            "Pixel 4a (5G)",
-            "Pixel 5",
-            "Pixel 5a",
-            "Pixel 6",
-            "Pixel 6 Pro",
-            "Pixel 6a",
-            "Pixel 7",
-            "Pixel 7 Pro",
-            "Pixel 7a",
-            "Pixel Tablet",
-            "Pixel Fold",
-            "Pixel 8",
-            "Pixel 8 Pro",
-            "POCOPHONE F1",
-            "POT-LX3",
-            "REVVL 2",
-            "RMX1941",
-            "SM-A705FN",
-            "SM-G960F",
-            "SM-G960U",
-            "SM-G960U1",
-            "SM-G960W",
-            "SM-G9600",
-            "SM-G965F",
-            "SM-G965U",
-            "SM-G965U1",
-            "SM-G965W",
-            "SM-G970F",
-            "SM-G975F",
-            "SM-J260A",
-            "SM-J260F",
-            "SM-J260T1",
-            "SM-J337A",
-            "SM-J337AZ",
-            "SM-J337T",
-            "SM-J720F",
-            "SM-J737T1",
-            "SM-M205F",
-            "SM-N960F",
-            "SM-N960U",
-            "SM-N970F",
-            "SM-N970U",
-            "SM-N975U",
-            "SM-S367VL",
-            "SM-T510",
-            "SM-T835",
-            "SNE-LX1",
-            "vivo 1807").contains(Build.MODEL);
-
     private static int getFirstApiLevel() {
         return Integer.parseInt(SystemProperties.get("ro.product.first_api_level",
                 Integer.toString(Build.VERSION.SDK_INT)));
@@ -263,10 +161,6 @@ public class AttestationActivity extends AppCompatActivity {
         snackbar = Snackbar.make(rootView, "", Snackbar.LENGTH_LONG);
 
         binding.content.auditee.setOnClickListener((final View view) -> {
-            if (!isSupportedAuditee) {
-                snackbar.setText(R.string.unsupported_auditee).show();
-                return;
-            }
             stage = Stage.Auditee;
             startQrScanner();
         });
@@ -513,7 +407,7 @@ public class AttestationActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.menu_attestation, menu);
-        menu.findItem(R.id.action_clear_auditee).setEnabled(isSupportedAuditee);
+        menu.findItem(R.id.action_clear_auditee).setEnabled(true);
         canSubmitSample = potentialSupportedAuditee() && !BuildConfig.DEBUG;
         menu.findItem(R.id.action_submit_sample).setEnabled(canSubmitSample);
         return true;
@@ -523,7 +417,7 @@ public class AttestationActivity extends AppCompatActivity {
     public boolean onPrepareOptionsMenu(final Menu menu) {
         final boolean isRemoteVerifyEnabled = RemoteVerifyJob.isEnabled(this);
         menu.findItem(R.id.action_enable_remote_verify)
-                .setEnabled(isSupportedAuditee && !isRemoteVerifyEnabled);
+                .setEnabled(!isRemoteVerifyEnabled);
         menu.findItem(R.id.action_disable_remote_verify).setEnabled(isRemoteVerifyEnabled);
         menu.findItem(R.id.action_submit_sample).setEnabled(canSubmitSample &&
                 !SubmitSampleJob.isScheduled(this));

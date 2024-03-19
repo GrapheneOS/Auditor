@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyFactory;
@@ -59,6 +60,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
@@ -116,6 +118,7 @@ class AttestationProtocol {
     private static final int FINGERPRINT_LENGTH = FINGERPRINT_HASH_FUNCTION.bits() / 8;
 
     private static final boolean PREFER_STRONGBOX = true;
+    private static final boolean PREFER_CHECK_VALIDITY_LEAF_CERT = false;
 
     // Challenge message:
     //
@@ -236,6 +239,7 @@ class AttestationProtocol {
 
     private static final int AUDITOR_APP_MINIMUM_VERSION = 47;
     private static final int OS_VERSION_MINIMUM = 100000;
+    private static final int OS_VERSION_MINIMUM_WITH_DEVICE_INFO_ATTESTATION_SUPPORT = 120000;
     private static final int OS_PATCH_LEVEL_MINIMUM = 201909;
     private static final int VENDOR_PATCH_LEVEL_MINIMUM = 20190905;
     private static final int BOOT_PATCH_LEVEL_MINIMUM = 20190905;
@@ -261,6 +265,11 @@ class AttestationProtocol {
             this.rollbackResistant = rollbackResistant;
             this.enforceStrongBox = enforceStrongBox;
             this.osName = osName;
+        }
+
+        // Generic device info always have false rollback resistance, and skips boot and vendor patch level checks.
+        boolean isGeneric() {
+            return GENERIC_DEVICE_STOCK.equals(this) || GENERIC_DEVICE_STRONGBOX_STOCK.equals(this);
         }
     }
 
@@ -579,6 +588,13 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_sm_n975u, 3, 4, false, true, R.string.os_stock))
             .build();
 
+    // Some Android 10 devices, including past supported devices above, has attestationVersion, keymasterVersion of 1.
+    // TODO: Remove non-generic device support past EoL with latest Android version lower than Android 10.
+    private static final DeviceInfo GENERIC_DEVICE_STOCK =
+            new DeviceInfo(R.string.generic_device_name_unknown, 1, 1, false, false, R.string.generic_device_os_stock);
+    private static final DeviceInfo GENERIC_DEVICE_STRONGBOX_STOCK =
+            new DeviceInfo(R.string.generic_device_name_unknown, 1, 1, false, true, R.string.generic_device_os_stock);
+
     private static byte[] getChallengeIndex(final Context context) {
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         final String challengeIndexSerialized = global.getString(KEY_CHALLENGE_INDEX, null);
@@ -610,7 +626,7 @@ class AttestationProtocol {
     }
 
     private static class Verified {
-        final int device;
+        final String device;
         final String verifiedBootKey;
         final byte[] verifiedBootHash;
         final int osName;
@@ -623,7 +639,7 @@ class AttestationProtocol {
         final int securityLevel;
         final boolean attestKey;
 
-        Verified(final int device, final String verifiedBootKey, final byte[] verifiedBootHash,
+        Verified(final String device, final String verifiedBootKey, final byte[] verifiedBootHash,
                 final int osName, final int osVersion, final int osPatchLevel,
                 final int vendorPatchLevel, final int bootPatchLevel, final int appVersion, final byte appVariant,
                 final int securityLevel, final boolean attestKey) {
@@ -653,7 +669,7 @@ class AttestationProtocol {
         return (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(in);
     }
 
-    private static Verified verifyStateless(final Certificate[] certificates,
+    private static Verified verifyStateless(final Context context, final Certificate[] certificates,
             final byte[] challenge, final boolean hasPersistentKey, final byte[][] validRoots)
             throws GeneralSecurityException, IOException {
 
@@ -751,22 +767,41 @@ class AttestationProtocol {
             }
         } else if (verifiedBootState == RootOfTrust.VerifiedBootState.VERIFIED) {
             if (attestationSecurityLevelEnum == ParsedAttestationRecord.SecurityLevel.STRONG_BOX) {
-                device = fingerprintsStrongBoxStock.get(verifiedBootKey);
+                device = fingerprintsStrongBoxStock.getOrDefault(verifiedBootKey, GENERIC_DEVICE_STRONGBOX_STOCK);
             } else {
-                device = fingerprintsStock.get(verifiedBootKey);
+                device = fingerprintsStock.getOrDefault(verifiedBootKey, GENERIC_DEVICE_STOCK);
             }
         } else {
             throw new GeneralSecurityException("verified boot state is not verified or self signed");
         }
 
         if (device == null) {
-            throw new GeneralSecurityException("invalid verified boot key fingerprint: " + verifiedBootKey);
+            throw new GeneralSecurityException("invalid self-signed verified boot key fingerprint: " + verifiedBootKey);
         }
 
         // enforce StrongBox for new pairings with devices supporting it
         if (!hasPersistentKey && device.enforceStrongBox &&
                 attestationSecurityLevelEnum != ParsedAttestationRecord.SecurityLevel.STRONG_BOX) {
             throw new GeneralSecurityException("non-StrongBox security level for device supporting it");
+        }
+
+        // Device info check
+        final String manufacturer = new String(teeEnforced.attestationIdManufacturer.orElse(new byte[0]), StandardCharsets.UTF_8);
+        final String model = new String(teeEnforced.attestationIdModel.orElse(new byte[0]), StandardCharsets.UTF_8);
+        final String deviceNameTee = manufacturer.isEmpty() && model.isEmpty() ? "" : manufacturer + " " + model;
+        final String deviceName;
+        if (device.isGeneric()) {
+            deviceName = deviceNameTee.isBlank() ? context.getString(R.string.generic_device_name_unknown) : deviceNameTee;
+        } else {
+            final String deviceNameRes = context.getString(device.name);
+            if (!deviceNameRes.startsWith(manufacturer)) {
+                throw new GeneralSecurityException("pinned device name must start with manufacturer name");
+            }
+            if (Stream.of(deviceNameRes.substring(manufacturer.length() + 1)
+                    .split(" / ")).noneMatch(str -> str.startsWith(model))) {
+                throw new GeneralSecurityException("model device name not found");
+            }
+            deviceName = deviceNameTee.isBlank() ? deviceNameRes : deviceNameTee;
         }
 
         // OS version sanity checks
@@ -779,11 +814,13 @@ class AttestationProtocol {
             throw new GeneralSecurityException("OS patch level too old: " + osPatchLevel);
         }
         final int vendorPatchLevel = teeEnforced.vendorPatchLevel.orElse(0);
-        if (vendorPatchLevel < VENDOR_PATCH_LEVEL_MINIMUM && !extraPatchLevelMissing.contains(device.name)) {
+        if (vendorPatchLevel < VENDOR_PATCH_LEVEL_MINIMUM && !extraPatchLevelMissing.contains(device.name)
+                && !device.isGeneric()) {
             throw new GeneralSecurityException("Vendor patch level too old: " + vendorPatchLevel);
         }
         final int bootPatchLevel = teeEnforced.bootPatchLevel.orElse(0);
-        if (bootPatchLevel < BOOT_PATCH_LEVEL_MINIMUM && !extraPatchLevelMissing.contains(device.name)) {
+        if (bootPatchLevel < BOOT_PATCH_LEVEL_MINIMUM && !extraPatchLevelMissing.contains(device.name)
+                && !device.isGeneric()) {
             throw new GeneralSecurityException("Boot patch level too old: " + bootPatchLevel);
         }
 
@@ -881,6 +918,32 @@ class AttestationProtocol {
                     throw new GeneralSecurityException("attest key keymaster version does not match");
                 }
 
+                // device info sanity checks
+                if (!Arrays.equals(teeEnforced1.attestationIdManufacturer.orElse(new byte[0]),
+                        teeEnforced.attestationIdManufacturer.orElse(new byte[0]))) {
+                    throw new GeneralSecurityException("attest key manufacturer info does not match");
+                }
+
+                if (!Arrays.equals(teeEnforced1.attestationIdModel.orElse(new byte[0]),
+                        teeEnforced.attestationIdModel.orElse(new byte[0]))) {
+                    throw new GeneralSecurityException("attest key model info does not match");
+                }
+
+                if (!Arrays.equals(teeEnforced1.attestationIdBrand.orElse(new byte[0]),
+                        teeEnforced.attestationIdBrand.orElse(new byte[0]))) {
+                    throw new GeneralSecurityException("attest key brand info does not match");
+                }
+
+                if (!Arrays.equals(teeEnforced1.attestationIdDevice.orElse(new byte[0]),
+                        teeEnforced.attestationIdDevice.orElse(new byte[0]))) {
+                    throw new GeneralSecurityException("attest key brand device info does not match");
+                }
+
+                if (!Arrays.equals(teeEnforced1.attestationIdProduct.orElse(new byte[0]),
+                        teeEnforced.attestationIdProduct.orElse(new byte[0]))) {
+                    throw new GeneralSecurityException("attest key product info does not match");
+                }
+
                 // OS version sanity checks
                 if (!teeEnforced1.osVersion.equals(teeEnforced.osVersion)) {
                     throw new GeneralSecurityException("attest key OS version does not match");
@@ -917,7 +980,7 @@ class AttestationProtocol {
             throw new GeneralSecurityException("only initial key and attest key should have attestation extension");
         }
 
-        return new Verified(device.name, verifiedBootKey, verifiedBootHash, device.osName,
+        return new Verified(deviceName, verifiedBootKey, verifiedBootHash, device.osName,
                 osVersion, osPatchLevel, vendorPatchLevel, bootPatchLevel, appVersion, appVariant,
                 ParsedAttestationRecord.securityLevelToInt(attestationSecurityLevelEnum), attestKey);
     }
@@ -930,8 +993,10 @@ class AttestationProtocol {
             throws GeneralSecurityException {
         for (int i = 1; i < certChain.length; ++i) {
             try {
-                if (i == 1 || !hasPersistentKey) {
-                    ((X509Certificate) certChain[i - 1]).checkValidity();
+                if (i != 1 || PREFER_CHECK_VALIDITY_LEAF_CERT) {
+                    if (i == 1 || !hasPersistentKey) {
+                        ((X509Certificate) certChain[i - 1]).checkValidity();
+                    }
                 }
                 certChain[i - 1].verify(certChain[i].getPublicKey());
             } catch (final GeneralSecurityException e) {
@@ -988,7 +1053,23 @@ class AttestationProtocol {
         }
         builder.append(context.getString(R.string.security_level, securityLevel));
 
-        builder.append(context.getString(R.string.device, context.getString(verified.device)));
+        builder.append(context.getString(R.string.device, verified.device));
+
+        final String deviceInfoAttestation;
+        if (verified.osName == R.string.generic_device_os_stock) {
+            deviceInfoAttestation = context.getString(R.string.generic_device_info_attestation_supported);
+        } else if (context.getString(R.string.generic_device_name_unknown).equals(verified.device)) {
+            if (verified.osVersion >= OS_VERSION_MINIMUM_WITH_DEVICE_INFO_ATTESTATION_SUPPORT) {
+                deviceInfoAttestation = context.getString(R.string.generic_device_info_attestation_unsupported_error);
+            } else {
+                deviceInfoAttestation = context.getString(R.string.generic_device_info_attestation_unsupported_os_version);
+            }
+        } else {
+            deviceInfoAttestation = context.getString(R.string.generic_device_info_attestation_support_unknown);
+        }
+
+        builder.append(context.getString(R.string.pinned_generic_device_info_attestation, deviceInfoAttestation));
+
         builder.append(context.getString(R.string.os, context.getString(verified.osName)));
 
         final String osVersion = String.format(Locale.US, "%06d", verified.osVersion);
@@ -1067,7 +1148,7 @@ class AttestationProtocol {
                     "\nIf the initial pairing was simply not completed, clear the pairing data on either the Auditee or the Auditor via the menu and try again.\n");
         }
 
-        final Verified verified = verifyStateless(attestationCertificates, challenge, hasPersistentKey,
+        final Verified verified = verifyStateless(context, attestationCertificates, challenge, hasPersistentKey,
                 new byte[][]{readRawResource(context, R.raw.google_root_0),
                     readRawResource(context, R.raw.google_root_1),
                     readRawResource(context, R.raw.google_root_2),
@@ -1376,8 +1457,9 @@ class AttestationProtocol {
     @TargetApi(31)
     static void generateAttestKey(final String alias, final byte[] challenge, final boolean useStrongBox) throws
             GeneralSecurityException, IOException {
-        generateKeyPair(getKeyBuilder(alias, KeyProperties.PURPOSE_ATTEST_KEY,
-                useStrongBox, challenge, false).build());
+        KeyGenParameterSpec.Builder builder =
+                getKeyBuilder(alias, KeyProperties.PURPOSE_ATTEST_KEY, useStrongBox, challenge, false);
+        maybeGenerateKeyPairWithDeviceProperties(builder);
     }
 
     static Certificate getCertificate(final KeyStore keyStore, final String alias)
@@ -1489,7 +1571,7 @@ class AttestationProtocol {
         if (useAttestKey) {
             setAttestKeyAlias(builder, attestKeystoreAlias);
         }
-        generateKeyPair(builder.build());
+        maybeGenerateKeyPairWithDeviceProperties(builder);
 
         try {
             final byte[] fingerprint =
@@ -1507,7 +1589,7 @@ class AttestationProtocol {
             }
 
             // sanity check on the device being verified before sending it off to the verifying device
-            verifyStateless(attestationCertificates, challenge, hasPersistentKey,
+            verifyStateless(context, attestationCertificates, challenge, hasPersistentKey,
                     new byte[][]{readRawResource(context, R.raw.google_root_0),
                         readRawResource(context, R.raw.google_root_1),
                         readRawResource(context, R.raw.google_root_2),
@@ -1638,6 +1720,30 @@ class AttestationProtocol {
                 keyStore.deleteEntry(persistentKeystoreAlias);
             }
             throw e;
+        }
+    }
+
+    private static void maybeGenerateKeyPairWithDeviceProperties(
+            final KeyGenParameterSpec.Builder builder) throws IOException,
+            InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            builder.setDevicePropertiesAttestationIncluded(true);
+            try {
+                generateKeyPair(builder.build());
+            } catch (IOException e) {
+                if (e.getCause() instanceof ProviderException pe) {
+                    if (pe.getCause() instanceof android.security.KeyStoreException ke) {
+                        if (KeyStoreExceptionUtils.isUnableToAttestDeviceInfoError(ke)) {
+                            builder.setDevicePropertiesAttestationIncluded(false);
+                            generateKeyPair(builder.build());
+                            return;
+                        }
+                    }
+                }
+                throw e;
+            }
+        } else {
+            generateKeyPair(builder.build());
         }
     }
 

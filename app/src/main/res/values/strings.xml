@@ -176,4 +176,12 @@
 
     <string name="os_stock">Stock</string>
     <string name="os_graphene">GrapheneOS</string>
+
+    <string name="generic_device_name_unknown">Unknown non-Pixel device</string>
+    <string name="generic_device_os_stock">Stock (Generic)</string>
+    <string name="pinned_generic_device_info_attestation">Pinned generic device info attestation: %s\n</string>
+    <string name="generic_device_info_attestation_supported">Supported</string>
+    <string name="generic_device_info_attestation_unsupported_os_version">Unsupported by older OS version</string>
+    <string name="generic_device_info_attestation_unsupported_error">Unsupported by attestation error</string>
+    <string name="generic_device_info_attestation_support_unknown">Unknown, device info attested by pinned verified boot key hash</string>
 </resources>
