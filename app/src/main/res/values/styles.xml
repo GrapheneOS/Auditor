@@ -8,5 +8,12 @@
         <item name="colorPrimary">@color/graphenePrimaryColor</item>
         <item name="colorOnPrimary">@color/grapheneOnPrimaryColor</item>
         <item name="colorSurface">@color/grapheneSurfaceColor</item>
+        <item name="colorSurfaceContainer">@color/grapheneSurfaceContainerColor</item>
+
+        <item name="popupMenuStyle">@style/GraphenePopup</item>
+    </style>
+
+    <style name="GraphenePopup" parent="Widget.Material3.PopupMenu">
+        <item name="popupMenuBackground">@drawable/popupmenu_background</item>
     </style>
 </resources>
