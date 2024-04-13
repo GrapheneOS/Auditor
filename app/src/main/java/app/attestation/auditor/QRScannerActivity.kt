@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Size
 import android.view.ViewTreeObserver
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraProvider
@@ -15,14 +16,15 @@ import androidx.camera.core.FocusMeteringAction
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.MeteringPointFactory
 import androidx.camera.core.Preview
+import androidx.camera.core.SurfaceOrientedMeteringPointFactory
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
-import androidx.camera.core.SurfaceOrientedMeteringPointFactory
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import app.attestation.auditor.databinding.ActivityQrscannerBinding
 import com.google.android.material.snackbar.Snackbar
 import java.util.concurrent.ExecutionException
@@ -74,10 +76,15 @@ class QRScannerActivity : AppCompatActivity() {
     }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         binding = ActivityQrscannerBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
+        val insetsController = WindowCompat.getInsetsController(window, window.decorView)
+        insetsController.isAppearanceLightStatusBars = false
+        insetsController.isAppearanceLightNavigationBars = false
 
         binding.contentFrame.scaleType = PreviewView.ScaleType.FIT_CENTER
 
