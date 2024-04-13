@@ -2,4 +2,7 @@
     <color name="green">#591B5E20</color> <!-- Green 900 -->
     <color name="orange">#80F57F17</color> <!-- Yellow 900 (not orange; better color difference to dark red) -->
     <color name="red">#80B71C1C</color> <!-- Red 900 -->
+
+    <color name="graphenePrimaryColor">#FCFCFC</color>
+    <color name="grapheneOnPrimaryColor">#474747</color>
 </resources>

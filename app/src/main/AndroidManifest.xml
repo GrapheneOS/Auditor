@@ -17,10 +17,10 @@
             android:networkSecurityConfig="@xml/network_security_config"
             android:icon="@mipmap/ic_launcher"
             android:supportsRtl="true"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AuditorTheme">
 
         <activity android:name=".AttestationActivity"
-                android:theme="@style/AppTheme.NoActionBar"
+                android:theme="@style/AuditorTheme"
                 android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

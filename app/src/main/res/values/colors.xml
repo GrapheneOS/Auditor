@@ -3,5 +3,6 @@
     <color name="orange">#FFCC80</color> <!-- Orange 200 -->
     <color name="red">#EF9A9A</color> <!-- Red 200 -->
 
-    <color name="white_a90">#E6FFFFFF</color>
+    <color name="graphenePrimaryColor">#252525</color>
+    <color name="grapheneOnPrimaryColor">#E6E6E6</color>
 </resources>
