@@ -37,8 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:text="@string/auditee_button"
-                android:textAllCaps="false"
-                android:textColor="@color/white_a90" />
+                android:textAllCaps="false" />
 
             <Button
                 android:id="@+id/auditor"
@@ -46,8 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:text="@string/auditor_button"
-                android:textAllCaps="false"
-                android:textColor="@color/white_a90" />
+                android:textAllCaps="false" />
 
         </LinearLayout>
 
