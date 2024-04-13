@@ -19,14 +19,19 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 
+import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -253,12 +258,31 @@ public class AttestationActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
 
         binding = ActivityAttestationBinding.inflate(getLayoutInflater());
         View rootView = binding.getRoot();
         setContentView(rootView);
         setSupportActionBar(binding.toolbar);
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (@NonNull View v, @NonNull WindowInsetsCompat insets) -> {
+            Insets barInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            Insets cutoutInsets = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
+
+            int leftInsets = barInsets.left + cutoutInsets.left;
+            int rightInsets = barInsets.right + cutoutInsets.right;
+
+            binding.toolbar.setPadding(leftInsets, 0, rightInsets, 0);
+            binding.content.buttons.setPadding(0, 0, 0, barInsets.bottom);
+
+            ViewGroup.MarginLayoutParams mlpScrollView = (ViewGroup.MarginLayoutParams) binding.content.scrollview.getLayoutParams();
+            mlpScrollView.leftMargin = leftInsets;
+            mlpScrollView.rightMargin = rightInsets;
+            binding.content.scrollview.setLayoutParams(mlpScrollView);
+
+            return insets;
+        });
 
         snackbar = Snackbar.make(rootView, "", Snackbar.LENGTH_LONG);
 
