@@ -64,8 +64,10 @@ public class AttestationActivity extends AppCompatActivity {
 
     private static final int PERMISSIONS_REQUEST_CAMERA = 0;
     private static final int PERMISSIONS_REQUEST_POST_NOTIFICATIONS_REMOTE_VERIFY = 1;
+
     private static final int PERMISSIONS_REQUEST_POST_NOTIFICATIONS_SUBMIT_SAMPLE = 2;
 
+    private static final int PERMISSIONS_REQUEST_POST_NOTIFICATIONS_IMMEDIATE_REMOTE_VERIFY = 3;
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private ActivityAttestationBinding binding;
@@ -491,6 +493,9 @@ public class AttestationActivity extends AppCompatActivity {
             }
         } else if (requestCode == PERMISSIONS_REQUEST_POST_NOTIFICATIONS_REMOTE_VERIFY) {
             QRScannerActivityLauncher.launch(new Intent(this, QRScannerActivity.class));
+        } else if (requestCode == PERMISSIONS_REQUEST_POST_NOTIFICATIONS_IMMEDIATE_REMOTE_VERIFY) {
+            RemoteVerifyJob.schedule(this, -1);
+            snackbar.setText(R.string.remote_verify_now).show();
         } else if (requestCode == PERMISSIONS_REQUEST_POST_NOTIFICATIONS_SUBMIT_SAMPLE) {
             SubmitSampleJob.schedule(this);
             snackbar.setText(R.string.schedule_submit_sample_success).show();
@@ -525,6 +530,7 @@ public class AttestationActivity extends AppCompatActivity {
         menu.findItem(R.id.action_enable_remote_verify)
                 .setEnabled(isSupportedAuditee && !isRemoteVerifyEnabled);
         menu.findItem(R.id.action_disable_remote_verify).setEnabled(isRemoteVerifyEnabled);
+        menu.findItem(R.id.action_remote_verify_now).setEnabled(isRemoteVerifyEnabled);
         menu.findItem(R.id.action_submit_sample).setEnabled(canSubmitSample &&
                 !SubmitSampleJob.isScheduled(this));
         return true;
@@ -567,7 +573,19 @@ public class AttestationActivity extends AppCompatActivity {
             stage = Stage.EnableRemoteVerify;
             startQrScanner();
             return true;
-        } else if (itemId == R.id.action_disable_remote_verify) {
+        }
+        else if (itemId == R.id.action_remote_verify_now) {
+            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        PERMISSIONS_REQUEST_POST_NOTIFICATIONS_IMMEDIATE_REMOTE_VERIFY);
+            } else {
+                RemoteVerifyJob.schedule(this, -1);
+                snackbar.setText(R.string.remote_verify_now).show();
+            }
+            return true;
+        }
+
+        else if (itemId == R.id.action_disable_remote_verify) {
             new AlertDialog.Builder(this)
                     .setMessage(getString(R.string.action_disable_remote_verify) + "?")
                     .setPositiveButton(R.string.disable, (dialogInterface, i) -> {
