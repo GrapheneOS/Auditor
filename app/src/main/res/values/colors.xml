@@ -5,4 +5,5 @@
 
     <color name="graphenePrimaryColor">#252525</color>
     <color name="grapheneOnPrimaryColor">#E6E6E6</color>
+    <color name="grapheneSurfaceColor">#f8f8f8</color>
 </resources>

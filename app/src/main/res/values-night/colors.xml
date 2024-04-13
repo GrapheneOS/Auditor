@@ -4,5 +4,6 @@
     <color name="red">#80B71C1C</color> <!-- Red 900 -->
 
     <color name="graphenePrimaryColor">#FCFCFC</color>
-    <color name="grapheneOnPrimaryColor">#474747</color>
+    <color name="grapheneOnPrimaryColor">#2C2C2C</color>
+    <color name="grapheneSurfaceColor">#121212</color>
 </resources>

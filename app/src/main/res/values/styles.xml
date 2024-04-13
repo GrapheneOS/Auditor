@@ -7,5 +7,6 @@
 
         <item name="colorPrimary">@color/graphenePrimaryColor</item>
         <item name="colorOnPrimary">@color/grapheneOnPrimaryColor</item>
+        <item name="colorSurface">@color/grapheneSurfaceColor</item>
     </style>
 </resources>
