@@ -73,8 +73,8 @@ class QRScannerActivity : AppCompatActivity() {
         focusTimerActive = false
     }
 
-    public override fun onCreate(state: Bundle?) {
-        super.onCreate(state)
+    public override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         binding = ActivityQrscannerBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
