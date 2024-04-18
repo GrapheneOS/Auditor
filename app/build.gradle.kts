@@ -107,7 +107,7 @@ dependencies {
     // noinspection GradleDependency
     implementation("com.google.guava:guava:33.1.0-android")
     implementation("com.google.zxing:core:3.5.3")
-    implementation("org.bouncycastle:bcprov-jdk18on:1.78")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
 
     val cameraVersion = "1.3.3"
     implementation("androidx.camera:camera-core:$cameraVersion")
