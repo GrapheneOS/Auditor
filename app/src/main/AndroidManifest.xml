@@ -20,7 +20,6 @@
             android:theme="@style/AuditorTheme">
 
         <activity android:name=".AttestationActivity"
-                android:theme="@style/AuditorTheme"
                 android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
