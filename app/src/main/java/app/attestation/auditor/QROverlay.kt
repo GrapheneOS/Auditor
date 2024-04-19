@@ -73,7 +73,7 @@ class QROverlay(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         val textY = verticalHeight + size + frameSideSize * 4
 
         val xPos = textX - (tPaint.measureText(text) / 2).toInt()
-        val yPos = (textY - (tPaint.descent() + tPaint.ascent()) / 2).toInt()
+        val yPos = (textY - (tPaint.descent() + tPaint.ascent())).toInt()
 
         canvas.drawText(text, xPos.toFloat(), yPos.toFloat(), tPaint)
 
