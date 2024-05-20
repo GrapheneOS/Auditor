@@ -1,7 +1,6 @@
 package app.attestation.auditor;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.KeyguardManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
@@ -1362,11 +1361,6 @@ class AttestationProtocol {
         }
     }
 
-    @TargetApi(31)
-    static void setAttestKeyAlias(final KeyGenParameterSpec.Builder builder, final String alias) {
-        builder.setAttestKeyAlias(alias);
-    }
-
     static KeyGenParameterSpec.Builder getKeyBuilder(final String alias, final int purposes,
             final boolean useStrongBox, final byte[] challenge, final boolean temporary) {
         final Date startTime = new Date(new Date().getTime() - CLOCK_SKEW_MS);
@@ -1384,7 +1378,6 @@ class AttestationProtocol {
         return builder;
     }
 
-    @TargetApi(31)
     static void generateAttestKey(final String alias, final byte[] challenge, final boolean useStrongBox) throws
             GeneralSecurityException, IOException {
         generateKeyPair(getKeyBuilder(alias, KeyProperties.PURPOSE_ATTEST_KEY,
@@ -1461,17 +1454,10 @@ class AttestationProtocol {
             keyStore.deleteEntry(freshKeyStoreAlias);
             attestationKeystoreAlias = freshKeyStoreAlias;
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                final PrivateKey key = (PrivateKey) keyStore.getKey(persistentKeystoreAlias, null);
-                final KeyFactory factory = KeyFactory.getInstance(key.getAlgorithm(), "AndroidKeyStore");
-                final KeyInfo keyinfo = factory.getKeySpec(key, KeyInfo.class);
-                useStrongBox = keyinfo.getSecurityLevel() == KeyProperties.SECURITY_LEVEL_STRONGBOX;
-            } else {
-                final X509Certificate persistent =
-                    (X509Certificate) getCertificate(keyStore, persistentKeystoreAlias);
-                final String dn = persistent.getIssuerX500Principal().getName(X500Principal.RFC1779);
-                useStrongBox = dn.contains("StrongBox");
-            }
+            final PrivateKey key = (PrivateKey) keyStore.getKey(persistentKeystoreAlias, null);
+            final KeyFactory factory = KeyFactory.getInstance(key.getAlgorithm(), "AndroidKeyStore");
+            final KeyInfo keyinfo = factory.getKeySpec(key, KeyInfo.class);
+            useStrongBox = keyinfo.getSecurityLevel() == KeyProperties.SECURITY_LEVEL_STRONGBOX;
 
             final boolean hasAttestKey = keyStore.containsAlias(attestKeystoreAlias);
             if (hasAttestKey) {
@@ -1498,7 +1484,7 @@ class AttestationProtocol {
                 KeyProperties.PURPOSE_SIGN | KeyProperties.PURPOSE_VERIFY, useStrongBox, challenge,
                 hasPersistentKey);
         if (useAttestKey) {
-            setAttestKeyAlias(builder, attestKeystoreAlias);
+            builder.setAttestKeyAlias(attestKeystoreAlias);
         }
         generateKeyPair(builder.build());
 

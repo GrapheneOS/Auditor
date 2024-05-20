@@ -1,6 +1,5 @@
 package app.attestation.auditor;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -109,9 +108,7 @@ public class RemoteVerifyJob extends JobService {
                     .setPersisted(true)
                     .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                     .setEstimatedNetworkBytes(ESTIMATED_DOWNLOAD_BYTES, ESTIMATED_UPLOAD_BYTES);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                builder.setExpedited(true);
-            }
+            builder.setExpedited(true);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 builder.setPriority(JobInfo.PRIORITY_MAX);
             }
