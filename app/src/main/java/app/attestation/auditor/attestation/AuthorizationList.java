@@ -61,19 +61,23 @@ import static app.attestation.auditor.attestation.Constants.KM_TAG_USER_AUTH_TYP
 import static app.attestation.auditor.attestation.Constants.KM_TAG_VENDOR_PATCH_LEVEL;
 import static app.attestation.auditor.attestation.Constants.UINT32_MAX;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
-import static com.google.common.collect.Streams.stream;
+//import static com.google.common.collect.Streams.stream;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
+
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Integer;
@@ -371,107 +375,106 @@ public class AuthorizationList {
   public final boolean identityCredentialKey;
 
   private AuthorizationList(ASN1Encodable[] authorizationList, int attestationVersion) {
-    Map<Integer, ASN1Object> authorizationMap = getAuthorizationMap(authorizationList);
+    parsedAuthorizationMap = getAuthorizationMap(authorizationList);
+
     this.purpose =
-        findIntegerSetAuthorizationListEntry(authorizationMap, KM_TAG_PURPOSE).stream()
+        parsedAuthorizationMap.findIntegerSetAuthorizationListEntry(KM_TAG_PURPOSE).stream()
             .flatMap(key -> Utils.streamOfNullable(ASN1_TO_OPERATION_PURPOSE.get(key)))
             .collect(toImmutableSet());
     this.algorithm =
-        findOptionalIntegerAuthorizationListEntry(authorizationMap, KM_TAG_ALGORITHM)
+        parsedAuthorizationMap.findOptionalIntegerAuthorizationListEntry(KM_TAG_ALGORITHM)
             .map(ASN1_TO_ALGORITHM::get);
-    this.keySize = findOptionalIntegerAuthorizationListEntry(authorizationMap, KM_TAG_KEY_SIZE);
+    this.keySize = parsedAuthorizationMap.findOptionalIntegerAuthorizationListEntry(KM_TAG_KEY_SIZE);
     this.digest =
-        findIntegerSetAuthorizationListEntry(authorizationMap, KM_TAG_DIGEST).stream()
+        parsedAuthorizationMap.findIntegerSetAuthorizationListEntry(KM_TAG_DIGEST).stream()
             .flatMap(key -> Utils.streamOfNullable(ASN1_TO_DIGEST_MODE.get(key)))
             .collect(toImmutableSet());
     this.padding =
-        findIntegerSetAuthorizationListEntry(authorizationMap, KM_TAG_PADDING).stream()
+        parsedAuthorizationMap.findIntegerSetAuthorizationListEntry(KM_TAG_PADDING).stream()
             .flatMap(key -> Utils.streamOfNullable(ASN1_TO_PADDING_MODE.get(key)))
             .collect(toImmutableSet());
     this.ecCurve =
-        findOptionalIntegerAuthorizationListEntry(authorizationMap, KM_TAG_EC_CURVE)
+        parsedAuthorizationMap.findOptionalIntegerAuthorizationListEntry(KM_TAG_EC_CURVE)
             .map(ASN1_TO_EC_CURVE::get);
     this.rsaPublicExponent =
-        findOptionalLongAuthorizationListEntry(authorizationMap, KM_TAG_RSA_PUBLIC_EXPONENT);
+        parsedAuthorizationMap.findOptionalLongAuthorizationListEntry(KM_TAG_RSA_PUBLIC_EXPONENT);
     this.rollbackResistance =
-        findBooleanAuthorizationListEntry(authorizationMap, KM_TAG_ROLLBACK_RESISTANCE);
+        parsedAuthorizationMap.findBooleanAuthorizationListEntry(KM_TAG_ROLLBACK_RESISTANCE);
     this.activeDateTime =
-        findOptionalInstantMillisAuthorizationListEntry(authorizationMap, KM_TAG_ACTIVE_DATE_TIME);
+        parsedAuthorizationMap.findOptionalInstantMillisAuthorizationListEntry(KM_TAG_ACTIVE_DATE_TIME);
     this.originationExpireDateTime =
-        findOptionalInstantMillisAuthorizationListEntry(
-            authorizationMap, KM_TAG_ORIGINATION_EXPIRE_DATE_TIME);
+        parsedAuthorizationMap.findOptionalInstantMillisAuthorizationListEntry(
+            KM_TAG_ORIGINATION_EXPIRE_DATE_TIME);
     this.usageExpireDateTime =
-        findOptionalInstantMillisAuthorizationListEntry(
-            authorizationMap, KM_TAG_USAGE_EXPIRE_DATE_TIME);
+        parsedAuthorizationMap.findOptionalInstantMillisAuthorizationListEntry(
+            KM_TAG_USAGE_EXPIRE_DATE_TIME);
     this.noAuthRequired =
-        findBooleanAuthorizationListEntry(authorizationMap, KM_TAG_NO_AUTH_REQUIRED);
-    this.userAuthType = findUserAuthType(authorizationMap, KM_TAG_USER_AUTH_TYPE);
+        parsedAuthorizationMap.findBooleanAuthorizationListEntry(KM_TAG_NO_AUTH_REQUIRED);
+    this.userAuthType = parsedAuthorizationMap.findUserAuthType(KM_TAG_USER_AUTH_TYPE);
     this.authTimeout =
-        findOptionalDurationSecondsAuthorizationListEntry(authorizationMap, KM_TAG_AUTH_TIMEOUT);
+        parsedAuthorizationMap.findOptionalDurationSecondsAuthorizationListEntry(KM_TAG_AUTH_TIMEOUT);
     this.allowWhileOnBody =
-        findBooleanAuthorizationListEntry(authorizationMap, KM_TAG_ALLOW_WHILE_ON_BODY);
+        parsedAuthorizationMap.findBooleanAuthorizationListEntry(KM_TAG_ALLOW_WHILE_ON_BODY);
     this.trustedUserPresenceRequired =
-        findBooleanAuthorizationListEntry(authorizationMap, KM_TAG_TRUSTED_USER_PRESENCE_REQUIRED);
+        parsedAuthorizationMap.findBooleanAuthorizationListEntry(KM_TAG_TRUSTED_USER_PRESENCE_REQUIRED);
     this.trustedConfirmationRequired =
-        findBooleanAuthorizationListEntry(authorizationMap, KM_TAG_TRUSTED_CONFIRMATION_REQUIRED);
+        parsedAuthorizationMap.findBooleanAuthorizationListEntry(KM_TAG_TRUSTED_CONFIRMATION_REQUIRED);
     this.unlockedDeviceRequired =
-        findBooleanAuthorizationListEntry(authorizationMap, KM_TAG_UNLOCKED_DEVICE_REQUIRED);
+        parsedAuthorizationMap.findBooleanAuthorizationListEntry(KM_TAG_UNLOCKED_DEVICE_REQUIRED);
     this.allApplications =
-        findBooleanAuthorizationListEntry(authorizationMap, KM_TAG_ALL_APPLICATIONS);
+        parsedAuthorizationMap.findBooleanAuthorizationListEntry(KM_TAG_ALL_APPLICATIONS);
     this.applicationId =
-        findOptionalByteArrayAuthorizationListEntry(authorizationMap, KM_TAG_APPLICATION_ID);
+        parsedAuthorizationMap.findOptionalByteArrayAuthorizationListEntry(KM_TAG_APPLICATION_ID);
     this.creationDateTime =
-        findOptionalInstantMillisAuthorizationListEntry(
-            authorizationMap, KM_TAG_CREATION_DATE_TIME);
+        parsedAuthorizationMap.findOptionalInstantMillisAuthorizationListEntry(KM_TAG_CREATION_DATE_TIME);
     this.origin =
-        findOptionalIntegerAuthorizationListEntry(authorizationMap, KM_TAG_ORIGIN)
+        parsedAuthorizationMap.findOptionalIntegerAuthorizationListEntry(KM_TAG_ORIGIN)
             .map(ASN1_TO_KEY_ORIGIN::get);
     this.rollbackResistant =
-        findBooleanAuthorizationListEntry(authorizationMap, KM_TAG_ROLLBACK_RESISTANT);
+        parsedAuthorizationMap.findBooleanAuthorizationListEntry(KM_TAG_ROLLBACK_RESISTANT);
     this.rootOfTrust =
-        findAuthorizationListEntry(authorizationMap, KM_TAG_ROOT_OF_TRUST)
+        parsedAuthorizationMap. findAuthorizationListEntry(KM_TAG_ROOT_OF_TRUST)
             .map(ASN1Sequence.class::cast)
             .map(rootOfTrust -> RootOfTrust.createRootOfTrust(rootOfTrust, attestationVersion));
-    this.osVersion = findOptionalIntegerAuthorizationListEntry(authorizationMap, KM_TAG_OS_VERSION);
+    this.osVersion =parsedAuthorizationMap.findOptionalIntegerAuthorizationListEntry(KM_TAG_OS_VERSION);
     this.osPatchLevel =
-        findOptionalIntegerAuthorizationListEntry(authorizationMap, KM_TAG_OS_PATCH_LEVEL);
+        parsedAuthorizationMap.findOptionalIntegerAuthorizationListEntry(KM_TAG_OS_PATCH_LEVEL);
     this.attestationApplicationId =
-        findAuthorizationListEntry(authorizationMap, KM_TAG_ATTESTATION_APPLICATION_ID)
+        parsedAuthorizationMap.findAuthorizationListEntry(KM_TAG_ATTESTATION_APPLICATION_ID)
             .map(ASN1OctetString.class::cast)
             .map(ASN1OctetString::getOctets)
             .map(AttestationApplicationId::createAttestationApplicationId);
     this.attestationApplicationIdBytes =
-        findOptionalByteArrayAuthorizationListEntry(
-            authorizationMap, KM_TAG_ATTESTATION_APPLICATION_ID);
+        parsedAuthorizationMap.findOptionalByteArrayAuthorizationListEntry(KM_TAG_ATTESTATION_APPLICATION_ID);
     this.attestationIdBrand =
-        findOptionalByteArrayAuthorizationListEntry(authorizationMap, KM_TAG_ATTESTATION_ID_BRAND);
+        parsedAuthorizationMap.findOptionalByteArrayAuthorizationListEntry(KM_TAG_ATTESTATION_ID_BRAND);
     this.attestationIdDevice =
-        findOptionalByteArrayAuthorizationListEntry(authorizationMap, KM_TAG_ATTESTATION_ID_DEVICE);
+        parsedAuthorizationMap.findOptionalByteArrayAuthorizationListEntry(KM_TAG_ATTESTATION_ID_DEVICE);
     this.attestationIdProduct =
-        findOptionalByteArrayAuthorizationListEntry(
-            authorizationMap, KM_TAG_ATTESTATION_ID_PRODUCT);
+        parsedAuthorizationMap.findOptionalByteArrayAuthorizationListEntry(
+            KM_TAG_ATTESTATION_ID_PRODUCT);
     this.attestationIdSerial =
-        findOptionalByteArrayAuthorizationListEntry(authorizationMap, KM_TAG_ATTESTATION_ID_SERIAL);
+        parsedAuthorizationMap.findOptionalByteArrayAuthorizationListEntry(KM_TAG_ATTESTATION_ID_SERIAL);
     this.attestationIdImei =
-        findOptionalByteArrayAuthorizationListEntry(authorizationMap, KM_TAG_ATTESTATION_ID_IMEI);
+        parsedAuthorizationMap.findOptionalByteArrayAuthorizationListEntry(KM_TAG_ATTESTATION_ID_IMEI);
     this.attestationIdSecondImei =
-        findOptionalByteArrayAuthorizationListEntry(
-            authorizationMap, KM_TAG_ATTESTATION_ID_SECOND_IMEI);
+        parsedAuthorizationMap.findOptionalByteArrayAuthorizationListEntry(
+            KM_TAG_ATTESTATION_ID_SECOND_IMEI);
     this.attestationIdMeid =
-        findOptionalByteArrayAuthorizationListEntry(authorizationMap, KM_TAG_ATTESTATION_ID_MEID);
+        parsedAuthorizationMap.findOptionalByteArrayAuthorizationListEntry(KM_TAG_ATTESTATION_ID_MEID);
     this.attestationIdManufacturer =
-        findOptionalByteArrayAuthorizationListEntry(
-            authorizationMap, KM_TAG_ATTESTATION_ID_MANUFACTURER);
+        parsedAuthorizationMap.findOptionalByteArrayAuthorizationListEntry(
+            KM_TAG_ATTESTATION_ID_MANUFACTURER);
     this.attestationIdModel =
-        findOptionalByteArrayAuthorizationListEntry(authorizationMap, KM_TAG_ATTESTATION_ID_MODEL);
+        parsedAuthorizationMap.findOptionalByteArrayAuthorizationListEntry(KM_TAG_ATTESTATION_ID_MODEL);
     this.vendorPatchLevel =
-        findOptionalIntegerAuthorizationListEntry(authorizationMap, KM_TAG_VENDOR_PATCH_LEVEL);
+        parsedAuthorizationMap.findOptionalIntegerAuthorizationListEntry(KM_TAG_VENDOR_PATCH_LEVEL);
     this.bootPatchLevel =
-        findOptionalIntegerAuthorizationListEntry(authorizationMap, KM_TAG_BOOT_PATCH_LEVEL);
+        parsedAuthorizationMap.findOptionalIntegerAuthorizationListEntry(KM_TAG_BOOT_PATCH_LEVEL);
     this.individualAttestation =
-        findBooleanAuthorizationListEntry(authorizationMap, KM_TAG_DEVICE_UNIQUE_ATTESTATION);
+        parsedAuthorizationMap.findBooleanAuthorizationListEntry(KM_TAG_DEVICE_UNIQUE_ATTESTATION);
     this.identityCredentialKey =
-        findBooleanAuthorizationListEntry(authorizationMap, KM_TAG_IDENTITY_CREDENTIAL_KEY);
+        parsedAuthorizationMap.findBooleanAuthorizationListEntry(KM_TAG_IDENTITY_CREDENTIAL_KEY);
 
   }
 
@@ -524,75 +527,22 @@ public class AuthorizationList {
     return new AuthorizationList(authorizationList, attestationVersion);
   }
 
-  private static Map<Integer, ASN1Object> getAuthorizationMap(
-      ASN1Encodable[] authorizationList) {
+  private static ParsedAuthorizationMap getAuthorizationMap(ASN1Encodable[] authorizationList) {
     Map<Integer, ASN1Object> authorizationMap = new HashMap<>();
+    List<Integer> unorderedTags = new ArrayList<>();
+    int currentTag = 0;
+    int previousTag = 0;
     for (ASN1Encodable entry : authorizationList) {
       ASN1TaggedObject taggedEntry = ASN1TaggedObject.getInstance(entry);
+      previousTag = currentTag;
+      currentTag = taggedEntry.getTagNo();
+      if (previousTag > currentTag) {
+        unorderedTags.add(previousTag);
+      }
       authorizationMap.put(
-          taggedEntry.getTagNo(),
-          ASN1Util.getExplicitContextBaseObject(taggedEntry, taggedEntry.getTagNo()));
+          currentTag, ASN1Util.getExplicitContextBaseObject(taggedEntry, taggedEntry.getTagNo()));
     }
-    return authorizationMap;
-  }
-
-  private static Optional<ASN1Object> findAuthorizationListEntry(
-      Map<Integer, ASN1Object> authorizationMap, int tag) {
-    return Optional.ofNullable(authorizationMap.get(tag));
-  }
-
-  private static ImmutableSet<Integer> findIntegerSetAuthorizationListEntry(
-      Map<Integer, ASN1Object> authorizationMap, int tag) {
-    ASN1Set asn1Set =
-        findAuthorizationListEntry(authorizationMap, tag).map(ASN1Set.class::cast).orElse(null);
-    if (asn1Set == null) {
-      return ImmutableSet.of();
-    }
-    return stream(asn1Set).map(ASN1Parsing::getIntegerFromAsn1).collect(toImmutableSet());
-  }
-
-  private static Optional<Duration> findOptionalDurationSecondsAuthorizationListEntry(
-      Map<Integer, ASN1Object> authorizationMap, int tag) {
-    Optional<Integer> seconds = findOptionalIntegerAuthorizationListEntry(authorizationMap, tag);
-    return seconds.map(Duration::ofSeconds);
-  }
-
-  private static Optional<Integer> findOptionalIntegerAuthorizationListEntry(
-      Map<Integer, ASN1Object> authorizationMap, int tag) {
-    return findAuthorizationListEntry(authorizationMap, tag)
-        .map(ASN1Integer.class::cast)
-        .map(ASN1Parsing::getIntegerFromAsn1);
-  }
-
-  private static Optional<Instant> findOptionalInstantMillisAuthorizationListEntry(
-      Map<Integer, ASN1Object> authorizationMap, int tag) {
-    Optional<Long> millis = findOptionalLongAuthorizationListEntry(authorizationMap, tag);
-    return millis.map(Instant::ofEpochMilli);
-  }
-
-  private static Optional<Long> findOptionalLongAuthorizationListEntry(
-      Map<Integer, ASN1Object> authorizationMap, int tag) {
-    return findAuthorizationListEntry(authorizationMap, tag)
-        .map(ASN1Integer.class::cast)
-        .map(value -> value.getValue().longValue());
-  }
-
-  private static boolean findBooleanAuthorizationListEntry(
-      Map<Integer, ASN1Object> authorizationMap, int tag) {
-    return findAuthorizationListEntry(authorizationMap, tag).isPresent();
-  }
-
-  private static Optional<byte[]> findOptionalByteArrayAuthorizationListEntry(
-      Map<Integer, ASN1Object> authorizationMap, int tag) {
-    return findAuthorizationListEntry(authorizationMap, tag)
-        .map(ASN1OctetString.class::cast)
-        .map(ASN1OctetString::getOctets);
-  }
-
-  private static ImmutableSet<UserAuthType> findUserAuthType(
-      Map<Integer, ASN1Object> authorizationMap, int tag) {
-    Optional<Long> userAuthType = findOptionalLongAuthorizationListEntry(authorizationMap, tag);
-    return userAuthType.map(AuthorizationList::userAuthTypeToEnum).orElse(ImmutableSet.of());
+    return new ParsedAuthorizationMap(authorizationMap, ImmutableList.copyOf(unorderedTags));
   }
 
   @VisibleForTesting
@@ -1096,6 +1046,81 @@ public class AuthorizationList {
 
     public AuthorizationList build() {
       return new AuthorizationList(this);
+    }
+  }
+
+  public ImmutableList<Integer> getUnorderedTags() {
+    return parsedAuthorizationMap.getUnorderedTags();
+  }
+
+  private ParsedAuthorizationMap parsedAuthorizationMap;
+
+  /**
+   * This data structure holds the parsed attest record authorizations mapped to their authorization
+   * tags and a list of unordered authorization tags found in this authorization list.
+   */
+  private static class ParsedAuthorizationMap {
+    private final Map<Integer, ASN1Object> authorizationMap;
+    private final ImmutableList<Integer> unorderedTags;
+
+    private ParsedAuthorizationMap(
+        Map<Integer, ASN1Object> authorizationMap, ImmutableList<Integer> unorderedTags) {
+      this.authorizationMap = authorizationMap;
+      this.unorderedTags = unorderedTags;
+    }
+
+    private ImmutableList<Integer> getUnorderedTags() {
+      return unorderedTags;
+    }
+
+    private Optional<ASN1Object> findAuthorizationListEntry(int tag) {
+      return Optional.ofNullable(authorizationMap.get(tag));
+    }
+
+    private ImmutableSet<Integer> findIntegerSetAuthorizationListEntry(int tag) {
+      ASN1Set asn1Set =
+              findAuthorizationListEntry(tag).map(ASN1Set.class::cast).orElse(null);
+      if (asn1Set == null) {
+        return ImmutableSet.of();
+      }
+      return Utils.collectToImmutableSet(java.util.Arrays.stream(asn1Set.toArray()).map(ASN1Parsing::getIntegerFromAsn1));
+    }
+
+    private Optional<Duration> findOptionalDurationSecondsAuthorizationListEntry(int tag) {
+      Optional<Integer> seconds = findOptionalIntegerAuthorizationListEntry(tag);
+      return seconds.map(Duration::ofSeconds);
+    }
+
+    private Optional<Integer> findOptionalIntegerAuthorizationListEntry(int tag) {
+      return findAuthorizationListEntry(tag)
+              .map(ASN1Integer.class::cast)
+              .map(ASN1Parsing::getIntegerFromAsn1);
+    }
+
+    private Optional<Instant> findOptionalInstantMillisAuthorizationListEntry(int tag) {
+      Optional<Long> millis = findOptionalLongAuthorizationListEntry(tag);
+      return millis.map(Instant::ofEpochMilli);
+    }
+
+    private Optional<Long> findOptionalLongAuthorizationListEntry(int tag) {
+      return findAuthorizationListEntry(tag)
+              .map(ASN1Integer.class::cast)
+              .map(value -> value.getValue().longValue());
+    }
+
+    private boolean findBooleanAuthorizationListEntry(int tag) {
+      return findAuthorizationListEntry(tag).isPresent();
+    }
+
+    private Optional<byte[]> findOptionalByteArrayAuthorizationListEntry(int tag) {
+      return findAuthorizationListEntry(tag)
+          .map(ASN1OctetString.class::cast)
+          .map(ASN1OctetString::getOctets);
+    }
+
+    private ImmutableSet<UserAuthType> findUserAuthType(int tag) {
+      Optional<Long> userAuthType = findOptionalLongAuthorizationListEntry(tag);
+      return userAuthType.map(AuthorizationList::userAuthTypeToEnum).orElse(ImmutableSet.of());
     }
   }
 }
