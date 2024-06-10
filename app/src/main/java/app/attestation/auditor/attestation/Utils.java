@@ -5,8 +5,11 @@ import com.google.common.collect.ImmutableSet;
 import org.bouncycastle.asn1.ASN1Boolean;
 
 import java.math.BigInteger;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Allow for backwards-compatible APIs usage of Google's attestation library in Android, without the need to use JDK 17 APIs.
@@ -38,6 +41,13 @@ class Utils {
 
     static <T> ImmutableSet<T> collectToImmutableSet(Stream<T> stream) {
         return ImmutableSet.<T>builder().addAll(stream.collect(Collectors.toSet())).build();
+    }
+
+    // com.google.common.collect.stream.Stream#stream from guava-jre library
+    public static <T extends Object> Stream<T> stream(Iterable<T> iterable) {
+        return (iterable instanceof Collection<T>)
+                ? ((Collection<T>) iterable).stream()
+                : StreamSupport.stream(iterable.spliterator(), false);
     }
 
     private Utils() {}
