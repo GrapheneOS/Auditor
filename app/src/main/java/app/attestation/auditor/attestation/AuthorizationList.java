@@ -1092,7 +1092,7 @@ public class AuthorizationList {
       if (asn1Set == null) {
         return ImmutableSet.of();
       }
-      return Utils.collectToImmutableSet(java.util.Arrays.stream(asn1Set.toArray()).map(ASN1Parsing::getIntegerFromAsn1));
+      return Utils.stream(asn1Set).map(ASN1Parsing::getIntegerFromAsn1).collect(toImmutableSet());
     }
 
     private Optional<Duration> findOptionalDurationSecondsAuthorizationListEntry(int tag) {

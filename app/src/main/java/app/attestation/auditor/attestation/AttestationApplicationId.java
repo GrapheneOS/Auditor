@@ -20,7 +20,7 @@ import static app.attestation.auditor.attestation.Constants.ATTESTATION_APPLICAT
 import static app.attestation.auditor.attestation.Constants.ATTESTATION_PACKAGE_INFO_PACKAGE_NAME_INDEX;
 import static app.attestation.auditor.attestation.Constants.ATTESTATION_PACKAGE_INFO_VERSION_INDEX;
 import static com.google.common.collect.ImmutableList.toImmutableList;
-import static com.google.common.collect.Streams.stream;
+//import static com.google.common.collect.Streams.stream;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.google.common.collect.ImmutableList;
@@ -58,7 +58,7 @@ public class AttestationApplicationId {
             attestationApplicationIdSequence.getObjectAt(
                 ATTESTATION_APPLICATION_ID_PACKAGE_INFOS_INDEX);
     packageInfos =
-        stream(attestationPackageInfos.iterator())
+        Utils.stream(attestationPackageInfos)
             .map(ASN1Sequence.class::cast)
             .map(AttestationPackageInfo::new)
             .collect(toImmutableList());
@@ -68,7 +68,7 @@ public class AttestationApplicationId {
             attestationApplicationIdSequence.getObjectAt(
                 ATTESTATION_APPLICATION_ID_SIGNATURE_DIGESTS_INDEX);
     signatureDigests =
-        stream(digests.iterator())
+        Utils.stream(digests)
             .map(ASN1OctetString.class::cast)
             .map(ASN1OctetString::getOctets)
             .map(ByteString::copyFrom)
