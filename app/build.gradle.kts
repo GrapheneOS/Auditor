@@ -40,7 +40,7 @@ android {
 
     compileSdk = 34
     buildToolsVersion = "35.0.0"
-    ndkVersion = "26.1.10909125"
+    ndkVersion = "26.3.11579264"
 
     namespace = "app.attestation.auditor"
 
