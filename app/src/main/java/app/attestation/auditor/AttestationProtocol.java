@@ -708,7 +708,7 @@ class AttestationProtocol {
         final AttestationPackageInfo info = infos.get(0);
         final List<byte[]> signatureDigests = attestationApplicationId.signatureDigests;
         if (signatureDigests.size() != 1) {
-            throw new GeneralSecurityException("invalid number of Auditor app signatures: " + signatureDigests.size());
+            throw new GeneralSecurityException("invalid number of Auditor app signing keys: " + signatureDigests.size());
         }
         final String signatureDigest = BaseEncoding.base16().encode(signatureDigests.get(0));
         final byte appVariant;
