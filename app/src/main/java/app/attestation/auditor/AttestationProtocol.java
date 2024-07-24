@@ -707,7 +707,9 @@ class AttestationProtocol {
         }
         final AttestationPackageInfo info = infos.get(0);
         final List<byte[]> signatureDigests = attestationApplicationId.signatureDigests;
-        if (signatureDigests.size() != 1) {
+        if (signatureDigests.size() == 0) {
+            throw new GeneralSecurityException("Auditor signing keys are missing from the attestation data.\n\nThis is known to happen after a system_server crash causes a soft reboot, which can be resolved by a full reboot of the device.");
+        } else if (signatureDigests.size() != 1) {
             throw new GeneralSecurityException("invalid number of Auditor app signing keys: " + signatureDigests.size());
         }
         final String signatureDigest = BaseEncoding.base16().encode(signatureDigests.get(0));
