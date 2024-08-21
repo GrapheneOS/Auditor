@@ -120,6 +120,9 @@
     <string name="device_pixel_8">Google Pixel 8</string>
     <string name="device_pixel_8_pro">Google Pixel 8 Pro</string>
     <string name="device_pixel_8a">Google Pixel 8a</string>
+    <string name="device_pixel_9">Google Pixel 9</string>
+    <string name="device_pixel_9_pro">Google Pixel 9 Pro</string>
+    <string name="device_pixel_9_pro_xl">Google Pixel 9 Pro XL</string>
     <string name="device_sm_g970f">Samsung Galaxy S10e (SM-G970F)</string>
     <string name="device_sm_g975f">Samsung Galaxy S10+ (SM-G975F)</string>
     <string name="device_sm_n970f">Samsung Galaxy Note 10 (SM-N970F)</string>
