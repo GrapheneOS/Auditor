@@ -49,6 +49,13 @@
                 android:text="@string/auditor_button"
                 android:textAllCaps="false" />
 
+            <Button
+                android:id="@+id/remote_verify"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="@string/action_enable_remote_verify" />
+
         </LinearLayout>
 
     </ScrollView>

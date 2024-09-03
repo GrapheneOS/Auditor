@@ -282,6 +282,21 @@ public class AttestationActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        final boolean isRemoteVerifyEnabled = RemoteVerifyJob.isEnabled(this);
+        int visibility = View.VISIBLE;
+        if (isRemoteVerifyEnabled) {
+            visibility = View.GONE;
+        }
+        binding.content.remoteVerify.setVisibility(visibility);
+        binding.content.remoteVerify.setOnClickListener(view -> {
+            stage = Stage.EnableRemoteVerify;
+            startQrScanner();
+        });
+    }
+
+    @Override
     public void onSaveInstanceState(@NonNull final Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putBoolean(STATE_AUDITEE_PAIRING, auditeePairing);
@@ -477,8 +492,6 @@ public class AttestationActivity extends AppCompatActivity {
     @Override
     public boolean onPrepareOptionsMenu(final Menu menu) {
         final boolean isRemoteVerifyEnabled = RemoteVerifyJob.isEnabled(this);
-        menu.findItem(R.id.action_enable_remote_verify)
-                .setEnabled(isSupportedAuditee && !isRemoteVerifyEnabled);
         menu.findItem(R.id.action_disable_remote_verify).setEnabled(isRemoteVerifyEnabled);
         menu.findItem(R.id.action_submit_sample).setEnabled(canSubmitSample &&
                 !SubmitSampleJob.isScheduled(this));
@@ -518,10 +531,6 @@ public class AttestationActivity extends AppCompatActivity {
                     .setNegativeButton(R.string.cancel, null)
                     .show();
             return true;
-        } else if (itemId == R.id.action_enable_remote_verify) {
-            stage = Stage.EnableRemoteVerify;
-            startQrScanner();
-            return true;
         } else if (itemId == R.id.action_disable_remote_verify) {
             new MaterialAlertDialogBuilder(this)
                     .setMessage(getString(R.string.action_disable_remote_verify) + "?")
@@ -548,6 +557,7 @@ public class AttestationActivity extends AppCompatActivity {
 
                             snackbar.setText(R.string.disable_remote_verify_success).show();
                         });
+                        binding.content.remoteVerify.setVisibility(View.VISIBLE);
                     })
                     .setNegativeButton(R.string.cancel, null)
                     .show();

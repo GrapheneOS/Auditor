@@ -8,9 +8,6 @@
     <item android:id="@+id/action_clear_auditor"
             android:title="@string/action_clear_auditor"
             app:showAsAction="never" />
-    <item android:id="@+id/action_enable_remote_verify"
-            android:title="@string/action_enable_remote_verify"
-            app:showAsAction="never" />
     <item android:id="@+id/action_disable_remote_verify"
             android:title="@string/action_disable_remote_verify"
             app:showAsAction="never" />
