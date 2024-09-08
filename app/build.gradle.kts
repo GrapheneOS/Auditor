@@ -39,7 +39,7 @@ android {
         }
     }
 
-    compileSdk = 34
+    compileSdk = 35
     buildToolsVersion = "35.0.0"
     ndkVersion = "27.1.12297006"
 
@@ -48,7 +48,7 @@ android {
     defaultConfig {
         applicationId = "app.attestation.auditor"
         minSdk = 31
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 86
         versionName = versionCode.toString()
         resourceConfigurations.add("en")
