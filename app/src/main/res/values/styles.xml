@@ -11,6 +11,8 @@
         <item name="colorSurfaceContainer">@color/grapheneSurfaceContainerColor</item>
 
         <item name="popupMenuStyle">@style/GraphenePopup</item>
+
+        <item name="background">@null</item>
     </style>
 
     <style name="GraphenePopup" parent="Widget.Material3.PopupMenu">
