@@ -191,7 +191,7 @@ class AttestationProtocol {
     // downgrade protection for the OS version/patch (bootloader/TEE enforced) and app version (OS
     // enforced) by keeping them updated.
     private static final byte PROTOCOL_VERSION = 5;
-    private static final byte PROTOCOL_VERSION_MINIMUM = 4;
+    private static final byte PROTOCOL_VERSION_MINIMUM = 5;
     // can become longer in the future, but this is the minimum length
     static final byte CHALLENGE_MESSAGE_LENGTH = 1 + CHALLENGE_LENGTH * 2;
     private static final int MAX_ENCODED_CHAIN_LENGTH = 5000;
@@ -233,7 +233,7 @@ class AttestationProtocol {
     private static final byte AUDITOR_APP_VARIANT_PLAY = 1;
     private static final byte AUDITOR_APP_VARIANT_DEBUG = 2;
 
-    private static final int AUDITOR_APP_MINIMUM_VERSION = 47;
+    private static final int AUDITOR_APP_MINIMUM_VERSION = 73;
     private static final int OS_VERSION_MINIMUM = 120000;
     private static final int OS_PATCH_LEVEL_MINIMUM = 202110;
     private static final int VENDOR_PATCH_LEVEL_MINIMUM = 20211005;
@@ -1246,7 +1246,7 @@ class AttestationProtocol {
         deserializer.get(compressedChain);
 
         final Certificate[] certificates;
-        final int dictionary = version < 5 ? R.raw.deflate_dictionary_3 : R.raw.deflate_dictionary_4;
+        final int dictionary = R.raw.deflate_dictionary_4;
         certificates = decodeChain(readRawResource(context, dictionary), compressedChain);
 
         final byte[] fingerprint = new byte[FINGERPRINT_LENGTH];
@@ -1501,7 +1501,7 @@ class AttestationProtocol {
             serializer.put(version);
 
             final byte[] compressed;
-            final int dictionary = version < 5 ? R.raw.deflate_dictionary_3 : R.raw.deflate_dictionary_4;
+            final int dictionary = R.raw.deflate_dictionary_4;
             compressed = encodeChain(readRawResource(context, dictionary), attestationCertificates);
 
             if (compressed.length > Short.MAX_VALUE) {
