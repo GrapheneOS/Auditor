@@ -242,26 +242,10 @@ class AttestationProtocol {
     // Split displayed fingerprint into groups of 4 characters
     private static final int FINGERPRINT_SPLIT_INTERVAL = 4;
 
-    private static class DeviceInfo {
-        final int name;
-        final int attestationVersion;
-        final int keymasterVersion;
-        // API for detecting this was replaced in keymaster v3 but the new one isn't used yet
-        final boolean rollbackResistant;
-        // enforce using StrongBox for new pairings
-        final boolean enforceStrongBox;
-        final int osName;
-
-        DeviceInfo(final int name, final int attestationVersion, final int keymasterVersion,
-                final boolean rollbackResistant, final boolean enforceStrongBox, final int osName) {
-            this.name = name;
-            this.attestationVersion = attestationVersion;
-            this.keymasterVersion = keymasterVersion;
-            this.rollbackResistant = rollbackResistant;
-            this.enforceStrongBox = enforceStrongBox;
-            this.osName = osName;
-        }
-    }
+    public record DeviceInfo(int name, int attestationVersion, int keymasterVersion,
+            // API for detecting this was replaced in keymaster v3 but the new one isn't used yet
+            boolean rollbackResistant,
+            boolean enforceStrongBox, int osName) {}
 
     private static final boolean isStrongBoxSupported = ImmutableSet.of(
             "Pixel 3",
@@ -551,38 +535,9 @@ class AttestationProtocol {
         return FINGERPRINT_HASH_FUNCTION.hashBytes(certificate.getEncoded()).asBytes();
     }
 
-    private static class Verified {
-        final int device;
-        final String verifiedBootKey;
-        final byte[] verifiedBootHash;
-        final int osName;
-        final int osVersion;
-        final int osPatchLevel;
-        final int vendorPatchLevel;
-        final int bootPatchLevel;
-        final int appVersion;
-        final byte appVariant;
-        final int securityLevel;
-        final boolean attestKey;
-
-        Verified(final int device, final String verifiedBootKey, final byte[] verifiedBootHash,
-                final int osName, final int osVersion, final int osPatchLevel,
-                final int vendorPatchLevel, final int bootPatchLevel, final int appVersion, final byte appVariant,
-                final int securityLevel, final boolean attestKey) {
-            this.device = device;
-            this.verifiedBootKey = verifiedBootKey;
-            this.verifiedBootHash = verifiedBootHash;
-            this.osName = osName;
-            this.osVersion = osVersion;
-            this.osPatchLevel = osPatchLevel;
-            this.vendorPatchLevel = vendorPatchLevel;
-            this.bootPatchLevel = bootPatchLevel;
-            this.appVersion = appVersion;
-            this.appVariant = appVariant;
-            this.securityLevel = securityLevel;
-            this.attestKey = attestKey;
-        }
-    }
+    private record Verified(int device, String verifiedBootKey, byte[] verifiedBootHash,
+            int osName, int osVersion, int osPatchLevel, int vendorPatchLevel, int bootPatchLevel,
+            int appVersion, int appVariant, int securityLevel, boolean attestKey) {}
 
     private static byte[] readRawResource(final Context context, final int id) throws IOException {
         try (final InputStream stream = context.getResources().openRawResource(id)) {
