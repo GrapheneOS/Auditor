@@ -1198,9 +1198,9 @@ class AttestationProtocol {
         final byte[] compressedChain = new byte[compressedChainLength];
         deserializer.get(compressedChain);
 
-        final Certificate[] certificates;
         final int dictionary = R.raw.deflate_dictionary_4;
-        certificates = decodeChain(readRawResource(context, dictionary), compressedChain);
+        final Certificate[] certificates =
+                decodeChain(readRawResource(context, dictionary), compressedChain);
 
         final byte[] fingerprint = new byte[FINGERPRINT_LENGTH];
         deserializer.get(fingerprint);
