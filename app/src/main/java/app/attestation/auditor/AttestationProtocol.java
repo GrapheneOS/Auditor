@@ -1393,13 +1393,6 @@ class AttestationProtocol {
                 attestationCertificates = getCertificateChain(keyStore, attestationKeystoreAlias);
             }
 
-            // sanity check on the device being verified before sending it off to the verifying device
-            verifyStateless(attestationCertificates, challenge, hasPersistentKey,
-                    new byte[][]{readRawResource(context, R.raw.google_root_0),
-                        readRawResource(context, R.raw.google_root_1),
-                        readRawResource(context, R.raw.google_root_2),
-                        readRawResource(context, R.raw.google_root_3)});
-
             // OS-enforced checks and information
 
             final DevicePolicyManager dpm = context.getSystemService(DevicePolicyManager.class);
