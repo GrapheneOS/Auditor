@@ -83,7 +83,7 @@ class AttestationProtocol {
     private static final String ADD_USERS_WHEN_LOCKED = "add_users_when_locked";
 
     private static final int CLOCK_SKEW_MS = 5 * 60 * 1000;
-    private static final int EXPIRE_OFFSET_MS = 5 * 60 * 1000 + CLOCK_SKEW_MS;
+    private static final int EXPIRATION_MS = 5 * 60 * 1000;
 
     private static final String KEYSTORE_ALIAS_FRESH = "fresh_attestation_key";
     private static final String KEYSTORE_ALIAS_PERSISTENT_PREFIX = "persistent_attestation_key_";
@@ -1253,14 +1253,14 @@ class AttestationProtocol {
 
     static KeyGenParameterSpec.Builder getKeyBuilder(final String alias, final int purposes,
             final boolean useStrongBox, final byte[] challenge, final boolean temporary) {
-        final Date startTime = new Date(new Date().getTime() - CLOCK_SKEW_MS);
+        final long now = System.currentTimeMillis();
         final KeyGenParameterSpec.Builder builder = new KeyGenParameterSpec.Builder(alias, purposes)
                 .setAlgorithmParameterSpec(new ECGenParameterSpec(EC_CURVE))
                 .setDigests(KEY_DIGEST)
                 .setAttestationChallenge(challenge)
-                .setKeyValidityStart(startTime);
+                .setKeyValidityStart(new Date(now - CLOCK_SKEW_MS));
         if (temporary) {
-            builder.setKeyValidityEnd(new Date(startTime.getTime() + EXPIRE_OFFSET_MS));
+            builder.setKeyValidityEnd(new Date(now + CLOCK_SKEW_MS + EXPIRATION_MS));
         }
         if (useStrongBox) {
             builder.setIsStrongBoxBacked(true);
