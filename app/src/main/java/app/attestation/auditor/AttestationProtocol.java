@@ -1051,7 +1051,7 @@ class AttestationProtocol {
             editor.putInt(KEY_PINNED_APP_VERSION, verified.appVersion);
             editor.putInt(KEY_PINNED_APP_VARIANT, verified.appVariant);
             editor.putInt(KEY_PINNED_SECURITY_LEVEL, verified.securityLevel); // new field
-            editor.putLong(KEY_VERIFIED_TIME_LAST, new Date().getTime());
+            editor.putLong(KEY_VERIFIED_TIME_LAST, System.currentTimeMillis());
             editor.apply();
         } else {
             verifySignature(attestationCertificates[0].getPublicKey(), signedMessage, signature);
@@ -1078,7 +1078,7 @@ class AttestationProtocol {
             editor.putInt(KEY_PINNED_APP_VARIANT, verified.appVariant);
             editor.putInt(KEY_PINNED_SECURITY_LEVEL, verified.securityLevel);
 
-            final long now = new Date().getTime();
+            final long now = System.currentTimeMillis();
             editor.putLong(KEY_VERIFIED_TIME_FIRST, now);
             editor.putLong(KEY_VERIFIED_TIME_LAST, now);
 
