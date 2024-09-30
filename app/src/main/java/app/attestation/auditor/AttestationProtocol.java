@@ -61,6 +61,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
@@ -1533,16 +1534,46 @@ class AttestationProtocol {
             serializer.putInt(osEnforcedFlags);
 
             if (version >= 6) {
-                final int autoRebootSeconds = 0;
+                final int autoRebootSeconds;
+                {
+                    String key = "android.ext.AUTO_REBOOT_TIMEOUT";
+                    final int def = SecurityStateExt.UNKNOWN_VALUE;
+                    final int val = extraSecurityState.getInt(key, def);
+                    final boolean isKnown = val >= TimeUnit.SECONDS.toMillis(20);
+                    autoRebootSeconds =  isKnown ? (int) TimeUnit.MILLISECONDS.toSeconds(val) : def;
+                }
                 serializer.putInt(autoRebootSeconds);
 
-                final byte portSecurityMode = 0;
+                final byte portSecurityMode;
+                {
+                    String key = "android.ext.USB_PORT_SECURITY_MODE";
+                    final byte def = SecurityStateExt.UNKNOWN_VALUE;
+                    final int val = extraSecurityState.getInt(key, def);
+                    // Update once USB-C port security settings valid value expands.
+                    final boolean isKnown = val >= 0 && val <= 4;
+                    portSecurityMode = isKnown ? (byte) val : def;
+                }
                 serializer.put(portSecurityMode);
 
-                final byte userCount = 0;
+                final byte userCount;
+                {
+                    String key = "android.ext.USER_COUNT";
+                    final byte def = SecurityStateExt.UNKNOWN_VALUE;
+                    final int val = extraSecurityState.getInt(key, def);
+                    final boolean isKnown = val >= 0 && val <= Byte.MAX_VALUE;
+                    userCount = isKnown ? (byte) val : def;
+                }
                 serializer.put(userCount);
 
-                final byte oemUnlockAllowed = 0;
+                final byte oemUnlockAllowed;
+                {
+                    String key = "android.ext.OEM_UNLOCK_ALLOWED";
+                    final byte def = SecurityStateExt.UNKNOWN_VALUE;
+                    final Object objVal = extraSecurityState.get(key);
+                    final byte val = (objVal instanceof Boolean boolVal) ? (byte) (boolVal ? 1 : 0) : def;
+                    final boolean isKnown = val >= 0 && val <= 1;
+                    oemUnlockAllowed = isKnown ? val : def;
+                }
                 serializer.put(oemUnlockAllowed);
             }
 
