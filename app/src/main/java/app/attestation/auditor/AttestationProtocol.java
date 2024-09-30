@@ -60,6 +60,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
@@ -1543,13 +1544,41 @@ class AttestationProtocol {
             serializer.putInt(osEnforcedFlags);
 
             if (version >= 6) {
-                final int autoRebootSeconds = 0;
+                String autoRebootTimeoutKey = "android.ext.AUTO_REBOOT_TIMEOUT";
+                final int autoRebootMilliseconds =
+                        extraSecurityState.getInt(autoRebootTimeoutKey, SecurityStateExt.UNKNOWN_VALUE);
+                final int autoRebootSeconds;
+                if (autoRebootMilliseconds == SecurityStateExt.UNKNOWN_VALUE) {
+                    autoRebootSeconds = SecurityStateExt.UNKNOWN_VALUE;
+                } else if (autoRebootMilliseconds < TimeUnit.SECONDS.toMillis(20)) {
+                    autoRebootSeconds = SecurityStateExt.INVALID_VALUE;
+                } else {
+                    autoRebootSeconds = (int) (Math.ceil((double) autoRebootMilliseconds / TimeUnit.SECONDS.toMillis(1)));
+                }
                 serializer.putInt(autoRebootSeconds);
 
-                final byte portSecurityMode = 0;
+                String portSecurityModeKey = "android.ext.USB_PORT_SECURITY_MODE";
+                final int portSecurityModeRaw = extraSecurityState.getInt(portSecurityModeKey, SecurityStateExt.UNKNOWN_VALUE);
+                final byte portSecurityMode;
+                if (portSecurityModeRaw == SecurityStateExt.UNKNOWN_VALUE) {
+                    portSecurityMode = (byte) SecurityStateExt.UNKNOWN_VALUE;
+                } else if (portSecurityModeRaw > Byte.MAX_VALUE || portSecurityModeRaw < 0) {
+                    portSecurityMode = (byte) SecurityStateExt.INVALID_VALUE;
+                } else {
+                    portSecurityMode = (byte) portSecurityModeRaw;
+                }
                 serializer.put(portSecurityMode);
 
-                final byte userCount = 0;
+                String userCountKey = "android.ext.USER_COUNT";
+                final int userCountRaw = extraSecurityState.getInt(userCountKey, SecurityStateExt.UNKNOWN_VALUE);
+                final byte userCount;
+                if (userCountRaw == SecurityStateExt.UNKNOWN_VALUE) {
+                    userCount = (byte) SecurityStateExt.UNKNOWN_VALUE;
+                } else if (userCountRaw > Byte.MAX_VALUE || userCountRaw < 0) {
+                    userCount = (byte) SecurityStateExt.INVALID_VALUE;
+                } else {
+                    userCount = (byte) userCountRaw;
+                }
                 serializer.put(userCount);
             }
 
