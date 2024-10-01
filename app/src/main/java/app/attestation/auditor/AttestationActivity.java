@@ -361,8 +361,8 @@ public class AttestationActivity extends AppCompatActivity {
                         binding.content.textview.append(result.history());
                     }
                 });
-            } catch (final DataFormatException | GeneralSecurityException | IOException |
-                           BufferUnderflowException | NegativeArraySizeException e) {
+            } catch (final BufferUnderflowException | DataFormatException |
+                    GeneralSecurityException | NegativeArraySizeException e) {
                 Log.e(TAG, "attestation verification error", e);
                 runOnUiThread(() -> {
                     setBackgroundResource(R.color.red);

@@ -561,7 +561,7 @@ class AttestationProtocol {
 
     private static Verified verifyStateless(final Certificate[] certificates,
             final byte[] challenge, final boolean hasPersistentKey, final byte[][] validRoots)
-            throws GeneralSecurityException, IOException {
+            throws GeneralSecurityException {
 
         verifyCertificateSignatures(certificates, hasPersistentKey);
 
@@ -574,7 +574,7 @@ class AttestationProtocol {
         final ParsedAttestationRecord attestation;
         try {
             attestation = ParsedAttestationRecord.createParsedAttestationRecord(List.of((X509Certificate) certificates[0]));
-        } catch (final ParsedAttestationRecord.KeyDescriptionMissingException e) {
+        } catch (final IOException | ParsedAttestationRecord.KeyDescriptionMissingException e) {
             throw new GeneralSecurityException(e);
         }
 
@@ -809,6 +809,8 @@ class AttestationProtocol {
             }
 
             attestKey = true;
+        } catch (final IOException e) {
+            throw new GeneralSecurityException(e);
         } catch (final ParsedAttestationRecord.KeyDescriptionMissingException ignored) {}
 
         // enforce attest key for new pairings with devices supporting it
@@ -819,7 +821,9 @@ class AttestationProtocol {
         for (int i = 2; i < certificates.length; i++) {
             try {
                 ParsedAttestationRecord.createParsedAttestationRecord(List.of((X509Certificate) certificates[i]));
-            } catch (final ParsedAttestationRecord.KeyDescriptionMissingException  e) {
+            } catch (final IOException e) {
+                throw new GeneralSecurityException(e);
+            } catch (final ParsedAttestationRecord.KeyDescriptionMissingException e) {
                 continue;
             }
             throw new GeneralSecurityException("only initial key and attest key should have attestation extension");
@@ -947,7 +951,7 @@ class AttestationProtocol {
             final boolean deviceAdminNonSystem, final boolean adbEnabled,
             final boolean addUsersWhenLocked, final boolean enrolledBiometrics,
             final boolean oemUnlockAllowed, final boolean systemUser)
-            throws GeneralSecurityException, IOException {
+            throws GeneralSecurityException {
         final String fingerprintHex = BaseEncoding.base16().encode(fingerprint);
         final byte[] currentFingerprint = getFingerprint(attestationCertificates[0]);
         final boolean hasPersistentKey = !Arrays.equals(currentFingerprint, fingerprint);
@@ -1181,7 +1185,7 @@ class AttestationProtocol {
     }
 
     static VerificationResult verifySerialized(final Context context, final byte[] attestationResult,
-            final byte[] challengeMessage) throws DataFormatException, GeneralSecurityException, IOException {
+            final byte[] challengeMessage) throws DataFormatException, GeneralSecurityException {
         final ByteBuffer deserializer = ByteBuffer.wrap(attestationResult);
         final byte version = deserializer.get();
         if (version > PROTOCOL_VERSION) {
