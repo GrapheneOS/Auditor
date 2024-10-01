@@ -64,8 +64,6 @@ import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.Inflater;
 
-import javax.security.auth.x500.X500Principal;
-
 import app.attestation.auditor.attestation.AttestationApplicationId;
 import app.attestation.auditor.attestation.AttestationApplicationId.AttestationPackageInfo;
 import app.attestation.auditor.attestation.AuthorizationList;
