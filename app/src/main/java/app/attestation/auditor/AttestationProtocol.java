@@ -525,9 +525,11 @@ class AttestationProtocol {
         }
     }
 
-    private static byte[] readRawResource(final Context context, final int id) throws IOException {
+    private static byte[] readRawResource(final Context context, final int id) {
         try (final InputStream stream = context.getResources().openRawResource(id)) {
             return ByteStreams.toByteArray(stream);
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
