@@ -157,10 +157,6 @@ public class RemoteVerifyJob extends JobService {
                 if (userId == -1) {
                     throw new IOException("missing userId");
                 }
-                final String subscribeKey = preferences.getString(KEY_SUBSCRIBE_KEY, null);
-                if (subscribeKey == null) {
-                    throw new IOException("missing subscribeKey");
-                }
 
                 final AttestationResult result = AttestationProtocol.generateSerialized(
                         context, challengeMessage, Long.toString(userId), STATE_PREFIX);
@@ -169,7 +165,16 @@ public class RemoteVerifyJob extends JobService {
                 connection.setConnectTimeout(CONNECT_TIMEOUT);
                 connection.setReadTimeout(READ_TIMEOUT);
                 connection.setDoOutput(true);
-                final String extra = result.pairing() ? " " + subscribeKey : "";
+                final String extra;
+                if (result.pairing()) {
+                    final String subscribeKey = preferences.getString(KEY_SUBSCRIBE_KEY, null);
+                    if (subscribeKey == null) {
+                        throw new IOException("missing subscribeKey");
+                    }
+                    extra = " " + subscribeKey;
+                } else {
+                    extra = "";
+                }
                 connection.setRequestProperty("Authorization", "Auditor " + userId + extra);
 
                 final OutputStream output = connection.getOutputStream();
@@ -185,7 +190,7 @@ public class RemoteVerifyJob extends JobService {
                             throw new GeneralSecurityException("missing fields");
                         }
                         final int interval = Integer.parseInt(tokens[1]);
-                        preferences.edit().putString(KEY_SUBSCRIBE_KEY, tokens[0]).putInt(KEY_INTERVAL, interval).apply();
+                        preferences.edit().remove(KEY_SUBSCRIBE_KEY).putInt(KEY_INTERVAL, interval).apply();
                         schedule(context, interval);
                     }
                 } else {
