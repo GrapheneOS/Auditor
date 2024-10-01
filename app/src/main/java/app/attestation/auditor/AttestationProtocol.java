@@ -954,6 +954,13 @@ class AttestationProtocol {
         return value ? context.getString(R.string.yes) : context.getString(R.string.no);
     }
 
+    record SecurityStateExt(int autoRebootSeconds, byte portSecurityMode, byte userCount) {
+        static int UNKNOWN_VALUE = -1;
+        static int INVALID_VALUE = -2;
+        static SecurityStateExt UNKNOWN = new SecurityStateExt(
+                UNKNOWN_VALUE, (byte) UNKNOWN_VALUE, (byte) UNKNOWN_VALUE);
+    }
+
     private static VerificationResult verify(final Context context, final byte[] fingerprint,
             final byte[] challenge, final ByteBuffer signedMessage, final byte[] signature,
             final Certificate[] attestationCertificates, final boolean userProfileSecure,
