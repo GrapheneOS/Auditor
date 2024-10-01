@@ -17,6 +17,8 @@ import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
+import com.google.common.io.CharStreams;
+
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -31,6 +33,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import app.attestation.auditor.AttestationProtocol.AttestationResult;
 
@@ -184,12 +189,8 @@ public class RemoteVerifyJob extends JobService {
                 final int responseCode = connection.getResponseCode();
                 if (responseCode == 200) {
                     try (final InputStream postResponse = connection.getInputStream()) {
-                        final BufferedReader postReader = new BufferedReader(new InputStreamReader(postResponse));
-                        final String[] tokens = postReader.readLine().split(" ");
-                        if (tokens.length < 2) {
-                            throw new GeneralSecurityException("missing fields");
-                        }
-                        final int interval = Integer.parseInt(tokens[1]);
+                        final JSONObject response = new JSONObject(CharStreams.toString(new InputStreamReader(postResponse)));
+                        final int interval = response.getInt("verifyInterval");
                         preferences.edit().remove(KEY_SUBSCRIBE_KEY).putInt(KEY_INTERVAL, interval).apply();
                         schedule(context, interval);
                     }
@@ -199,7 +200,7 @@ public class RemoteVerifyJob extends JobService {
                     }
                     throw new IOException("response code: " + responseCode);
                 }
-            } catch (final GeneralSecurityException | IOException | NumberFormatException e) {
+            } catch (final GeneralSecurityException | IOException | JSONException e) {
                 Log.e(TAG, "remote verify failure", e);
                 exceptionMessage = e.toString();
                 failure = true;
