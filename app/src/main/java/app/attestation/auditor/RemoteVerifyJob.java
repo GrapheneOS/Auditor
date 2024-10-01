@@ -168,11 +168,11 @@ public class RemoteVerifyJob extends JobService {
                 connection.setConnectTimeout(CONNECT_TIMEOUT);
                 connection.setReadTimeout(READ_TIMEOUT);
                 connection.setDoOutput(true);
-                final String extra = result.pairing ? " " + subscribeKey : "";
+                final String extra = result.pairing() ? " " + subscribeKey : "";
                 connection.setRequestProperty("Authorization", "Auditor " + userId + extra);
 
                 final OutputStream output = connection.getOutputStream();
-                output.write(result.serialized);
+                output.write(result.serialized());
                 output.close();
 
                 final int responseCode = connection.getResponseCode();
@@ -188,7 +188,7 @@ public class RemoteVerifyJob extends JobService {
                         schedule(context, interval);
                     }
                 } else {
-                    if (result.pairing) {
+                    if (result.pairing()) {
                         AttestationProtocol.clearAuditee(STATE_PREFIX, Long.toString(userId));
                     }
                     throw new IOException("response code: " + responseCode);

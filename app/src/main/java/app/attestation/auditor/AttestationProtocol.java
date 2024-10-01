@@ -932,20 +932,7 @@ class AttestationProtocol {
         }
     }
 
-    static class VerificationResult {
-        final boolean strong;
-        final String teeEnforced;
-        final String osEnforced;
-        final String history;
-
-        VerificationResult(final boolean strong, final String teeEnforced,
-                final String osEnforced, final String history) {
-            this.strong = strong;
-            this.teeEnforced = teeEnforced;
-            this.osEnforced = osEnforced;
-            this.history = history;
-        }
-    }
+    record VerificationResult(boolean strong, String teeEnforced, String osEnforced, String history) {}
 
     private static String toYesNoString(final Context context, final boolean value) {
         return value ? context.getString(R.string.yes) : context.getString(R.string.no);
@@ -1249,15 +1236,7 @@ class AttestationProtocol {
                 adbEnabled, addUsersWhenLocked, enrolledBiometrics, oemUnlockAllowed, systemUser);
     }
 
-    static class AttestationResult {
-        final boolean pairing;
-        final byte[] serialized;
-
-        AttestationResult(final boolean pairing, final byte[] serialized) {
-            this.pairing = pairing;
-            this.serialized = serialized;
-        }
-    }
+    record AttestationResult(boolean pairing, byte[] serialized) {}
 
     static KeyGenParameterSpec.Builder getKeyBuilder(final String alias, final int purposes,
             final boolean useStrongBox, final byte[] challenge, final boolean temporary) {

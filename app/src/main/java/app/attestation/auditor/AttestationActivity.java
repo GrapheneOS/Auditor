@@ -350,15 +350,15 @@ public class AttestationActivity extends AppCompatActivity {
             try {
                 final AttestationProtocol.VerificationResult result = AttestationProtocol.verifySerialized(this, serialized, auditorChallenge);
                 runOnUiThread(() -> {
-                    setBackgroundResource(result.strong ? R.color.green : R.color.orange);
-                    binding.content.textview.setText(result.strong ? R.string.verify_strong : R.string.verify_basic);
+                    setBackgroundResource(result.strong() ? R.color.green : R.color.orange);
+                    binding.content.textview.setText(result.strong() ? R.string.verify_strong : R.string.verify_basic);
                     binding.content.textview.append(getText(R.string.hardware_enforced));
-                    binding.content.textview.append(result.teeEnforced);
+                    binding.content.textview.append(result.teeEnforced());
                     binding.content.textview.append(getText(R.string.os_enforced));
-                    binding.content.textview.append(result.osEnforced);
-                    if (!result.history.isEmpty()) {
+                    binding.content.textview.append(result.osEnforced());
+                    if (!result.history().isEmpty()) {
                         binding.content.textview.append(getText(R.string.history));
-                        binding.content.textview.append(result.history);
+                        binding.content.textview.append(result.history());
                     }
                 });
             } catch (final DataFormatException | GeneralSecurityException | IOException |
@@ -380,8 +380,8 @@ public class AttestationActivity extends AppCompatActivity {
                 final AttestationProtocol.AttestationResult result =
                         AttestationProtocol.generateSerialized(this, challenge, null, "");
                 runOnUiThread(() -> {
-                    auditeePairing = result.pairing;
-                    auditeeShowAttestation(result.serialized);
+                    auditeePairing = result.pairing();
+                    auditeeShowAttestation(result.serialized());
                 });
             } catch (final GeneralSecurityException | IOException e) {
                 Log.e(TAG, "attestation generation error", e);
