@@ -1531,6 +1531,8 @@ class AttestationProtocol {
             if (systemUser) {
                 osEnforcedFlags |= OS_ENFORCED_FLAGS_SYSTEM_USER;
             }
+            if (extraSecurityState != Bundle.EMPTY) {
+            }
             serializer.putInt(osEnforcedFlags);
 
             if (version >= 6) {
