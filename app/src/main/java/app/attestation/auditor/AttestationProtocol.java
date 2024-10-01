@@ -525,6 +525,12 @@ class AttestationProtocol {
         }
     }
 
+    private static byte[] readRawResource(final Context context, final int id) throws IOException {
+        try (final InputStream stream = context.getResources().openRawResource(id)) {
+            return ByteStreams.toByteArray(stream);
+        }
+    }
+
     private static final SecureRandom random = new SecureRandom();
 
     private static byte[] generateRandomToken() {
@@ -545,12 +551,6 @@ class AttestationProtocol {
     private record Verified(int device, String verifiedBootKey, byte[] verifiedBootHash,
             int osName, int osVersion, int osPatchLevel, int vendorPatchLevel, int bootPatchLevel,
             int appVersion, int appVariant, int securityLevel, boolean attestKey) {}
-
-    private static byte[] readRawResource(final Context context, final int id) throws IOException {
-        try (final InputStream stream = context.getResources().openRawResource(id)) {
-            return ByteStreams.toByteArray(stream);
-        }
-    }
 
     private static X509Certificate generateCertificate(final InputStream in)
             throws CertificateException {
