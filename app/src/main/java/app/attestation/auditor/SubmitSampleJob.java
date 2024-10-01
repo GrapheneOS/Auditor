@@ -40,7 +40,7 @@ import java.util.Properties;
 public class SubmitSampleJob extends JobService {
     private static final String TAG = "SubmitSampleJob";
     private static final int JOB_ID = 2;
-    private static final String SUBMIT_URL = "https://" + RemoteVerifyJob.DOMAIN + "/submit";
+    private static final String SUBMIT_URL = RemoteVerifyJob.BASE_URL + "submit";
     private static final int CONNECT_TIMEOUT = 30000;
     private static final int READ_TIMEOUT = 30000;
     private static final int ESTIMATED_DOWNLOAD_BYTES = 4 * 1024;
