@@ -1532,6 +1532,13 @@ class AttestationProtocol {
                 osEnforcedFlags |= OS_ENFORCED_FLAGS_SYSTEM_USER;
             }
             if (extraSecurityState != Bundle.EMPTY) {
+                String oemUnlockAllowedKey = "android.ext.OEM_UNLOCK_ALLOWED";
+                if (extraSecurityState.containsKey(oemUnlockAllowedKey)) {
+                    osEnforcedFlags &= ~OS_ENFORCED_FLAGS_OEM_UNLOCK_ALLOWED;
+                    if (extraSecurityState.getBoolean(oemUnlockAllowedKey, false)) {
+                        osEnforcedFlags |= OS_ENFORCED_FLAGS_OEM_UNLOCK_ALLOWED;
+                    }
+                }
             }
             serializer.putInt(osEnforcedFlags);
 
