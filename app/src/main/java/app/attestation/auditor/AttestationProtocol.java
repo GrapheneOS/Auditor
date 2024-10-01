@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.SecurityStateManager;
 import android.os.UserManager;
 import android.provider.Settings;
 import android.security.keystore.KeyGenParameterSpec;
@@ -1449,6 +1451,35 @@ class AttestationProtocol {
 
             final UserManager userManager = context.getSystemService(UserManager.class);
             final boolean systemUser = userManager.isSystemUser();
+
+            final Bundle extraSecurityState;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                SecurityStateManager securityStateManager =
+                        context.getSystemService(SecurityStateManager.class);
+
+                if (securityStateManager != null) {
+                    Bundle extraSecurityStateTmp = Bundle.EMPTY;
+                    try {
+                        Bundle globalSecurityState = securityStateManager.getGlobalSecurityState();
+                        String securityStateExtKey = "android.ext.SECURITY_STATE_EXT";
+                        extraSecurityStateTmp = globalSecurityState.getBundle(securityStateExtKey);
+                    } catch (SecurityException e) {
+                        Log.e(TAG, "", e);
+                        String message = e.getMessage();
+                        if (message == null || !message.startsWith("get package info")
+                                || !message.endsWith("requires "
+                                + "android.permission.INTERACT_ACROSS_USERS_FULL or "
+                                + "android.permission.INTERACT_ACROSS_USERS to access user 0.")) {
+                            throw new GeneralSecurityException(e);
+                        }
+                    }
+                    extraSecurityState = extraSecurityStateTmp != null ? extraSecurityStateTmp : Bundle.EMPTY;
+                } else {
+                    extraSecurityState = Bundle.EMPTY;
+                }
+            } else {
+                extraSecurityState = Bundle.EMPTY;
+            }
 
             // Serialization
 
