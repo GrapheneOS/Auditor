@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.USE_FINGERPRINT" android:maxSdkVersion="28" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <application android:label="@string/app_name"
             android:useEmbeddedDex="true"

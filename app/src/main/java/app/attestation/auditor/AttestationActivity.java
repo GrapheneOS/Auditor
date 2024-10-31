@@ -6,6 +6,7 @@ import static android.graphics.Color.WHITE;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -13,6 +14,8 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
@@ -294,6 +297,10 @@ public class AttestationActivity extends AppCompatActivity {
             stage = Stage.EnableRemoteVerify;
             startQrScanner();
         });
+
+        if (isIgnoringBatteryOptimizations() && stage == Stage.EnableRemoteVerify) {
+            startQrScanner();
+        }
     }
 
     @Override
@@ -434,17 +441,17 @@ public class AttestationActivity extends AppCompatActivity {
 
     @SuppressLint("InlinedApi")
     private void startQrScanner() {
-        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        if (!isIgnoringBatteryOptimizations()) {
+            requestIgnoreBatteryOptimizations();
+        } else if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.CAMERA},
                     PERMISSIONS_REQUEST_CAMERA);
+        } else if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                    PERMISSIONS_REQUEST_POST_NOTIFICATIONS_REMOTE_VERIFY);
         } else {
-            if (stage == Stage.EnableRemoteVerify &&
-                    checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},
-                        PERMISSIONS_REQUEST_POST_NOTIFICATIONS_REMOTE_VERIFY);
-            } else {
-                QRScannerActivityLauncher.launch(new Intent(this, QRScannerActivity.class));
-            }
+            QRScannerActivityLauncher.launch(new Intent(this, QRScannerActivity.class));
+            stage = Stage.None;
         }
     }
 
@@ -459,8 +466,6 @@ public class AttestationActivity extends AppCompatActivity {
             } else {
                 snackbar.setText(R.string.camera_permission_denied).show();
             }
-        } else if (requestCode == PERMISSIONS_REQUEST_POST_NOTIFICATIONS_REMOTE_VERIFY) {
-            QRScannerActivityLauncher.launch(new Intent(this, QRScannerActivity.class));
         } else if (requestCode == PERMISSIONS_REQUEST_POST_NOTIFICATIONS_SUBMIT_SAMPLE) {
             SubmitSampleJob.schedule(this);
             snackbar.setText(R.string.schedule_submit_sample_success).show();
@@ -576,5 +581,25 @@ public class AttestationActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean isIgnoringBatteryOptimizations() {
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        if (powerManager != null) {
+            return powerManager.isIgnoringBatteryOptimizations(getPackageName());
+        }
+        return true;
+    }
+
+    @SuppressLint("BatteryLife")
+    private void requestIgnoreBatteryOptimizations() {
+        try {
+            Log.d(TAG, "Requesting battery optimization exemption");
+            Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+            intent.setData(Uri.parse("package:" + getPackageName()));
+            startActivity(intent);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to request to ignore battery optimizations: " + e.getMessage());
+        }
     }
 }
