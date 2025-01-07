@@ -254,6 +254,10 @@ class AttestationProtocol {
             // API for detecting this was replaced in keymaster v3 but the new one isn't used yet
             boolean rollbackResistant,
             boolean enforceStrongBox, int osName) {
+
+        boolean hasPogoPins() {
+            return name == R.string.device_pixel_tablet;
+        }
     }
 
     private static final boolean isStrongBoxSupported = ImmutableSet.of(
@@ -565,6 +569,10 @@ class AttestationProtocol {
     private record Verified(int device, String verifiedBootKey, byte[] verifiedBootHash,
             int osName, int osVersion, int osPatchLevel, int vendorPatchLevel, int bootPatchLevel,
             int appVersion, int appVariant, int securityLevel, boolean attestKey) {
+
+        boolean hasPogoPins() {
+            return device == R.string.device_pixel_tablet;
+        }
     }
 
     private static X509Certificate generateCertificate(final InputStream in)
