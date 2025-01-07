@@ -86,6 +86,28 @@
     <string name="add_users_when_locked">Add users from lock screen: %s\n</string>
     <string name="oem_unlock_allowed">OEM unlocking allowed: %s\n</string>
     <string name="system_user">Main user account: %s\n</string>
+    <string name="auto_reboot_timeout">Auto reboot timeout: %s\n</string>
+    <string name="auto_reboot_seconds_plural_value">%d seconds</string>
+    <string name="auto_reboot_minutes_plural_value">%d minutes</string>
+    <string name="auto_reboot_hours_plural_value">%d hours</string>
+    <string name="auto_reboot_seconds_singular_value">1 second</string>
+    <string name="auto_reboot_minutes_singular_value">1 minute</string>
+    <string name="auto_reboot_hours_singular_value">1 hour</string>
+
+    <string name="usbc_port_security_mode">USB-C port security mode: %s\n</string>
+    <string name="usbc_port_and_pogo_pins">USB-C port and pogo pins security mode: %s\n</string>
+
+    <string name="usbc_port_security_mode_off">Off</string>
+    <string name="usbc_port_and_pogo_pins_security_mode_off">USB-C port off, pogo pins used only for charging</string>
+    <string name="usbc_port_security_mode_charging_only">Charging-only</string>
+    <string name="usbc_port_security_mode_charging_only_when_locked">Charging-only when locked</string>
+    <string name="usbc_port_security_mode_charging_only_when_locked_afu">Charging-only when locked, except before first unlock</string>
+    <string name="usbc_port_security_mode_on">On</string>
+
+    <string name="user_count">User count: %s\n</string>
+
+    <string name="unknown_value">Unknown</string>
+    <string name="invalid_value">Invalid</string>
 
     <string name="history">\n<b>Attestation history:</b>\n\n</string>
     <string name="first_verified">First verified: %s\n</string>
