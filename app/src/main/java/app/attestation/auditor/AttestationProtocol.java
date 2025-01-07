@@ -253,7 +253,8 @@ class AttestationProtocol {
     public record DeviceInfo(int name, int attestationVersion, int keymasterVersion,
             // API for detecting this was replaced in keymaster v3 but the new one isn't used yet
             boolean rollbackResistant,
-            boolean enforceStrongBox, int osName) {}
+            boolean enforceStrongBox, int osName) {
+    }
 
     private static final boolean isStrongBoxSupported = ImmutableSet.of(
             "Pixel 3",
@@ -563,7 +564,8 @@ class AttestationProtocol {
 
     private record Verified(int device, String verifiedBootKey, byte[] verifiedBootHash,
             int osName, int osVersion, int osPatchLevel, int vendorPatchLevel, int bootPatchLevel,
-            int appVersion, int appVariant, int securityLevel, boolean attestKey) {}
+            int appVersion, int appVariant, int securityLevel, boolean attestKey) {
+    }
 
     private static X509Certificate generateCertificate(final InputStream in)
             throws CertificateException {
@@ -949,7 +951,8 @@ class AttestationProtocol {
         }
     }
 
-    record VerificationResult(boolean strong, String teeEnforced, String osEnforced, String history) {}
+    record VerificationResult(boolean strong, String teeEnforced, String osEnforced, String history) {
+    }
 
     private static String toYesNoString(final Context context, final boolean value) {
         return value ? context.getString(R.string.yes) : context.getString(R.string.no);
@@ -1251,7 +1254,8 @@ class AttestationProtocol {
                 adbEnabled, addUsersWhenLocked, enrolledBiometrics, systemUser);
     }
 
-    record AttestationResult(boolean pairing, byte[] serialized) {}
+    record AttestationResult(boolean pairing, byte[] serialized) {
+    }
 
     static KeyGenParameterSpec.Builder getKeyBuilder(final String alias, final int purposes,
             final boolean useStrongBox, final byte[] challenge, final boolean temporary) {
