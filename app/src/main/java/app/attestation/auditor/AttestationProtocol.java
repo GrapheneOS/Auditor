@@ -55,6 +55,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.ECGenParameterSpec;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -1153,8 +1154,88 @@ class AttestationProtocol {
                 toYesNoString(context, adbEnabled)));
         osEnforced.append(context.getString(R.string.add_users_when_locked,
                 toYesNoString(context, addUsersWhenLocked)));
+        if (securityStateExt.oemUnlocked() >= 0) {
+            osEnforced.append(context.getString(R.string.oem_unlock_allowed,
+                    toYesNoString(context, securityStateExt.oemUnlocked > 0)));
+        }
         osEnforced.append(context.getString(R.string.system_user,
                 toYesNoString(context, systemUser)));
+
+        final boolean hasPogoPins = verified.hasPogoPins();
+        final int usbcPortSecurityModePrefixRes = hasPogoPins
+                ? R.string.usbc_port_and_pogo_pins_security_mode
+                : R.string.usbc_port_security_mode;
+        final int usbcPortSecurityModeOffRes = hasPogoPins
+                ? R.string.usbc_port_and_pogo_pins_security_mode_off
+                : R.string.usbc_port_security_mode_off;
+
+        final byte usbcPortSecurityMode = securityStateExt.portSecurityMode();
+        if (usbcPortSecurityMode >= 0) {
+            final int usbcPortSecurityModeValueRes = switch (usbcPortSecurityMode) {
+                case 0 -> usbcPortSecurityModeOffRes;
+                case 1 -> R.string.usbc_port_security_mode_charging_only;
+                case 2 -> R.string.usbc_port_security_mode_charging_only_when_locked;
+                case 3 -> R.string.usbc_port_security_mode_charging_only_when_locked_afu;
+                case 4 -> R.string.usbc_port_security_mode_on;
+                default -> throw new IllegalStateException("Unexpected value: " + usbcPortSecurityMode);
+            };
+            osEnforced.append(context.getString(usbcPortSecurityModePrefixRes,
+                    context.getString(usbcPortSecurityModeValueRes)));
+        }
+
+        final int autoRebootSeconds = securityStateExt.autoRebootSeconds();
+        final String autoRebootValueString;
+        if (autoRebootSeconds > 20) {
+            final Duration duration = Duration.ofSeconds(autoRebootSeconds);
+            StringBuilder autoRebootValueStrBuilder = new StringBuilder();
+
+            long hoursDuration = duration.toHours();
+            if (hoursDuration > 1) {
+                autoRebootValueStrBuilder.append(
+                        context.getString(R.string.auto_reboot_hours_plural_value, hoursDuration));
+            } else if (hoursDuration == 1) {
+                autoRebootValueStrBuilder.append(
+                        context.getString(R.string.auto_reboot_hours_singular_value));
+            }
+
+            int minutesPart = duration.toMinutesPart();
+            if (minutesPart > 1) {
+                if (autoRebootValueStrBuilder.length() != 0) {
+                    autoRebootValueStrBuilder.append(", ");
+                }
+                autoRebootValueStrBuilder.append(
+                        context.getString(R.string.auto_reboot_minutes_plural_value, minutesPart));
+            } else if (minutesPart == 1) {
+                if (autoRebootValueStrBuilder.length() != 0) {
+                    autoRebootValueStrBuilder.append(", ");
+                }
+                autoRebootValueStrBuilder.append(
+                        context.getString(R.string.auto_reboot_minutes_singular_value));
+            }
+
+            int secondsPart = duration.toSecondsPart();
+            if (secondsPart > 1) {
+                if (autoRebootValueStrBuilder.length() != 0) {
+                    autoRebootValueStrBuilder.append(", ");
+                }
+                autoRebootValueStrBuilder.append(
+                        context.getString(R.string.auto_reboot_seconds_plural_value, secondsPart));
+            } else if (secondsPart == 1) {
+                if (autoRebootValueStrBuilder.length() != 0) {
+                    autoRebootValueStrBuilder.append(", ");
+                }
+                autoRebootValueStrBuilder.append(
+                        context.getString(R.string.auto_reboot_seconds_singular_value));
+            }
+
+            autoRebootValueString = autoRebootValueStrBuilder.toString();
+            osEnforced.append(context.getString(R.string.auto_reboot_timeout, autoRebootValueString));
+        }
+
+        final byte userCount = securityStateExt.userCount();
+        if (userCount > 0) {
+            osEnforced.append(context.getString(R.string.user_count, String.valueOf(userCount)));
+        }
 
         return new VerificationResult(hasPersistentKey, teeEnforced.toString(), osEnforced.toString(), history.toString());
     }
