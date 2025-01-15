@@ -51,7 +51,6 @@ android {
         targetSdk = 35
         versionCode = 88
         versionName = versionCode.toString()
-        resourceConfigurations.add("en")
     }
 
     buildTypes {
@@ -93,6 +92,7 @@ android {
     }
 
     androidResources {
+        localeFilters += listOf("en")
         noCompress += listOf("dex")
     }
 }
