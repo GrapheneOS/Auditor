@@ -25,7 +25,6 @@ import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
@@ -36,6 +35,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.Enumeration;
 import java.util.Properties;
+
+import javax.net.ssl.HttpsURLConnection;
+
+import org.grapheneos.tls.ModernTLSSocketFactory;
 
 public class SubmitSampleJob extends JobService {
     private static final String TAG = "SubmitSampleJob";
@@ -49,6 +52,8 @@ public class SubmitSampleJob extends JobService {
     private static final String NOTIFICATION_CHANNEL_ID = "sample_submission";
 
     private static final String KEYSTORE_ALIAS_SAMPLE = "sample_attestation_key";
+
+    private final ModernTLSSocketFactory tlsSocketFactory = new ModernTLSSocketFactory();
 
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
     private Future<?> task;
@@ -72,9 +77,10 @@ public class SubmitSampleJob extends JobService {
     @Override
     public boolean onStartJob(final JobParameters params) {
         task = executor.submit(() -> {
-            HttpURLConnection connection = null;
+            HttpsURLConnection connection = null;
             try {
-                connection = (HttpURLConnection) new URL(SUBMIT_URL).openConnection();
+                connection = (HttpsURLConnection) new URL(SUBMIT_URL).openConnection();
+                connection.setSSLSocketFactory(tlsSocketFactory);
                 connection.setConnectTimeout(CONNECT_TIMEOUT);
                 connection.setReadTimeout(READ_TIMEOUT);
                 connection.setDoOutput(true);

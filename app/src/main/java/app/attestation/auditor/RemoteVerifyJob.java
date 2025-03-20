@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -33,6 +32,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.List;
+
+import javax.net.ssl.HttpsURLConnection;
+
+import org.grapheneos.tls.ModernTLSSocketFactory;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,6 +66,8 @@ public class RemoteVerifyJob extends JobService {
     private static final String NOTIFICATION_CHANNEL_SUCCESS_ID = "remote_verification";
     private static final String NOTIFICATION_CHANNEL_FAILURE_ID = "remote_verification_failure_2";
     private static final String NOTIFICATION_CHANNEL_FAILURE_ID_OLD = "remote_verification_failure";
+
+    private final ModernTLSSocketFactory tlsSocketFactory = new ModernTLSSocketFactory();
 
     static final ExecutorService executor = Executors.newSingleThreadExecutor();
     private Future<?> task;
@@ -144,10 +149,11 @@ public class RemoteVerifyJob extends JobService {
         task = executor.submit(() -> {
             final Context context = RemoteVerifyJob.this;
             boolean failure = false;
-            HttpURLConnection connection = null;
+            HttpsURLConnection connection = null;
             String exceptionMessage = null;
             try {
-                connection = (HttpURLConnection) new URL(CHALLENGE_URL).openConnection();
+                connection = (HttpsURLConnection) new URL(CHALLENGE_URL).openConnection();
+                connection.setSSLSocketFactory(tlsSocketFactory);
                 connection.setConnectTimeout(CONNECT_TIMEOUT);
                 connection.setReadTimeout(READ_TIMEOUT);
                 connection.setRequestMethod("POST");
@@ -166,7 +172,8 @@ public class RemoteVerifyJob extends JobService {
                 final AttestationResult result = AttestationProtocol.generateSerialized(
                         context, challengeMessage, Long.toString(userId), STATE_PREFIX);
 
-                connection = (HttpURLConnection) new URL(VERIFY_URL).openConnection();
+                connection = (HttpsURLConnection) new URL(VERIFY_URL).openConnection();
+                connection.setSSLSocketFactory(tlsSocketFactory);
                 connection.setConnectTimeout(CONNECT_TIMEOUT);
                 connection.setReadTimeout(READ_TIMEOUT);
                 connection.setDoOutput(true);
