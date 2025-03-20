@@ -2,13 +2,13 @@ package app.attestation.auditor
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.graphics.toColorInt
 import kotlin.math.min
 
 class QROverlay(context: Context, attrs: AttributeSet?) : View(context, attrs) {
@@ -30,13 +30,13 @@ class QROverlay(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         frameSideSize *= resources.displayMetrics.density.toInt()
         frameSideLength *= resources.displayMetrics.density.toInt()
         bPaint = Paint()
-        bPaint.color = Color.parseColor("#A6000000")
+        bPaint.color = "#A6000000".toColorInt()
         bPaint.strokeWidth = 10f
         bPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC)
         tPaint = TextPaint()
-        tPaint.color = Color.parseColor("#ffffff")
+        tPaint.color = "#ffffff".toColorInt()
         fPaint = Paint()
-        fPaint.color = Color.parseColor("#8BC34A") // green500
+        fPaint.color = "#8BC34A".toColorInt() // green500
         fPaint.strokeWidth = frameSideSize.toFloat()
     }
 
