@@ -68,7 +68,7 @@ public class ModernTLSSocketFactory extends SSLSocketFactory {
         return configureSocket(wrapped.createSocket(address, port, localAddress, localPort));
     }
 
-    private Socket configureSocket(final Socket socket) {
+    private static Socket configureSocket(final Socket socket) {
         ((SSLSocket) socket).setEnabledProtocols(new String[] {"TLSv1.3"});
         return socket;
     }
