@@ -83,6 +83,7 @@ android {
 
     packaging {
         resources.excludes.addAll(listOf(
+            "META-INF/versions/*/OSGI-INF/MANIFEST.MF",
             "org/bouncycastle/pqc/**.properties",
             "org/bouncycastle/x509/**.properties",
         ))
