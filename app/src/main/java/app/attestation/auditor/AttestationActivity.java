@@ -172,6 +172,7 @@ public class AttestationActivity extends AppCompatActivity {
             "Pixel 9 Pro",
             "Pixel 9 Pro XL",
             "Pixel 9 Pro Fold",
+            "Pixel 9a",
             "SM-G970F",
             "SM-G975F",
             "SM-N970F",
