@@ -120,9 +120,7 @@ public class RemoteVerifyJob extends JobService {
                     .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                     .setEstimatedNetworkBytes(ESTIMATED_DOWNLOAD_BYTES, ESTIMATED_UPLOAD_BYTES);
             builder.setExpedited(true);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                builder.setPriority(JobInfo.PRIORITY_MAX);
-            }
+            builder.setPriority(JobInfo.PRIORITY_MAX);
             if (scheduler.schedule(builder.build()) == JobScheduler.RESULT_FAILURE) {
                 throw new RuntimeException("job schedule failed");
             }

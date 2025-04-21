@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.ApplicationInfoFlags;
 import android.os.Build;
 import android.os.UserManager;
 import android.provider.Settings;
@@ -1295,15 +1296,6 @@ class AttestationProtocol {
         return result;
     }
 
-    @SuppressWarnings("deprecation")
-    static ApplicationInfo getApplicationInfo(final PackageManager pm, final String packageName,
-            final int flags) throws PackageManager.NameNotFoundException {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            return pm.getApplicationInfo(packageName, flags);
-        }
-        return pm.getApplicationInfo(packageName, PackageManager.ApplicationInfoFlags.of(flags));
-    }
-
     static AttestationResult generateSerialized(final Context context, final byte[] challengeMessage,
             String index, final String statePrefix) throws GeneralSecurityException, IOException {
         if (challengeMessage.length < CHALLENGE_MESSAGE_LENGTH) {
@@ -1406,7 +1398,9 @@ class AttestationProtocol {
             if (activeAdmins != null) {
                 for (final ComponentName name : activeAdmins) {
                     try {
-                        final ApplicationInfo info = getApplicationInfo(pm, name.getPackageName(), 0);
+                        final String packageName = name.getPackageName();
+                        final ApplicationInfo info =
+                                pm.getApplicationInfo(packageName, ApplicationInfoFlags.of(0));
                         if ((info.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
                             deviceAdminNonSystem = true;
                         }
