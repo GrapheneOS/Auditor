@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 import androidx.activity.EdgeToEdge;
@@ -331,9 +332,24 @@ public class AttestationActivity extends AppCompatActivity {
                 } else {
                     binding.content.imageview.setImageBitmap(createQrCode(data));
                 }
+                setMaxBrightness();
                 return true;
             }
         });
+    }
+
+    private void setMaxBrightness() {
+        setBrightness(WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL);
+    }
+
+    private void resetToOriginalBrightness() {
+        setBrightness(WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE);
+    }
+
+    private void setBrightness(float value) {
+        WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+        layoutParams.screenBrightness = value;
+        getWindow().setAttributes(layoutParams);
     }
 
     private void runAuditor() {
@@ -342,7 +358,10 @@ public class AttestationActivity extends AppCompatActivity {
         }
         binding.content.textview.setText(R.string.qr_code_scan_hint_auditor);
         chooseBestLayout(auditorChallenge);
-        binding.content.imageview.setOnClickListener(view -> startQrScanner());
+        binding.content.imageview.setOnClickListener(view -> {
+            startQrScanner();
+            resetToOriginalBrightness();
+        });
     }
 
     private void handleAttestation(final byte[] serialized) {
