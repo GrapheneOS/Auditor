@@ -91,7 +91,6 @@ public class AttestationActivity extends AppCompatActivity {
     private byte[] auditeeSerializedAttestation;
     private byte[] auditorChallenge;
     private int backgroundResource;
-    private boolean canSubmitSample;
 
     final ActivityResultLauncher<Intent> QRScannerActivityLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -178,15 +177,6 @@ public class AttestationActivity extends AppCompatActivity {
             "SM-N970F",
             "SM-N970U",
             "SM-N975U").contains(Build.MODEL);
-
-    private static int getFirstApiLevel() {
-        return Integer.parseInt(SystemProperties.get("ro.product.first_api_level",
-                Integer.toString(Build.VERSION.SDK_INT)));
-    }
-
-    private static boolean potentialSupportedAuditee() {
-        return getFirstApiLevel() >= Build.VERSION_CODES.O;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -485,8 +475,7 @@ public class AttestationActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.menu_attestation, menu);
         menu.findItem(R.id.action_clear_auditee).setEnabled(isSupportedAuditee);
-        canSubmitSample = potentialSupportedAuditee() && !BuildConfig.DEBUG;
-        menu.findItem(R.id.action_submit_sample).setEnabled(canSubmitSample);
+        menu.findItem(R.id.action_submit_sample).setEnabled(!BuildConfig.DEBUG);
         return true;
     }
 
@@ -494,7 +483,7 @@ public class AttestationActivity extends AppCompatActivity {
     public boolean onPrepareOptionsMenu(final Menu menu) {
         final boolean isRemoteVerifyEnabled = RemoteVerifyJob.isEnabled(this);
         menu.findItem(R.id.action_disable_remote_verify).setEnabled(isRemoteVerifyEnabled);
-        menu.findItem(R.id.action_submit_sample).setEnabled(canSubmitSample &&
+        menu.findItem(R.id.action_submit_sample).setEnabled(!BuildConfig.DEBUG &&
                 !SubmitSampleJob.isScheduled(this));
         return true;
     }
