@@ -1187,9 +1187,9 @@ class AttestationProtocol {
         final String autoRebootValueString;
         if (autoRebootSeconds > 20) {
             final Duration duration = Duration.ofSeconds(autoRebootSeconds);
-            StringBuilder autoRebootValueStrBuilder = new StringBuilder();
+            final StringBuilder autoRebootValueStrBuilder = new StringBuilder();
 
-            long hoursDuration = duration.toHours();
+            final long hoursDuration = duration.toHours();
             if (hoursDuration > 1) {
                 autoRebootValueStrBuilder.append(
                         context.getString(R.string.auto_reboot_hours_plural_value, hoursDuration));
@@ -1198,7 +1198,7 @@ class AttestationProtocol {
                         context.getString(R.string.auto_reboot_hours_singular_value));
             }
 
-            int minutesPart = duration.toMinutesPart();
+            final int minutesPart = duration.toMinutesPart();
             if (minutesPart > 1) {
                 if (autoRebootValueStrBuilder.length() != 0) {
                     autoRebootValueStrBuilder.append(", ");
@@ -1213,7 +1213,7 @@ class AttestationProtocol {
                         context.getString(R.string.auto_reboot_minutes_singular_value));
             }
 
-            int secondsPart = duration.toSecondsPart();
+            final int secondsPart = duration.toSecondsPart();
             if (secondsPart > 1) {
                 if (autoRebootValueStrBuilder.length() != 0) {
                     autoRebootValueStrBuilder.append(", ");
@@ -1541,18 +1541,18 @@ class AttestationProtocol {
 
             final Bundle extraSecurityState;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                SecurityStateManager securityStateManager =
+                final SecurityStateManager securityStateManager =
                         context.getSystemService(SecurityStateManager.class);
 
                 if (securityStateManager != null) {
                     Bundle extraSecurityStateTmp = Bundle.EMPTY;
                     try {
-                        Bundle globalSecurityState = securityStateManager.getGlobalSecurityState();
-                        String securityStateExtKey = "android.ext.SECURITY_STATE_EXT";
+                        final Bundle globalSecurityState = securityStateManager.getGlobalSecurityState();
+                        final String securityStateExtKey = "android.ext.SECURITY_STATE_EXT";
                         extraSecurityStateTmp = globalSecurityState.getBundle(securityStateExtKey);
-                    } catch (SecurityException e) {
+                    } catch (final SecurityException e) {
                         Log.e(TAG, "", e);
-                        String message = e.getMessage();
+                        final String message = e.getMessage();
                         // Still needed for older releases without the upstream fix
                         // for fetching the global security state.
                         if (message == null || !message.startsWith("get package info")
@@ -1622,7 +1622,7 @@ class AttestationProtocol {
             if (version >= 6) {
                 final int autoRebootSeconds;
                 {
-                    String key = "android.ext.AUTO_REBOOT_TIMEOUT";
+                    final String key = "android.ext.AUTO_REBOOT_TIMEOUT";
                     final int def = SecurityStateExt.UNKNOWN_VALUE;
                     final int val = extraSecurityState.getInt(key, def);
                     final boolean isKnown = val >= TimeUnit.SECONDS.toMillis(20);
@@ -1632,7 +1632,7 @@ class AttestationProtocol {
 
                 final byte portSecurityMode;
                 {
-                    String key = "android.ext.USB_PORT_SECURITY_MODE";
+                    final String key = "android.ext.USB_PORT_SECURITY_MODE";
                     final byte def = SecurityStateExt.UNKNOWN_VALUE;
                     final int val = extraSecurityState.getInt(key, def);
                     // Update once USB-C port security settings valid value expands.
@@ -1643,7 +1643,7 @@ class AttestationProtocol {
 
                 final byte userCount;
                 {
-                    String key = "android.ext.USER_COUNT";
+                    final String key = "android.ext.USER_COUNT";
                     final byte def = SecurityStateExt.UNKNOWN_VALUE;
                     final int val = extraSecurityState.getInt(key, def);
                     final boolean isKnown = val >= 0 && val <= Byte.MAX_VALUE;
@@ -1653,7 +1653,7 @@ class AttestationProtocol {
 
                 final byte oemUnlockAllowed;
                 {
-                    String key = "android.ext.OEM_UNLOCK_ALLOWED";
+                    final String key = "android.ext.OEM_UNLOCK_ALLOWED";
                     final byte def = SecurityStateExt.UNKNOWN_VALUE;
                     final Object objVal = extraSecurityState.get(key);
                     final byte val = (objVal instanceof Boolean boolVal) ? (byte) (boolVal ? 1 : 0) : def;
