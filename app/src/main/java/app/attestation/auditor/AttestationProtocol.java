@@ -1655,6 +1655,7 @@ class AttestationProtocol {
                 {
                     final String key = "android.ext.OEM_UNLOCK_ALLOWED";
                     final byte def = SecurityStateExt.UNKNOWN_VALUE;
+                    @SuppressWarnings("deprecation") // getBoolean(...) is ambiguous
                     final Object objVal = extraSecurityState.get(key);
                     final byte val = (objVal instanceof Boolean boolVal) ? (byte) (boolVal ? 1 : 0) : def;
                     final boolean isKnown = val >= 0 && val <= 1;
