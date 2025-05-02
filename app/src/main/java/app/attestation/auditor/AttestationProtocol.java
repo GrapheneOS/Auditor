@@ -300,24 +300,9 @@ class AttestationProtocol {
             "Pixel 6 Pro",
             "Pixel 6a").contains(Build.MODEL);
 
-    private static final ImmutableSet<Integer> extraPatchLevelMissing = ImmutableSet.of(
-            R.string.device_sm_g970f,
-            R.string.device_sm_g975f,
-            R.string.device_sm_n970f,
-            R.string.device_sm_n970u,
-            R.string.device_sm_n975u);
-
     private static final ImmutableMap<String, DeviceInfo> fingerprintsCustomOS = ImmutableMap
             .<String, DeviceInfo>builder()
             // GrapheneOS
-            .put("0F9A9CC8ADE73064A54A35C5509E77994E3AA37B6FB889DD53AF82C3C570C5CF",
-                    new DeviceInfo(R.string.device_pixel_3, 3, 4, false, true, R.string.os_graphene))
-            .put("06DD526EE9B1CB92AA19D9835B68B4FF1A48A3AD31D813F27C9A7D6C271E9451",
-                    new DeviceInfo(R.string.device_pixel_3_xl, 3, 4, false, true, R.string.os_graphene))
-            .put("8FF8B9B4F831114963669E04EA4F849F33F3744686A0B33B833682746645ABC8",
-                    new DeviceInfo(R.string.device_pixel_3a, 3, 4, false, true, R.string.os_graphene))
-            .put("91943FAA75DCB6392AE87DA18CA57D072BFFB80BC30F8FAFC7FFE13D76C5736E",
-                    new DeviceInfo(R.string.device_pixel_3a_xl, 3, 4, false, true, R.string.os_graphene))
             .put("80EF268700EE42686F779A47B4A155FE1FFC2EEDF836B4803CAAB8FA61439746",
                     new DeviceInfo(R.string.device_pixel_4, 3, 4, false, true, R.string.os_graphene))
             .put("3F15FDCB82847FED97427CE00563B8F9FF34627070DE5FDB17ACA7849AB98CC8",
@@ -365,12 +350,6 @@ class AttestationProtocol {
             .build();
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStock = ImmutableMap
             .<String, DeviceInfo>builder()
-            .put("4B9201B11685BE6710E2B2BA8482F444E237E0C8A3D1F7F447FE29C37CECC559",
-                    new DeviceInfo(R.string.device_oneplus_7_pro_gm1913, 3, 4, false, false, R.string.os_stock))
-            .put("61FDA12B32ED84214A9CF13D1AFFB7AA80BD8A268A861ED4BB7A15170F1AB00C",
-                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 4, false, true, R.string.os_stock))
-            .put("E75B86C52C7496255A95FB1E2B1C044BFA9D5FE34DD1E4EEBD752EEF0EA89875",
-                    new DeviceInfo(R.string.device_pixel_3a_generic, 3, 4, false, true, R.string.os_stock))
             .put("AE6316B4753C61F5855B95B9B98484AF784F2E83648D0FCC8107FCA752CAEA34",
                     new DeviceInfo(R.string.device_pixel_4_generic, 3, 4, false, true, R.string.os_stock))
             .put("879CD3F18EA76E244D4D4AC3BCB9C337C13B4667190B19035AFE2536550050F1",
@@ -411,29 +390,11 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_9_pro_fold, 300, 300, false, true, R.string.os_stock))
             .put("3327AF62D84AB897AF2523A16DCB5801E60C5D5B97F41CA1BD099C4784F7B743",
                     new DeviceInfo(R.string.device_pixel_9a, 300, 300, false, true, R.string.os_stock))
-            .put("9D77474FA4FEA6F0B28636222FBCEE2BB1E6FF9856C736C85B8EA6E3467F2BBA",
-                    new DeviceInfo(R.string.device_sm_g970f, 3, 4, false, false, R.string.os_stock))
-            .put("08B2B5C6EC8F54C00C505756E1EF516BB4537B2F02D640410D287A43FCF92E3F",
-                    new DeviceInfo(R.string.device_sm_g975f, 3, 4, false, false, R.string.os_stock))
-            .put("E94BC43B97F98CD10C22CD9D8469DBE621116ECFA624FE291A1D53CF3CD685D1",
-                    new DeviceInfo(R.string.device_sm_n970f, 3, 4, false, false, R.string.os_stock))
-            .put("466011C44BBF883DB38CF96617ED35C796CE2552C5357F9230258329E943DB70",
-                    new DeviceInfo(R.string.device_sm_n970u, 3, 4, false, true, R.string.os_stock))
-            .put("52946676088007755EB586B3E3F3E8D3821BE5DF73513E6C13640507976420E6",
-                    new DeviceInfo(R.string.device_sm_n975u, 3, 4, false, true, R.string.os_stock))
             .build();
 
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxCustomOS = ImmutableMap
             .<String, DeviceInfo>builder()
             // GrapheneOS
-            .put("0F9A9CC8ADE73064A54A35C5509E77994E3AA37B6FB889DD53AF82C3C570C5CF",
-                    new DeviceInfo(R.string.device_pixel_3, 3, 4, false, true, R.string.os_graphene))
-            .put("06DD526EE9B1CB92AA19D9835B68B4FF1A48A3AD31D813F27C9A7D6C271E9451",
-                    new DeviceInfo(R.string.device_pixel_3_xl, 3, 4, false, true, R.string.os_graphene))
-            .put("73D6C63A07610404FE16A4E07DD24E41A70D331E9D3EF7BBA2D087E4761EB63A",
-                    new DeviceInfo(R.string.device_pixel_3a, 3, 4, false, true, R.string.os_graphene))
-            .put("3F36E3482E1FF82986576552CB4FD08AF09F8B09D3832314341E04C42D2919A4",
-                    new DeviceInfo(R.string.device_pixel_3a_xl, 3, 4, false, true, R.string.os_graphene))
             .put("80EF268700EE42686F779A47B4A155FE1FFC2EEDF836B4803CAAB8FA61439746",
                     new DeviceInfo(R.string.device_pixel_4, 3, 4, false, true, R.string.os_graphene))
             .put("3F15FDCB82847FED97427CE00563B8F9FF34627070DE5FDB17ACA7849AB98CC8",
@@ -481,10 +442,6 @@ class AttestationProtocol {
             .build();
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxStock = ImmutableMap
             .<String, DeviceInfo>builder()
-            .put("61FDA12B32ED84214A9CF13D1AFFB7AA80BD8A268A861ED4BB7A15170F1AB00C",
-                    new DeviceInfo(R.string.device_pixel_3_generic, 3, 4, false, true, R.string.os_stock))
-            .put("8CA89AF1A6DAA74B00810849356DE929CFC4498EF36AF964757BDE8A113BF46D",
-                    new DeviceInfo(R.string.device_pixel_3a_generic, 3, 4, false, true, R.string.os_stock))
             .put("AE6316B4753C61F5855B95B9B98484AF784F2E83648D0FCC8107FCA752CAEA34",
                     new DeviceInfo(R.string.device_pixel_4_generic, 3, 4, false, true, R.string.os_stock))
             .put("879CD3F18EA76E244D4D4AC3BCB9C337C13B4667190B19035AFE2536550050F1",
@@ -525,10 +482,6 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_9_pro_fold, 300, 300, false, true, R.string.os_stock))
             .put("3327AF62D84AB897AF2523A16DCB5801E60C5D5B97F41CA1BD099C4784F7B743",
                     new DeviceInfo(R.string.device_pixel_9a, 300, 300, false, true, R.string.os_stock))
-            .put("3D3DEB132A89551D0A700D230BABAE4E3E80E3C7926ACDD7BAEDF9B57AD316D0",
-                    new DeviceInfo(R.string.device_sm_n970u, 3, 4, false, true, R.string.os_stock))
-            .put("9AC63842137D92C119A1B1BE2C9270B9EBB6083BBE6350B7823571942B5869F0",
-                    new DeviceInfo(R.string.device_sm_n975u, 3, 4, false, true, R.string.os_stock))
             .build();
 
     private static byte[] getChallengeIndex(final Context context) {
@@ -712,11 +665,11 @@ class AttestationProtocol {
             throw new GeneralSecurityException("OS patch level too old: " + osPatchLevel);
         }
         final int vendorPatchLevel = teeEnforced.vendorPatchLevel.orElse(0);
-        if (vendorPatchLevel < VENDOR_PATCH_LEVEL_MINIMUM && !extraPatchLevelMissing.contains(device.name)) {
+        if (vendorPatchLevel < VENDOR_PATCH_LEVEL_MINIMUM) {
             throw new GeneralSecurityException("Vendor patch level too old: " + vendorPatchLevel);
         }
         final int bootPatchLevel = teeEnforced.bootPatchLevel.orElse(0);
-        if (bootPatchLevel < BOOT_PATCH_LEVEL_MINIMUM && !extraPatchLevelMissing.contains(device.name)) {
+        if (bootPatchLevel < BOOT_PATCH_LEVEL_MINIMUM) {
             throw new GeneralSecurityException("Boot patch level too old: " + bootPatchLevel);
         }
 
