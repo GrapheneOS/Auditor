@@ -973,7 +973,7 @@ class AttestationProtocol {
     record SecurityStateExt(
             int autoRebootSeconds, byte portSecurityMode, byte userCount, byte oemUnlocked) {
         static final int UNKNOWN_VALUE = -1;
-        static SecurityStateExt UNKNOWN = new SecurityStateExt(UNKNOWN_VALUE,
+        static final SecurityStateExt UNKNOWN = new SecurityStateExt(UNKNOWN_VALUE,
                 (byte) UNKNOWN_VALUE, (byte) UNKNOWN_VALUE, (byte) UNKNOWN_VALUE);
     }
 
