@@ -17,7 +17,8 @@
             android:icon="@mipmap/ic_launcher"
             android:supportsRtl="true"
             android:theme="@style/AuditorTheme"
-            android:name=".AuditorApplication">
+            android:name=".AuditorApplication"
+            android:memtagMode="async">
 
         <activity android:name=".AttestationActivity"
                 android:exported="true">
