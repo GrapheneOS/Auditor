@@ -1138,7 +1138,7 @@ class AttestationProtocol {
 
         final int autoRebootSeconds = securityStateExt.autoRebootSeconds();
         final String autoRebootValueString;
-        if (autoRebootSeconds > 20) {
+        if (autoRebootSeconds >= 20) {
             final Duration duration = Duration.ofSeconds(autoRebootSeconds);
             final StringBuilder autoRebootValueStrBuilder = new StringBuilder();
 
