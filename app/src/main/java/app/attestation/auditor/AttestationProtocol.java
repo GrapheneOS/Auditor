@@ -1573,8 +1573,9 @@ class AttestationProtocol {
                     final String key = "android.ext.AUTO_REBOOT_TIMEOUT";
                     final int def = SecurityStateExt.UNKNOWN_VALUE;
                     final int val = extraSecurityState.getInt(key, def);
-                    final boolean isKnown = val >= TimeUnit.SECONDS.toMillis(20);
-                    autoRebootSeconds =  isKnown ? (int) TimeUnit.MILLISECONDS.toSeconds(val) : def;
+                    final boolean isValid = val >= TimeUnit.SECONDS.toMillis(20) || val == 0;
+                    final int fallbackVal = (def == val) ? def : SecurityStateExt.INVALID_VALUE;
+                    autoRebootSeconds = isValid ? (int) TimeUnit.MILLISECONDS.toSeconds(val) : fallbackVal;
                 }
                 serializer.putInt(autoRebootSeconds);
 
@@ -1584,8 +1585,9 @@ class AttestationProtocol {
                     final byte def = SecurityStateExt.UNKNOWN_VALUE;
                     final int val = extraSecurityState.getInt(key, def);
                     // Update once USB-C port security settings valid value expands.
-                    final boolean isKnown = val >= 0 && val <= 4;
-                    portSecurityMode = isKnown ? (byte) val : def;
+                    final boolean isValid = val >= 0 && val <= 4;
+                    final byte fallbackVal = (def == val) ? def : SecurityStateExt.INVALID_VALUE;
+                    portSecurityMode = isValid ? (byte) val : fallbackVal;
                 }
                 serializer.put(portSecurityMode);
 
@@ -1595,7 +1597,8 @@ class AttestationProtocol {
                     final byte def = SecurityStateExt.UNKNOWN_VALUE;
                     final int val = extraSecurityState.getInt(key, def);
                     final boolean isKnown = val >= 0 && val <= Byte.MAX_VALUE;
-                    userCount = isKnown ? (byte) val : def;
+                    final byte fallbackVal = (def == val) ? def : SecurityStateExt.INVALID_VALUE;
+                    userCount = isKnown ? (byte) val : fallbackVal;
                 }
                 serializer.put(userCount);
 
@@ -1606,8 +1609,9 @@ class AttestationProtocol {
                     @SuppressWarnings("deprecation") // getBoolean(...) is ambiguous
                     final Object objVal = extraSecurityState.get(key);
                     final byte val = (objVal instanceof Boolean boolVal) ? (byte) (boolVal ? 1 : 0) : def;
-                    final boolean isKnown = val >= 0 && val <= 1;
-                    oemUnlockAllowed = isKnown ? val : def;
+                    final boolean isValid = val >= 0 && val <= 1;
+                    final byte fallbackVal = (objVal == null || objVal instanceof Boolean) ? def : SecurityStateExt.INVALID_VALUE;
+                    oemUnlockAllowed = isValid ? val : fallbackVal;
                 }
                 serializer.put(oemUnlockAllowed);
             }
