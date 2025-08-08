@@ -90,9 +90,9 @@
     <string name="auto_reboot_seconds_plural_value">%d seconds</string>
     <string name="auto_reboot_minutes_plural_value">%d minutes</string>
     <string name="auto_reboot_hours_plural_value">%d hours</string>
-    <string name="auto_reboot_seconds_singular_value">1 second</string>
-    <string name="auto_reboot_minutes_singular_value">1 minute</string>
-    <string name="auto_reboot_hours_singular_value">1 hour</string>
+    <string name="auto_reboot_one_second">1 second</string>
+    <string name="auto_reboot_one_minute">1 minute</string>
+    <string name="auto_reboot_one_hour">1 hour</string>
 
     <string name="usbc_port_security_mode">USB-C port security mode: %s\n</string>
     <string name="usbc_port_and_pogo_pins_security_mode">USB-C port and pogo pins security mode: %s\n</string>

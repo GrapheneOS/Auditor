@@ -1141,7 +1141,7 @@ class AttestationProtocol {
                         context.getString(R.string.auto_reboot_hours_plural_value, hoursDuration));
             } else if (hoursDuration == 1) {
                 autoRebootValueStrBuilder.append(
-                        context.getString(R.string.auto_reboot_hours_singular_value));
+                        context.getString(R.string.auto_reboot_one_hour));
             }
 
             final int minutesPart = duration.toMinutesPart();
@@ -1156,7 +1156,7 @@ class AttestationProtocol {
                     autoRebootValueStrBuilder.append(", ");
                 }
                 autoRebootValueStrBuilder.append(
-                        context.getString(R.string.auto_reboot_minutes_singular_value));
+                        context.getString(R.string.auto_reboot_one_minute));
             }
 
             final int secondsPart = duration.toSecondsPart();
@@ -1171,7 +1171,7 @@ class AttestationProtocol {
                     autoRebootValueStrBuilder.append(", ");
                 }
                 autoRebootValueStrBuilder.append(
-                        context.getString(R.string.auto_reboot_seconds_singular_value));
+                        context.getString(R.string.auto_reboot_one_second));
             }
 
             autoRebootValueString = autoRebootValueStrBuilder.toString();
