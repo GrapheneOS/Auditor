@@ -87,6 +87,7 @@
     <string name="oem_unlock_allowed">OEM unlocking allowed: %s\n</string>
     <string name="system_user">Main user account: %s\n</string>
     <string name="auto_reboot_timeout">Auto reboot timeout: %s\n</string>
+    <string name="auto_reboot_off">Off</string>
     <string name="auto_reboot_seconds_plural_value">%d seconds</string>
     <string name="auto_reboot_minutes_plural_value">%d minutes</string>
     <string name="auto_reboot_hours_plural_value">%d hours</string>
