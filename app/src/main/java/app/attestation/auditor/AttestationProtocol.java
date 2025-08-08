@@ -1177,6 +1177,9 @@ class AttestationProtocol {
 
             autoRebootValueString = autoRebootValueStrBuilder.toString();
             osEnforced.append(context.getString(R.string.auto_reboot_timeout, autoRebootValueString));
+        } else if (autoRebootSeconds == 0) {
+            osEnforced.append(context.getString(R.string.auto_reboot_timeout,
+                    context.getString(R.string.auto_reboot_off)));
         }
 
         final byte userCount = securityStateExt.userCount();
