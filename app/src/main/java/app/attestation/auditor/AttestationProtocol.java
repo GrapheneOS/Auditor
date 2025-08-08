@@ -1103,9 +1103,13 @@ class AttestationProtocol {
                 toYesNoString(context, adbEnabled)));
         osEnforced.append(context.getString(R.string.add_users_when_locked,
                 toYesNoString(context, addUsersWhenLocked)));
-        if (securityStateExt.oemUnlocked() >= 0) {
+        byte oemUnlocked = securityStateExt.oemUnlocked();
+        if (oemUnlocked == 0 || oemUnlocked == 1) {
             osEnforced.append(context.getString(R.string.oem_unlock_allowed,
-                    toYesNoString(context, securityStateExt.oemUnlocked > 0)));
+                    toYesNoString(context, oemUnlocked > 0)));
+        } else if (oemUnlocked == (byte) SecurityStateExt.INVALID_VALUE) {
+            osEnforced.append(context.getString(R.string.oem_unlock_allowed,
+                    context.getString(R.string.invalid_value)));
         }
         osEnforced.append(context.getString(R.string.system_user,
                 toYesNoString(context, systemUser)));
@@ -1130,11 +1134,14 @@ class AttestationProtocol {
             };
             osEnforced.append(context.getString(usbcPortSecurityModePrefixRes,
                     context.getString(usbcPortSecurityModeValueRes)));
+        } else if (usbcPortSecurityMode == SecurityStateExt.INVALID_VALUE) {
+            osEnforced.append(context.getString(usbcPortSecurityModePrefixRes,
+                    context.getString(R.string.invalid_value)));
         }
 
         final int autoRebootSeconds = securityStateExt.autoRebootSeconds();
-        final String autoRebootValueString;
         if (autoRebootSeconds >= 20) {
+            final String autoRebootValueString;
             final Duration duration = Duration.ofSeconds(autoRebootSeconds);
             final StringBuilder autoRebootValueStrBuilder = new StringBuilder();
 
@@ -1182,11 +1189,17 @@ class AttestationProtocol {
         } else if (autoRebootSeconds == 0) {
             osEnforced.append(context.getString(R.string.auto_reboot_timeout,
                     context.getString(R.string.auto_reboot_off)));
+        } else if (autoRebootSeconds == SecurityStateExt.INVALID_VALUE) {
+            osEnforced.append(context.getString(R.string.auto_reboot_timeout,
+                    context.getString(R.string.invalid_value)));
         }
 
         final byte userCount = securityStateExt.userCount();
         if (userCount > 0) {
             osEnforced.append(context.getString(R.string.user_count, String.valueOf(userCount)));
+        } else if (userCount == SecurityStateExt.INVALID_VALUE) {
+            osEnforced.append(context.getString(R.string.user_count,
+                    context.getString(R.string.invalid_value)));
         }
 
         return new VerificationResult(hasPersistentKey, teeEnforced.toString(), osEnforced.toString(), history.toString());
