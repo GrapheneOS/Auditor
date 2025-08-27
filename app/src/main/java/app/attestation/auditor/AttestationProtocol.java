@@ -286,7 +286,8 @@ class AttestationProtocol {
             "Pixel 9 Pro",
             "Pixel 9 Pro XL",
             "Pixel 9 Pro Fold",
-            "Pixel 9a").contains(Build.MODEL);
+            "Pixel 9a",
+            "Pixel 10").contains(Build.MODEL);
 
     private static final ImmutableMap<String, DeviceInfo> fingerprintsCustomOS = ImmutableMap
             .<String, DeviceInfo>builder()
@@ -378,6 +379,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_9_pro_fold, 300, 300, false, true, R.string.os_stock))
             .put("3327AF62D84AB897AF2523A16DCB5801E60C5D5B97F41CA1BD099C4784F7B743",
                     new DeviceInfo(R.string.device_pixel_9a, 300, 300, false, true, R.string.os_stock))
+            .put("757C626A2A91FE852536546048D7CA3F50DF6C745C026DB9FF89CC4703C59481",
+                    new DeviceInfo(R.string.device_pixel_10, 300, 300, false, true, R.string.os_stock))
             .build();
 
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxCustomOS = ImmutableMap
@@ -470,6 +473,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_9_pro_fold, 300, 300, false, true, R.string.os_stock))
             .put("3327AF62D84AB897AF2523A16DCB5801E60C5D5B97F41CA1BD099C4784F7B743",
                     new DeviceInfo(R.string.device_pixel_9a, 300, 300, false, true, R.string.os_stock))
+            .put("757C626A2A91FE852536546048D7CA3F50DF6C745C026DB9FF89CC4703C59481",
+                    new DeviceInfo(R.string.device_pixel_10, 300, 300, false, true, R.string.os_stock))
             .build();
 
     private static byte[] getChallengeIndex(final Context context) {
