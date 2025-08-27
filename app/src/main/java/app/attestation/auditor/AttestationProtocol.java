@@ -288,12 +288,6 @@ class AttestationProtocol {
             "Pixel 9 Pro Fold",
             "Pixel 9a").contains(Build.MODEL);
 
-    // Pixel 6, Pixel 6 Pro and Pixel 6a forgot to declare the attest key feature when it shipped in Android 12
-    private static final boolean alwaysHasAttestKey = ImmutableSet.of(
-            "Pixel 6",
-            "Pixel 6 Pro",
-            "Pixel 6a").contains(Build.MODEL);
-
     private static final ImmutableMap<String, DeviceInfo> fingerprintsCustomOS = ImmutableMap
             .<String, DeviceInfo>builder()
             // GrapheneOS
@@ -1384,7 +1378,7 @@ class AttestationProtocol {
         final boolean hasPersistentKey = keyStore.containsAlias(persistentKeystoreAlias);
         final String attestationKeystoreAlias;
         final boolean useStrongBox;
-        final boolean canUseAttestKey = (alwaysHasAttestKey || pm.hasSystemFeature(PackageManager.FEATURE_KEYSTORE_APP_ATTEST_KEY));
+        final boolean canUseAttestKey = pm.hasSystemFeature(PackageManager.FEATURE_KEYSTORE_APP_ATTEST_KEY);
         final boolean useAttestKey;
         if (hasPersistentKey) {
             final String freshKeyStoreAlias = statePrefix + KEYSTORE_ALIAS_FRESH;
