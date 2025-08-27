@@ -265,10 +265,6 @@ class AttestationProtocol {
     }
 
     private static final boolean isStrongBoxSupported = ImmutableSet.of(
-            "Pixel 3",
-            "Pixel 3 XL",
-            "Pixel 3a",
-            "Pixel 3a XL",
             "Pixel 4",
             "Pixel 4 XL",
             "Pixel 4a",
@@ -290,9 +286,7 @@ class AttestationProtocol {
             "Pixel 9 Pro",
             "Pixel 9 Pro XL",
             "Pixel 9 Pro Fold",
-            "Pixel 9a",
-            "SM-N970U",
-            "SM-N975U").contains(Build.MODEL);
+            "Pixel 9a").contains(Build.MODEL);
 
     // Pixel 6, Pixel 6 Pro and Pixel 6a forgot to declare the attest key feature when it shipped in Android 12
     private static final boolean alwaysHasAttestKey = ImmutableSet.of(

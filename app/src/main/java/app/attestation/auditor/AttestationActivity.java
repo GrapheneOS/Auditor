@@ -145,11 +145,6 @@ public class AttestationActivity extends AppCompatActivity {
             });
 
     private static final boolean isSupportedAuditee = ImmutableSet.of(
-            "GM1913",
-            "Pixel 3",
-            "Pixel 3 XL",
-            "Pixel 3a",
-            "Pixel 3a XL",
             "Pixel 4",
             "Pixel 4 XL",
             "Pixel 4a",
@@ -171,12 +166,7 @@ public class AttestationActivity extends AppCompatActivity {
             "Pixel 9 Pro",
             "Pixel 9 Pro XL",
             "Pixel 9 Pro Fold",
-            "Pixel 9a",
-            "SM-G970F",
-            "SM-G975F",
-            "SM-N970F",
-            "SM-N970U",
-            "SM-N975U").contains(Build.MODEL);
+            "Pixel 9a").contains(Build.MODEL);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
