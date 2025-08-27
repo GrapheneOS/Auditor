@@ -1384,7 +1384,6 @@ class AttestationProtocol {
         final boolean hasPersistentKey = keyStore.containsAlias(persistentKeystoreAlias);
         final String attestationKeystoreAlias;
         final boolean useStrongBox;
-        @SuppressLint("InlinedApi")
         final boolean canUseAttestKey = (alwaysHasAttestKey || pm.hasSystemFeature(PackageManager.FEATURE_KEYSTORE_APP_ATTEST_KEY));
         final boolean useAttestKey;
         if (hasPersistentKey) {
