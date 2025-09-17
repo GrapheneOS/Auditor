@@ -102,7 +102,7 @@ dependencies {
     implementation("androidx.preference:preference:1.2.1")
 
     implementation("com.google.android.material:material:1.13.0")
-    implementation("com.google.guava:guava:33.4.8-android")
+    implementation("com.google.guava:guava:33.5.0-android")
     implementation("com.google.zxing:core:3.5.3")
     implementation("org.bouncycastle:bcprov-jdk18on:1.81")
 
