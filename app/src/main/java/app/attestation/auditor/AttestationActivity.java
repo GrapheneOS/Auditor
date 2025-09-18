@@ -425,7 +425,7 @@ public class AttestationActivity extends AppCompatActivity {
                 requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},
                         PERMISSIONS_REQUEST_POST_NOTIFICATIONS_REMOTE_VERIFY);
             } else {
-                QRScannerActivityLauncher.launch(new Intent(this, QRScannerActivity.class));
+                launchQrScannerActivity();
             }
         }
     }
@@ -442,7 +442,7 @@ public class AttestationActivity extends AppCompatActivity {
                 snackbar.setText(R.string.camera_permission_denied).show();
             }
         } else if (requestCode == PERMISSIONS_REQUEST_POST_NOTIFICATIONS_REMOTE_VERIFY) {
-            QRScannerActivityLauncher.launch(new Intent(this, QRScannerActivity.class));
+            launchQrScannerActivity();
         } else if (requestCode == PERMISSIONS_REQUEST_POST_NOTIFICATIONS_SUBMIT_SAMPLE) {
             SubmitSampleJob.schedule(this);
             snackbar.setText(R.string.schedule_submit_sample_success).show();
@@ -557,5 +557,10 @@ public class AttestationActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void launchQrScannerActivity() {
+        QRScannerActivityLauncher.launch(new Intent(this, QRScannerActivity.class));
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 }
