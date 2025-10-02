@@ -11,6 +11,12 @@
             <!-- ISRG Root X2 -->
             <pin digest="SHA-256">diGVwiVYbubAI3RW4hB9xU8e/CH2GnkuvVFZE8zmgzI=</pin>
 
+            <!-- ISRG Root YE -->
+            <pin digest="SHA-256">sCkq5UWXjg+7mKu9lMhhYF5bGLsy7VI/UNW3tccdR7w=</pin>
+
+            <!-- ISRG Root YR -->
+            <pin digest="SHA-256">fk6IOKit1ild5647BH06ujSIq5XbCgqlbYl6ANhhi88=</pin>
+
             <!-- ECDSA secp256r1 backup key -->
             <pin digest="SHA-256">q3TMLLQkHOLGnFXKL1RytMd1Vr906gdK/ymgcBnk144=</pin>
 
