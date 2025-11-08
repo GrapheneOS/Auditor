@@ -287,7 +287,10 @@ class AttestationProtocol {
             "Pixel 9 Pro XL",
             "Pixel 9 Pro Fold",
             "Pixel 9a",
-            "Pixel 10").contains(Build.MODEL);
+            "Pixel 10",
+            "Pixel 10 Pro",
+            "Pixel 10 Pro XL",
+            "Pixel 10 Pro Fold").contains(Build.MODEL);
 
     private static final ImmutableMap<String, DeviceInfo> fingerprintsCustomOS = ImmutableMap
             .<String, DeviceInfo>builder()
@@ -381,6 +384,12 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_9a, 300, 300, false, true, R.string.os_stock))
             .put("757C626A2A91FE852536546048D7CA3F50DF6C745C026DB9FF89CC4703C59481",
                     new DeviceInfo(R.string.device_pixel_10, 300, 300, false, true, R.string.os_stock))
+            .put("244BAAF78D0FEE555A562FDD3F70EF61036492FBA7AD192B83BB8D427E380B17",
+                    new DeviceInfo(R.string.device_pixel_10_pro, 300, 300, false, true, R.string.os_stock))
+            .put("CA5C81DA02B8DEBB054FC625135A7833698A9B32148E8A2EF619EBC62AB2E3D8",
+                    new DeviceInfo(R.string.device_pixel_10_pro_xl, 300, 300, false, true, R.string.os_stock))
+            .put("072D8E3269350849F3DE787AC7A319F264C34FA326A7E70917FD96AAEFD2FB0E",
+                    new DeviceInfo(R.string.device_pixel_10_pro_fold, 300, 300, false, true, R.string.os_stock))
             .build();
 
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxCustomOS = ImmutableMap
@@ -475,6 +484,12 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_9a, 300, 300, false, true, R.string.os_stock))
             .put("757C626A2A91FE852536546048D7CA3F50DF6C745C026DB9FF89CC4703C59481",
                     new DeviceInfo(R.string.device_pixel_10, 300, 300, false, true, R.string.os_stock))
+            .put("244BAAF78D0FEE555A562FDD3F70EF61036492FBA7AD192B83BB8D427E380B17",
+                    new DeviceInfo(R.string.device_pixel_10_pro, 300, 300, false, true, R.string.os_stock))
+            .put("CA5C81DA02B8DEBB054FC625135A7833698A9B32148E8A2EF619EBC62AB2E3D8",
+                    new DeviceInfo(R.string.device_pixel_10_pro_xl, 300, 300, false, true, R.string.os_stock))
+            .put("072D8E3269350849F3DE787AC7A319F264C34FA326A7E70917FD96AAEFD2FB0E",
+                    new DeviceInfo(R.string.device_pixel_10_pro_fold, 300, 300, false, true, R.string.os_stock))
             .build();
 
     private static byte[] getChallengeIndex(final Context context) {

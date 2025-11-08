@@ -167,7 +167,10 @@ public class AttestationActivity extends AppCompatActivity {
             "Pixel 9 Pro XL",
             "Pixel 9 Pro Fold",
             "Pixel 9a",
-            "Pixel 10").contains(Build.MODEL);
+            "Pixel 10",
+            "Pixel 10 Pro",
+            "Pixel 10 Pro XL",
+            "Pixel 10 Pro Fold").contains(Build.MODEL);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

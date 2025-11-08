@@ -142,6 +142,9 @@
     <string name="device_pixel_9_pro_fold">Google Pixel 9 Pro Fold</string>
     <string name="device_pixel_9a">Google Pixel 9a</string>
     <string name="device_pixel_10">Google Pixel 10</string>
+    <string name="device_pixel_10_pro">Google Pixel 10 Pro</string>
+    <string name="device_pixel_10_pro_xl">Google Pixel 10 Pro XL</string>
+    <string name="device_pixel_10_pro_fold">Google Pixel 10 Pro Fold</string>
 
     <string name="os_stock">Stock</string>
     <string name="os_graphene">GrapheneOS</string>
