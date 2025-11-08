@@ -273,6 +273,10 @@ public class AttestationActivity extends AppCompatActivity {
         }
         binding.content.remoteVerify.setVisibility(visibility);
         binding.content.remoteVerify.setOnClickListener(view -> {
+            if (!isSupportedAuditee) {
+                snackbar.setText(R.string.unsupported_auditee).show();
+                return;
+            }
             stage = Stage.EnableRemoteVerify;
             startQrScanner();
         });
