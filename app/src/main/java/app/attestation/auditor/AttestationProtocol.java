@@ -161,6 +161,7 @@ class AttestationProtocol {
     // 6: portSecurityMode added
     // 6: userCount added
     // 6: oemUnlockAllowed added
+    // 7: new DEFLATE dictionary with new ECDSA root included
     //
     // n/a
     //
@@ -200,7 +201,7 @@ class AttestationProtocol {
     // the outer signature and the rest of the chain for pinning the expected chain. It enforces
     // downgrade protection for the OS version/patch (bootloader/TEE enforced) and app version (OS
     // enforced) by keeping them updated.
-    private static final byte PROTOCOL_VERSION = 6;
+    private static final byte PROTOCOL_VERSION = 7;
     private static final byte PROTOCOL_VERSION_MINIMUM = 5;
     // can become longer in the future, but this is the minimum length
     static final byte CHALLENGE_MESSAGE_LENGTH = 1 + RANDOM_TOKEN_LENGTH * 2;
@@ -1273,7 +1274,7 @@ class AttestationProtocol {
         final byte[] compressedChain = new byte[compressedChainLength];
         deserializer.get(compressedChain);
 
-        final int dictionary = R.raw.deflate_dictionary_4;
+        final int dictionary = version < 7 ? R.raw.deflate_dictionary_4 : R.raw.deflate_dictionary_5;
         final Certificate[] certificates =
                 decodeChain(readRawResource(context, dictionary), compressedChain);
 
@@ -1540,7 +1541,7 @@ class AttestationProtocol {
             serializer.put(version);
 
             final byte[] compressed;
-            final int dictionary = R.raw.deflate_dictionary_4;
+            final int dictionary = version < 7 ? R.raw.deflate_dictionary_4 : R.raw.deflate_dictionary_5;
             compressed = encodeChain(readRawResource(context, dictionary), attestationCertificates);
 
             if (compressed.length > Short.MAX_VALUE) {
