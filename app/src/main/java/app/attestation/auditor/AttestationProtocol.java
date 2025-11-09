@@ -292,7 +292,7 @@ class AttestationProtocol {
             "Pixel 10 Pro XL",
             "Pixel 10 Pro Fold").contains(Build.MODEL);
 
-    private static final ImmutableMap<String, DeviceInfo> fingerprintsCustomOS = ImmutableMap
+    private static final ImmutableMap<String, DeviceInfo> fingerprintsNonStock = ImmutableMap
             .<String, DeviceInfo>builder()
             // GrapheneOS
             .put("80EF268700EE42686F779A47B4A155FE1FFC2EEDF836B4803CAAB8FA61439746",
@@ -400,7 +400,7 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_10_pro_fold, 300, 300, false, true, R.string.os_stock))
             .build();
 
-    private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxCustomOS = ImmutableMap
+    private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxNonStock = ImmutableMap
             .<String, DeviceInfo>builder()
             // GrapheneOS
             .put("80EF268700EE42686F779A47B4A155FE1FFC2EEDF836B4803CAAB8FA61439746",
@@ -655,9 +655,9 @@ class AttestationProtocol {
         final DeviceInfo device;
         if (verifiedBootState == RootOfTrust.VerifiedBootState.SELF_SIGNED) {
             if (attestationSecurityLevelEnum == ParsedAttestationRecord.SecurityLevel.STRONG_BOX) {
-                device = fingerprintsStrongBoxCustomOS.get(verifiedBootKey);
+                device = fingerprintsStrongBoxNonStock.get(verifiedBootKey);
             } else {
-                device = fingerprintsCustomOS.get(verifiedBootKey);
+                device = fingerprintsNonStock.get(verifiedBootKey);
             }
         } else if (verifiedBootState == RootOfTrust.VerifiedBootState.VERIFIED) {
             if (attestationSecurityLevelEnum == ParsedAttestationRecord.SecurityLevel.STRONG_BOX) {
