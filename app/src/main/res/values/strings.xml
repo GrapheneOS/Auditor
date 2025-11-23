@@ -107,7 +107,6 @@
 
     <string name="user_count">User count: %s\n</string>
 
-    <string name="unknown_value">Unknown</string>
     <string name="invalid_value">Invalid</string>
 
     <string name="history">\n<b>Attestation history:</b>\n\n</string>
