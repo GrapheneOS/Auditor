@@ -104,7 +104,7 @@ dependencies {
     implementation("com.google.android.material:material:1.13.0")
     implementation("com.google.guava:guava:33.5.0-android")
     implementation("com.google.zxing:core:3.5.4")
-    implementation("org.bouncycastle:bcprov-jdk18on:1.82")
+    implementation("org.bouncycastle:bcprov-jdk18on:1.83")
 
     val cameraVersion = "1.5.1"
     implementation("androidx.camera:camera-core:$cameraVersion")
