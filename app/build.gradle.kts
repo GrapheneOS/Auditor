@@ -10,7 +10,6 @@ if (useKeystoreProperties) {
 
 plugins {
     id("com.android.application")
-    kotlin("android")
 }
 
 java {
