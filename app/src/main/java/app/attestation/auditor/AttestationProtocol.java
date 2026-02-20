@@ -1,6 +1,5 @@
 package app.attestation.auditor;
 
-import android.annotation.SuppressLint;
 import android.app.KeyguardManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
@@ -1702,6 +1701,65 @@ class AttestationProtocol {
         deleteKey(keyStore, statePrefix + KEYSTORE_ALIAS_PERSISTENT_PREFIX + index);
     }
 
+    public record AuditeeSummary(
+            long verifiedTimeFirst,
+            long verifiedTimeLast,
+            String verifiedBootKey,
+            int pinnedOsVersion,
+            int pinnedOsPatchLevel,
+            int pinnedVendorPatchLevel,
+            int pinnedBootPatchLevel,
+            int pinnedAppVersion,
+            int pinnedAppVariant,
+            int pinnedSecurityLevel
+
+    ) { }
+
+    static AuditeeSummary getAuditorSummary(final Context context, final String auditeeFingerprintHex) {
+        final SharedPreferences preferences = context.getSharedPreferences(
+                PREFERENCES_DEVICE_PREFIX + auditeeFingerprintHex,
+                Context.MODE_PRIVATE
+        );
+        return new AuditeeSummary(
+                preferences.getLong(KEY_VERIFIED_TIME_FIRST, 0),
+                preferences.getLong(KEY_VERIFIED_TIME_LAST, 0),
+                preferences.getString(KEY_PINNED_VERIFIED_BOOT_KEY, ""),
+                preferences.getInt(KEY_PINNED_OS_VERSION, 0),
+                preferences.getInt(KEY_PINNED_OS_PATCH_LEVEL, 0),
+                preferences.getInt(KEY_PINNED_VENDOR_PATCH_LEVEL, 0),
+                preferences.getInt(KEY_PINNED_BOOT_PATCH_LEVEL, 0),
+                preferences.getInt(KEY_PINNED_APP_VERSION, 0),
+                preferences.getInt(KEY_PINNED_APP_VARIANT, 0),
+                preferences.getInt(KEY_PINNED_SECURITY_LEVEL, 0)
+
+        );
+    }
+
+    static List<String> getAuditorFingerprints(final Context context) {
+        final File dir = new File(context.getFilesDir().getParent() + "/shared_prefs/");
+        ArrayList<String> auditees = new ArrayList<>();
+        final String[] sharedPreferenceFiles = dir.list();
+        if (sharedPreferenceFiles == null) {
+            Log.e(TAG, "shared preferences directory is invalid");
+            return List.of();
+        }
+        for (final String filename : sharedPreferenceFiles) {
+            if (!filename.startsWith(PREFERENCES_DEVICE_PREFIX)) {
+                continue;
+            }
+            final String decapitatedFilename = filename.substring(PREFERENCES_DEVICE_PREFIX.length());
+            if (!decapitatedFilename.endsWith(".xml")) {
+                continue;
+            }
+            final String deviceName = decapitatedFilename.substring(0, decapitatedFilename.length() - ".xml".length());
+            if (deviceName.isBlank()) {
+                continue;
+            }
+            auditees.add(deviceName);
+        }
+        return auditees;
+    }
+
     static void clearAuditor(final Context context) {
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit().remove(KEY_CHALLENGE_INDEX).apply();
@@ -1715,4 +1773,5 @@ class AttestationProtocol {
             }
         }
     }
+
 }

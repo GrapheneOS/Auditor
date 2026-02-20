@@ -56,6 +56,35 @@
                 android:layout_margin="16dp"
                 android:text="@string/action_enable_remote_verify" />
 
+            <LinearLayout
+                android:id="@+id/auditees"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="16dp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    style="@style/TextAppearance.Material3.TitleMedium"
+                    android:id="@+id/auditee_list_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:maxLines="100"
+                    android:scrollbarAlwaysDrawHorizontalTrack="false"
+                    android:scrollbarAlwaysDrawVerticalTrack="false"
+                    android:scrollbars="vertical"
+                    android:scrollHorizontally="false"
+                    android:text="@string/paired_auditees_list" />
+
+                <LinearLayout
+                    android:id="@+id/auditee_list_values"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="16dp"/>
+
+            </LinearLayout>
+
         </LinearLayout>
 
     </ScrollView>

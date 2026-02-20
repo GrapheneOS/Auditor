@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
@@ -47,7 +48,9 @@ import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.util.Collections;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -263,6 +266,10 @@ public class AttestationActivity extends AppCompatActivity {
             }
         });
 
+        final List<String> auditees = AttestationProtocol.getAuditorFingerprints(this);
+
+        refreshAuditeeList(auditees);
+
         RemoteVerifyJob.restore(this);
     }
 
@@ -324,6 +331,29 @@ public class AttestationActivity extends AppCompatActivity {
         });
     }
 
+    private void refreshAuditeeList(List<String> auditees) {
+        final TextView auditeeListLabel = findViewById(R.id.auditee_list_label);
+        final LinearLayout auditeesContainer = findViewById(R.id.auditee_list_values);
+        if (auditees.isEmpty()) {
+            auditeeListLabel.setText(R.string.paired_auditees_list_empty);
+            auditeesContainer.removeAllViews();
+            return;
+        }
+
+        Collections.sort(auditees);
+        for (final String auditee : auditees) {
+            auditeeListLabel.setText(R.string.paired_auditees_list);
+            final View view = getLayoutInflater().inflate(R.layout.content_auditee_fingerprint, auditeesContainer, false);
+            final TextView fingerprintHexField = view.findViewById(R.id.auditee_fingerprint_hex);
+            fingerprintHexField.setText(auditee);
+            fingerprintHexField.setOnClickListener(v -> {
+                final Intent inspectAuditeeIntent = new Intent(this, InspectAuditeeActivity.class);
+                inspectAuditeeIntent.putExtra(InspectAuditeeActivity.INTENT_KEY_FINGERPRINT, auditee);
+                startActivity(inspectAuditeeIntent);
+            });
+            auditeesContainer.addView(view);
+        }
+    }
     private void runAuditor() {
         if (auditorChallenge == null) {
             auditorChallenge = AttestationProtocol.getChallengeMessage(this);
@@ -513,7 +543,10 @@ public class AttestationActivity extends AppCompatActivity {
                     .setPositiveButton(R.string.clear, (dialogInterface, i) -> {
                         executor.submit(() -> {
                             AttestationProtocol.clearAuditor(this);
-                            runOnUiThread(() -> snackbar.setText(R.string.clear_auditor_pairings_success).show());
+                            runOnUiThread(() -> {
+                                refreshAuditeeList(List.of());
+                                snackbar.setText(R.string.clear_auditor_pairings_success).show();
+                            });
                         });
                     })
                     .setNegativeButton(R.string.cancel, null)
