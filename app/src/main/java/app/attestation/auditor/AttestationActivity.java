@@ -343,15 +343,19 @@ public class AttestationActivity extends AppCompatActivity {
         Collections.sort(auditees);
         for (final String auditee : auditees) {
             auditeeListLabel.setText(R.string.paired_auditees_list);
-            final View view = getLayoutInflater().inflate(R.layout.content_auditee_fingerprint, auditeesContainer, false);
-            final TextView fingerprintHexField = view.findViewById(R.id.auditee_fingerprint_hex);
+            final View fingerprintEntryItem = getLayoutInflater().inflate(
+                    R.layout.content_auditee_fingerprint,
+                    auditeesContainer,
+                    false
+            );
+            final TextView fingerprintHexField = fingerprintEntryItem.findViewById(R.id.auditee_fingerprint_hex);
             fingerprintHexField.setText(auditee);
-            fingerprintHexField.setOnClickListener(v -> {
+            fingerprintEntryItem.setOnClickListener(v -> {
                 final Intent inspectAuditeeIntent = new Intent(this, InspectAuditeeActivity.class);
                 inspectAuditeeIntent.putExtra(InspectAuditeeActivity.INTENT_KEY_FINGERPRINT, auditee);
                 startActivity(inspectAuditeeIntent);
             });
-            auditeesContainer.addView(view);
+            auditeesContainer.addView(fingerprintEntryItem);
         }
     }
     private void runAuditor() {

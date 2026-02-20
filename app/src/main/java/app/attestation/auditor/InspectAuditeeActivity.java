@@ -14,7 +14,7 @@ public class InspectAuditeeActivity extends AppCompatActivity {
 
     private static final String TAG = "InspectAuditeeActivity";
 
-    public static final String INTENT_KEY_FINGERPRINT = "fingerprintHex";
+    public static final String INTENT_KEY_FINGERPRINT = "fingerprint_hex";
 
     private void addSummaryField(final String fieldName, final String fieldValue) {
         final TableLayout summaryContainer = findViewById(R.id.summary);
@@ -36,16 +36,11 @@ public class InspectAuditeeActivity extends AppCompatActivity {
             Log.e(TAG, "auditee fingerprint not provided");
             return;
         }
-        addSummaryField("fingerprint", fingerprint_hex);
-
         final AttestationProtocol.AuditeeSummary summary = AttestationProtocol.getAuditorSummary(
                 this,
                 fingerprint_hex
         );
-        if (summary == null) {
-            Log.e(TAG,"auditee was not found");
-            return;
-        }
+        addSummaryField("fingerprint", fingerprint_hex);
         addSummaryField("first verified", new Date(summary.verifiedTimeFirst()).toString());
         addSummaryField("last verified", new Date(summary.verifiedTimeLast()).toString());
         addSummaryField("verified boot key", summary.verifiedBootKey());
