@@ -344,7 +344,7 @@ public class AttestationActivity extends AppCompatActivity {
         for (final String auditee : auditees) {
             auditeeListLabel.setText(R.string.paired_auditees_list);
             final View fingerprintEntryItem = getLayoutInflater().inflate(
-                    R.layout.content_auditee_fingerprint,
+                    R.layout.content_attestation_auditee_fingerprint,
                     auditeesContainer,
                     false
             );
