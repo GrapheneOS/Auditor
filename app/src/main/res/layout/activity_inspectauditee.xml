@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="app.attestation.auditor.AttestationActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -13,12 +14,12 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/inspect_auditee_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize" />
+            android:layout_height="?attr/actionBarSize"
+            app:title="@string/inspect_auditee_title" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <RelativeLayout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"

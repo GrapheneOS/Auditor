@@ -119,6 +119,8 @@
     <string name="no">no</string>
     <string name="yes">yes</string>
 
+    <string name="inspect_auditee_title">inspect auditee</string>
+
     <string name="device_pixel_4_generic">Google Pixel 4 / Pixel 4 XL</string>
     <string name="device_pixel_4">Google Pixel 4</string>
     <string name="device_pixel_4_xl">Google Pixel 4 XL</string>
