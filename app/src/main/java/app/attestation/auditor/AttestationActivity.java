@@ -353,7 +353,7 @@ public class AttestationActivity extends AppCompatActivity {
             this.auditeeFingerprints = List.of();
         }
 
-        public static class ViewHolder extends RecyclerView.ViewHolder {
+        static class ViewHolder extends RecyclerView.ViewHolder {
             public TextView fingerprintHex;
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
