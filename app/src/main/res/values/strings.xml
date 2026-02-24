@@ -126,6 +126,18 @@
     <string name="inspect_auditee_attestation_history">attestation history</string>
     <string name="inspect_auditee_error_message_missing_fingerprint">auditee fingerprint was not provided</string>
 
+    <string name="inspect_auditee_field_name_fingerprint">fingerprint</string>
+    <string name="inspect_auditee_field_name_pinned_security_level">pinned security level</string>
+    <string name="inspect_auditee_field_name_pinned_os_version">pinned OS version</string>
+    <string name="inspect_auditee_field_name_pinned_os_patch_level">pinned OS patch level</string>
+    <string name="inspect_auditee_field_name_pinned_vendor_patch_level">pinned vendor patch level</string>
+    <string name="inspect_auditee_field_name_pinned_boot_patch_level">pinned boot patch level</string>
+    <string name="inspect_auditee_field_name_verified_boot_key">verified boot key</string>
+    <string name="inspect_auditee_field_name_pinned_app_version">pinned app version</string>
+    <string name="inspect_auditee_field_name_pinned_app_variant">pinned app variant</string>
+    <string name="inspect_auditee_field_name_first_verified">first verified</string>
+    <string name="inspect_auditee_field_name_last_verified">last verified</string>
+
     <string name="device_pixel_4_generic">Google Pixel 4 / Pixel 4 XL</string>
     <string name="device_pixel_4">Google Pixel 4</string>
     <string name="device_pixel_4_xl">Google Pixel 4 XL</string>
