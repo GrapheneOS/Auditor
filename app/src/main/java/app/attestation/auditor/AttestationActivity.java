@@ -266,9 +266,12 @@ public class AttestationActivity extends AppCompatActivity {
             }
         });
 
-        final List<String> auditees = AttestationProtocol.getAuditorFingerprints(this);
-
-        refreshAuditeeList(auditees);
+        executor.submit(() -> {
+            final List<String> auditees = AttestationProtocol.getAuditorFingerprints(this);
+            runOnUiThread(() -> {
+                refreshAuditeeList(auditees);
+            });
+        });
 
         RemoteVerifyJob.restore(this);
     }
