@@ -21,7 +21,7 @@ public class InspectAuditeeActivity extends AppCompatActivity {
 
     private void addSummaryFieldToTable(int tableId, final String fieldName, final String fieldValue) {
         final TableLayout summaryContainer = findViewById(tableId);
-        final TableRow fieldContainer = (TableRow) getLayoutInflater().inflate(R.layout.content_auditee_summary_field, summaryContainer, false);
+        final TableRow fieldContainer = (TableRow) getLayoutInflater().inflate(R.layout.content_inspectauditee_summary_row, summaryContainer, false);
         final TextView fieldLabel = fieldContainer.findViewById(R.id.name);
         final TextView fieldContent = fieldContainer.findViewById(R.id.value);
         fieldLabel.setText(fieldName);
