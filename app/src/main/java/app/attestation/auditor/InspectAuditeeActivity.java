@@ -6,7 +6,10 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.Date;
 
@@ -31,6 +34,18 @@ public class InspectAuditeeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inspectauditee);
 
+        // set up back button
+        final MaterialToolbar toolbar = findViewById(R.id.inspect_auditee_toolbar);
+        setSupportActionBar(toolbar);
+        final ActionBar supportActionBar = getSupportActionBar();
+        if (supportActionBar != null) {
+            supportActionBar.setDisplayHomeAsUpEnabled(true);
+        }
+        toolbar.setNavigationOnClickListener(v -> {
+            finish();
+        });
+
+        // load auditee information
         final String fingerprint_hex = getIntent().getStringExtra(INTENT_KEY_FINGERPRINT);
         if (fingerprint_hex == null || fingerprint_hex.isBlank()) {
             Log.e(TAG, "auditee fingerprint not provided");
