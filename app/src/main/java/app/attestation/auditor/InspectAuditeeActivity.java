@@ -19,8 +19,8 @@ public class InspectAuditeeActivity extends AppCompatActivity {
 
     public static final String INTENT_KEY_FINGERPRINT = "fingerprint_hex";
 
-    private void addSummaryField(final String fieldName, final String fieldValue) {
-        final TableLayout summaryContainer = findViewById(R.id.summary);
+    private void addSummaryFieldToTable(int tableId, final String fieldName, final String fieldValue) {
+        final TableLayout summaryContainer = findViewById(tableId);
         final TableRow fieldContainer = (TableRow) getLayoutInflater().inflate(R.layout.content_auditee_summary_field, summaryContainer, false);
         final TextView fieldLabel = fieldContainer.findViewById(R.id.name);
         final TextView fieldContent = fieldContainer.findViewById(R.id.value);
@@ -55,17 +55,20 @@ public class InspectAuditeeActivity extends AppCompatActivity {
                 this,
                 fingerprint_hex
         );
-        addSummaryField("fingerprint", fingerprint_hex);
-        addSummaryField("first verified", new Date(summary.verifiedTimeFirst()).toString());
-        addSummaryField("last verified", new Date(summary.verifiedTimeLast()).toString());
-        addSummaryField("verified boot key", summary.verifiedBootKey());
-        addSummaryField("pinned OS version", String.valueOf(summary.pinnedOsVersion()));
-        addSummaryField("pinned OS patch level", String.valueOf(summary.pinnedOsPatchLevel()));
-        addSummaryField("pinned vendor patch level", String.valueOf(summary.pinnedVendorPatchLevel()));
-        addSummaryField("pinned boot patch level", String.valueOf(summary.pinnedBootPatchLevel()));
-        addSummaryField("pinned app version", String.valueOf(summary.pinnedAppVersion()));
-        addSummaryField("pinned app variant", String.valueOf(summary.pinnedAppVariant()));
-        addSummaryField("pinned security level", String.valueOf(summary.pinnedSecurityLevel()));
+
+        addSummaryFieldToTable(R.id.summary_hardware, "fingerprint", fingerprint_hex);
+        addSummaryFieldToTable(R.id.summary_hardware, "pinned security level", String.valueOf(summary.pinnedSecurityLevel()));
+        addSummaryFieldToTable(R.id.summary_hardware, "pinned OS version", String.valueOf(summary.pinnedOsVersion()));
+        addSummaryFieldToTable(R.id.summary_hardware, "pinned OS patch level", String.valueOf(summary.pinnedOsPatchLevel()));
+        addSummaryFieldToTable(R.id.summary_hardware, "pinned vendor patch level", String.valueOf(summary.pinnedVendorPatchLevel()));
+        addSummaryFieldToTable(R.id.summary_hardware, "pinned boot patch level", String.valueOf(summary.pinnedBootPatchLevel()));
+        addSummaryFieldToTable(R.id.summary_hardware, "verified boot key", summary.verifiedBootKey());
+
+        addSummaryFieldToTable(R.id.summary_os, "pinned app version", String.valueOf(summary.pinnedAppVersion()));
+        addSummaryFieldToTable(R.id.summary_os, "pinned app variant", String.valueOf(summary.pinnedAppVariant()));
+
+        addSummaryFieldToTable(R.id.summary_history, "first verified", new Date(summary.verifiedTimeFirst()).toString());
+        addSummaryFieldToTable(R.id.summary_history, "last verified", new Date(summary.verifiedTimeLast()).toString());
     }
 
 }

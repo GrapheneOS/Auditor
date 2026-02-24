@@ -56,6 +56,7 @@
 
     <string name="paired_auditees_list"><b>paired auditees</b></string>
     <string name="paired_auditees_list_empty"><b>no paired auditees</b></string>
+    <string name="paired_auditees_list_loading"><b>loading paired auditees...</b></string>
 
     <string name="hardware_enforced"><b>Hardware verified information:</b>\n\n</string>
     <string name="identity">Pairing identity (hash of pinned hardware-backed key): %s\n</string>
@@ -120,6 +121,9 @@
     <string name="yes">yes</string>
 
     <string name="inspect_auditee_title">inspect auditee</string>
+    <string name="inspect_auditee_os_provided_info">information from the verified OS</string>
+    <string name="inspect_auditee_hardware_verified">hardware verified information</string>
+    <string name="inspect_auditee_attestation_history">attestation history</string>
 
     <string name="device_pixel_4_generic">Google Pixel 4 / Pixel 4 XL</string>
     <string name="device_pixel_4">Google Pixel 4</string>

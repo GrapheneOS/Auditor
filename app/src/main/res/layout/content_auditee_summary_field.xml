@@ -3,23 +3,26 @@
 android:layout_width="match_parent"
 android:layout_height="wrap_content"
 android:paddingVertical="8dp"
-android:paddingHorizontal="8dp">
+>
 
 <TextView
     style="@style/TextAppearance.Material3.LabelLarge"
     android:id="@+id/name"
     android:layout_width="0dp"
-    android:layout_weight="1"
+    android:layout_weight="2"
     android:layout_height="wrap_content"
     android:textStyle="bold"
     android:textIsSelectable="true"
     />
-
+<View
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1" />
 <TextView
     style="@style/TextAppearance.Material3.BodyMedium"
     android:id="@+id/value"
     android:layout_width="0dp"
-    android:layout_weight="2"
+    android:layout_weight="4"
     android:layout_height="wrap_content"
     android:textIsSelectable="true"
     />

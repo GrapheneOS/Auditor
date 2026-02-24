@@ -74,7 +74,7 @@
                     android:scrollbarAlwaysDrawVerticalTrack="false"
                     android:scrollbars="vertical"
                     android:scrollHorizontally="false"
-                    android:text="@string/paired_auditees_list" />
+                    android:text="@string/paired_auditees_list_loading" />
 
                 <LinearLayout
                     android:id="@+id/auditee_list_values"
