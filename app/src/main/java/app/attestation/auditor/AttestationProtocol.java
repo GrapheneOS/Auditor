@@ -1737,7 +1737,7 @@ class AttestationProtocol {
 
     static List<String> getAuditorFingerprints(final Context context) {
         final File dir = new File(context.getFilesDir().getParent() + "/shared_prefs/");
-        ArrayList<String> auditees = new ArrayList<>();
+        final ArrayList<String> ret = new ArrayList<>();
         final String[] sharedPreferenceFiles = dir.list();
         if (sharedPreferenceFiles == null) {
             Log.e(TAG, "shared preferences directory is invalid");
@@ -1751,13 +1751,13 @@ class AttestationProtocol {
             if (!decapitatedFilename.endsWith(".xml")) {
                 continue;
             }
-            final String deviceName = decapitatedFilename.substring(0, decapitatedFilename.length() - ".xml".length());
-            if (deviceName.isBlank()) {
+            final String auditeeFingerprint = decapitatedFilename.substring(0, decapitatedFilename.length() - ".xml".length());
+            if (auditeeFingerprint.isBlank()) {
                 continue;
             }
-            auditees.add(deviceName);
+            ret.add(auditeeFingerprint);
         }
-        return auditees;
+        return ret;
     }
 
     static void clearAuditor(final Context context) {
