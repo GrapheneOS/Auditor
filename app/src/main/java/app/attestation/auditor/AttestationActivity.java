@@ -271,10 +271,10 @@ public class AttestationActivity extends AppCompatActivity {
             }
         });
 
-        final RecyclerView recyclerView = findViewById(R.id.auditee_list_recycler);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        final RecyclerView auditeesRecyclerView = findViewById(R.id.auditee_list_recycler);
+        auditeesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         this.auditeeListAdapter = new AuditeeListAdapter();
-        recyclerView.setAdapter(this.auditeeListAdapter);
+        auditeesRecyclerView.setAdapter(this.auditeeListAdapter);
         executor.submit(() -> {
             final List<String> auditeeFingerprints = AttestationProtocol.getAuditorFingerprints(this);
             Collections.sort(auditeeFingerprints);
