@@ -5,6 +5,7 @@ import android.util.Log;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -49,6 +50,14 @@ public class InspectAuditeeActivity extends AppCompatActivity {
         final String fingerprint_hex = getIntent().getStringExtra(INTENT_KEY_FINGERPRINT);
         if (fingerprint_hex == null || fingerprint_hex.isBlank()) {
             Log.e(TAG, "auditee fingerprint not provided");
+            runOnUiThread(() -> {
+                Toast.makeText(
+                        this,
+                        R.string.inspect_auditee_error_message_missing_fingerprint,
+                        Toast.LENGTH_SHORT
+                ).show();
+            });
+            finish();
             return;
         }
         final AttestationProtocol.AuditeeSummary summary = AttestationProtocol.getAuditorSummary(

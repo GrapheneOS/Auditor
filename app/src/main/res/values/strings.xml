@@ -124,6 +124,7 @@
     <string name="inspect_auditee_os_provided_info">information from the verified OS</string>
     <string name="inspect_auditee_hardware_verified">hardware verified information</string>
     <string name="inspect_auditee_attestation_history">attestation history</string>
+    <string name="inspect_auditee_error_message_missing_fingerprint">auditee fingerprint was not provided</string>
 
     <string name="device_pixel_4_generic">Google Pixel 4 / Pixel 4 XL</string>
     <string name="device_pixel_4">Google Pixel 4</string>
