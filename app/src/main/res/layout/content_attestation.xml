@@ -8,7 +8,7 @@
     tools:context="app.attestation.auditor.AttestationActivity"
     tools:showIn="@layout/activity_attestation">
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -76,18 +76,20 @@
                     android:scrollHorizontally="false"
                     android:text="@string/paired_auditees_list_loading" />
 
-                <LinearLayout
-                    android:id="@+id/auditee_list_values"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/auditee_list_recycler"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginTop="16dp"/>
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:clipToPadding="false"
+                    android:scrollbars="vertical"
+                    android:nestedScrollingEnabled="true"/>
 
             </LinearLayout>
 
         </LinearLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
         android:id="@+id/result"

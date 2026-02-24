@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,6 +35,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -48,6 +51,7 @@ import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
@@ -94,6 +98,7 @@ public class AttestationActivity extends AppCompatActivity {
     private byte[] auditeeSerializedAttestation;
     private byte[] auditorChallenge;
     private int backgroundResource;
+    private AuditeeListAdapter auditeeListAdapter;
 
     final ActivityResultLauncher<Intent> QRScannerActivityLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -266,10 +271,15 @@ public class AttestationActivity extends AppCompatActivity {
             }
         });
 
+        final RecyclerView recyclerView = findViewById(R.id.auditee_list_recycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        this.auditeeListAdapter = new AuditeeListAdapter();
+        recyclerView.setAdapter(this.auditeeListAdapter);
         executor.submit(() -> {
-            final List<String> auditees = AttestationProtocol.getAuditorFingerprints(this);
+            final List<String> auditeeFingerprints = AttestationProtocol.getAuditorFingerprints(this);
+            Collections.sort(auditeeFingerprints);
             runOnUiThread(() -> {
-                refreshAuditeeList(auditees);
+                this.auditeeListAdapter.updateList(auditeeFingerprints);
             });
         });
 
@@ -334,33 +344,61 @@ public class AttestationActivity extends AppCompatActivity {
         });
     }
 
-    private void refreshAuditeeList(List<String> auditees) {
-        final TextView auditeeListLabel = findViewById(R.id.auditee_list_label);
-        final LinearLayout auditeesContainer = findViewById(R.id.auditee_list_values);
-        if (auditees.isEmpty()) {
-            auditeeListLabel.setText(R.string.paired_auditees_list_empty);
-            auditeesContainer.removeAllViews();
-            return;
+    private class AuditeeListAdapter extends RecyclerView.Adapter<AuditeeListAdapter.ViewHolder> {
+
+        @NonNull
+        private List<String> auditeeFingerprints;
+
+        private AuditeeListAdapter() {
+            this.auditeeFingerprints = List.of();
         }
 
-        Collections.sort(auditees);
-        for (final String auditee : auditees) {
-            auditeeListLabel.setText(R.string.paired_auditees_list);
-            final View fingerprintEntryItem = getLayoutInflater().inflate(
-                    R.layout.content_attestation_auditee_fingerprint,
-                    auditeesContainer,
-                    false
-            );
-            final TextView fingerprintHexField = fingerprintEntryItem.findViewById(R.id.auditee_fingerprint_hex);
-            fingerprintHexField.setText(auditee);
-            fingerprintEntryItem.setOnClickListener(v -> {
-                final Intent inspectAuditeeIntent = new Intent(this, InspectAuditeeActivity.class);
-                inspectAuditeeIntent.putExtra(InspectAuditeeActivity.INTENT_KEY_FINGERPRINT, auditee);
+        public static class ViewHolder extends RecyclerView.ViewHolder {
+            public TextView fingerprintHex;
+            public ViewHolder(@NonNull View itemView) {
+                super(itemView);
+                this.fingerprintHex = itemView.findViewById(R.id.auditee_fingerprint_hex);
+            }
+        }
+
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            final View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.content_attestation_auditee_fingerprint, parent, false);
+            return new AuditeeListAdapter.ViewHolder(view);
+        }
+
+        private void updateList(final List<String> newAuditeeFingerprints) {
+            this.auditeeFingerprints = newAuditeeFingerprints;
+
+            final TextView auditeeListLabel = findViewById(R.id.auditee_list_label);
+            if (this.auditeeFingerprints.isEmpty()) {
+                auditeeListLabel.setText(R.string.paired_auditees_list_empty);
+            } else {
+                auditeeListLabel.setText(R.string.paired_auditees_list);
+            }
+            this.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            final String fingerprint = auditeeFingerprints.get(position);
+            holder.fingerprintHex.setText(fingerprint);
+            holder.itemView.setOnClickListener(v -> {
+                final Intent inspectAuditeeIntent = new Intent(AttestationActivity.this, InspectAuditeeActivity.class);
+                inspectAuditeeIntent.putExtra(InspectAuditeeActivity.INTENT_KEY_FINGERPRINT, fingerprint);
                 startActivity(inspectAuditeeIntent);
             });
-            auditeesContainer.addView(fingerprintEntryItem);
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return this.auditeeFingerprints.size();
         }
     }
+
     private void runAuditor() {
         if (auditorChallenge == null) {
             auditorChallenge = AttestationProtocol.getChallengeMessage(this);
@@ -551,7 +589,7 @@ public class AttestationActivity extends AppCompatActivity {
                         executor.submit(() -> {
                             AttestationProtocol.clearAuditor(this);
                             runOnUiThread(() -> {
-                                refreshAuditeeList(List.of());
+                                this.auditeeListAdapter.updateList(List.of());
                                 snackbar.setText(R.string.clear_auditor_pairings_success).show();
                             });
                         });
