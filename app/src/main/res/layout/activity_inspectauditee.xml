@@ -25,7 +25,7 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:context="app.attestation.auditor.AttestationActivity"
-        android:layout_margin="16dp">
+        android:layout_margin="@dimen/content_normal_margin">
 
         <ScrollView
             android:layout_width="match_parent"
@@ -42,7 +42,7 @@
                     style="@style/TextAppearance.Material3.TitleLarge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginBottom="@dimen/content_smaller_margin"
                     android:maxLines="100"
                     android:scrollbarAlwaysDrawHorizontalTrack="false"
                     android:scrollbarAlwaysDrawVerticalTrack="false"
@@ -60,8 +60,8 @@
                     style="@style/TextAppearance.Material3.TitleLarge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="@dimen/content_normal_margin"
+                    android:layout_marginBottom="@dimen/content_smaller_margin"
                     android:maxLines="100"
                     android:scrollbarAlwaysDrawHorizontalTrack="false"
                     android:scrollbarAlwaysDrawVerticalTrack="false"
@@ -79,8 +79,8 @@
                     style="@style/TextAppearance.Material3.TitleLarge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="@dimen/content_normal_margin"
+                    android:layout_marginBottom="@dimen/content_smaller_margin"
                     android:maxLines="100"
                     android:scrollbarAlwaysDrawHorizontalTrack="false"
                     android:scrollbarAlwaysDrawVerticalTrack="false"
