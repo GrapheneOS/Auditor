@@ -2,24 +2,31 @@ package app.attestation.auditor;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.material.appbar.MaterialToolbar;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import java.util.Date;
+
+import app.attestation.auditor.databinding.ActivityInspectauditeeBinding;
 
 public class InspectAuditeeActivity extends AppCompatActivity {
 
     private static final String TAG = "InspectAuditeeActivity";
 
     public static final String INTENT_KEY_FINGERPRINT = "fingerprint_hex";
+
+    private ActivityInspectauditeeBinding binding;
 
     private void addSummaryFieldToTable(int tableId, final int fieldNameId, final String fieldValue) {
         final TableLayout summaryContainer = findViewById(tableId);
@@ -35,17 +42,32 @@ public class InspectAuditeeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_inspectauditee);
+
+        binding = ActivityInspectauditeeBinding.inflate(getLayoutInflater());
+        final View rootView = binding.getRoot();
+        setContentView(rootView);
 
         // set up back button
-        final MaterialToolbar toolbar = findViewById(R.id.inspect_auditee_toolbar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(binding.inspectAuditeeToolbar);
         final ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {
             supportActionBar.setDisplayHomeAsUpEnabled(true);
         }
-        toolbar.setNavigationOnClickListener(v -> {
+        binding.inspectAuditeeToolbar.setNavigationOnClickListener(v -> {
             finish();
+        });
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (@NonNull View v, @NonNull WindowInsetsCompat insets) -> {
+            final Insets barInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            final Insets cutoutInsets = insets.getInsets(WindowInsetsCompat.Type.displayCutout());
+
+            int leftInsets = barInsets.left + cutoutInsets.left;
+            int rightInsets = barInsets.right + cutoutInsets.right;
+
+            binding.inspectAuditeeToolbar.setPadding(leftInsets, 0, rightInsets, 0);
+            binding.summaryContainer.setPadding(leftInsets, 0, rightInsets, barInsets.bottom);
+
+            return insets;
         });
 
         // load auditee information
