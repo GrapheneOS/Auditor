@@ -76,7 +76,7 @@ public class InspectAuditeeActivity extends AppCompatActivity {
             Log.e(TAG, "auditee fingerprint not provided");
             Toast.makeText(
                     this,
-                    R.string.inspect_auditee_error_message_missing_fingerprint,
+                    R.string.inspect_auditee_error_missing_fingerprint,
                     Toast.LENGTH_SHORT
             ).show();
             finish();
