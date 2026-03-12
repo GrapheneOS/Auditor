@@ -144,6 +144,7 @@
     <string name="device_pixel_10_pro">Google Pixel 10 Pro</string>
     <string name="device_pixel_10_pro_xl">Google Pixel 10 Pro XL</string>
     <string name="device_pixel_10_pro_fold">Google Pixel 10 Pro Fold</string>
+    <string name="device_pixel_10a">Google Pixel 10a</string>
 
     <string name="os_stock">Stock</string>
     <string name="os_graphene">GrapheneOS</string>

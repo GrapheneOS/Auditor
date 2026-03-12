@@ -318,6 +318,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_10_pro_xl, 300, 300, false, R.string.os_graphene))
             .put("55A2D44103E56D5EC65496399C417987BA77730E6488FC60BA058D09FC3CAEE3",
                     new DeviceInfo(R.string.device_pixel_10_pro_fold, 300, 300, false, R.string.os_graphene))
+            .put("D8F879D10419EDDC9FCDA6280718BE763F6BF12299E1F72DF3EA8AD8A8EB7F80",
+                    new DeviceInfo(R.string.device_pixel_10a, 300, 300, false, R.string.os_graphene))
             .build();
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStock = ImmutableMap
             .<String, DeviceInfo>builder()
@@ -369,6 +371,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_10_pro_xl, 300, 300, false, R.string.os_stock))
             .put("072D8E3269350849F3DE787AC7A319F264C34FA326A7E70917FD96AAEFD2FB0E",
                     new DeviceInfo(R.string.device_pixel_10_pro_fold, 300, 300, false, R.string.os_stock))
+            .put("E354CD6BBB15D64B2E95B2F79E9DF6CE22B8A5D0D66CFB70330D6A1BCD7212A0",
+                    new DeviceInfo(R.string.device_pixel_10a, 300, 300, false, R.string.os_stock))
             .build();
 
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxNonStock = ImmutableMap
@@ -426,6 +430,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_10_pro_xl, 300, 300, false, R.string.os_graphene))
             .put("55A2D44103E56D5EC65496399C417987BA77730E6488FC60BA058D09FC3CAEE3",
                     new DeviceInfo(R.string.device_pixel_10_pro_fold, 300, 300, false, R.string.os_graphene))
+            .put("D8F879D10419EDDC9FCDA6280718BE763F6BF12299E1F72DF3EA8AD8A8EB7F80",
+                    new DeviceInfo(R.string.device_pixel_10a, 300, 300, false, R.string.os_graphene))
             .build();
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxStock = ImmutableMap
             .<String, DeviceInfo>builder()
@@ -477,6 +483,8 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_10_pro_xl, 300, 300, false, R.string.os_stock))
             .put("072D8E3269350849F3DE787AC7A319F264C34FA326A7E70917FD96AAEFD2FB0E",
                     new DeviceInfo(R.string.device_pixel_10_pro_fold, 300, 300, false, R.string.os_stock))
+            .put("E354CD6BBB15D64B2E95B2F79E9DF6CE22B8A5D0D66CFB70330D6A1BCD7212A0",
+                    new DeviceInfo(R.string.device_pixel_10a, 300, 300, false, R.string.os_stock))
             .build();
 
     private static byte[] getChallengeIndex(final Context context) {
