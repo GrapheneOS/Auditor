@@ -97,7 +97,7 @@ android {
 dependencies {
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("androidx.biometric:biometric:1.1.0")
-    implementation("androidx.core:core:1.17.0")
+    implementation("androidx.core:core:1.18.0")
     implementation("androidx.preference:preference:1.2.1")
 
     implementation("com.google.android.material:material:1.13.0")
