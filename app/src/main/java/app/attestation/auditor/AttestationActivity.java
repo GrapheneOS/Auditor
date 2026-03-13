@@ -16,12 +16,14 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
@@ -33,6 +35,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -47,7 +51,10 @@ import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -91,6 +98,7 @@ public class AttestationActivity extends AppCompatActivity {
     private byte[] auditeeSerializedAttestation;
     private byte[] auditorChallenge;
     private int backgroundResource;
+    private AuditeeListAdapter auditeeListAdapter;
 
     final ActivityResultLauncher<Intent> QRScannerActivityLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -264,6 +272,18 @@ public class AttestationActivity extends AppCompatActivity {
             }
         });
 
+        final RecyclerView auditeesRecyclerView = findViewById(R.id.auditee_list_recycler);
+        auditeesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        this.auditeeListAdapter = new AuditeeListAdapter();
+        auditeesRecyclerView.setAdapter(this.auditeeListAdapter);
+        executor.submit(() -> {
+            final List<String> auditeeFingerprints = AttestationProtocol.getAuditorFingerprints(this);
+            Collections.sort(auditeeFingerprints);
+            runOnUiThread(() -> {
+                this.auditeeListAdapter.updateList(auditeeFingerprints);
+            });
+        });
+
         RemoteVerifyJob.restore(this);
     }
 
@@ -323,6 +343,61 @@ public class AttestationActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    private class AuditeeListAdapter extends RecyclerView.Adapter<AuditeeListAdapter.ViewHolder> {
+
+        @NonNull
+        private List<String> auditeeFingerprints;
+
+        private AuditeeListAdapter() {
+            this.auditeeFingerprints = List.of();
+        }
+
+        static class ViewHolder extends RecyclerView.ViewHolder {
+            public TextView fingerprintHex;
+            public ViewHolder(@NonNull View itemView) {
+                super(itemView);
+                this.fingerprintHex = itemView.findViewById(R.id.auditee_fingerprint_hex);
+            }
+        }
+
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            final View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.content_attestation_auditee_fingerprint, parent, false);
+            return new AuditeeListAdapter.ViewHolder(view);
+        }
+
+        private void updateList(final List<String> newAuditeeFingerprints) {
+            this.auditeeFingerprints = newAuditeeFingerprints;
+
+            final TextView auditeeListLabel = findViewById(R.id.auditee_list_label);
+            if (this.auditeeFingerprints.isEmpty()) {
+                auditeeListLabel.setText(R.string.paired_auditees_list_empty);
+            } else {
+                auditeeListLabel.setText(R.string.paired_auditees_list);
+            }
+            this.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            final String fingerprint = auditeeFingerprints.get(position);
+            holder.fingerprintHex.setText(fingerprint);
+            holder.itemView.setOnClickListener(v -> {
+                final Intent inspectAuditeeIntent = new Intent(AttestationActivity.this, InspectAuditeeActivity.class);
+                inspectAuditeeIntent.putExtra(InspectAuditeeActivity.INTENT_KEY_FINGERPRINT, fingerprint);
+                startActivity(inspectAuditeeIntent);
+            });
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return this.auditeeFingerprints.size();
+        }
     }
 
     private void runAuditor() {
@@ -514,7 +589,10 @@ public class AttestationActivity extends AppCompatActivity {
                     .setPositiveButton(R.string.clear, (dialogInterface, i) -> {
                         executor.submit(() -> {
                             AttestationProtocol.clearAuditor(this);
-                            runOnUiThread(() -> snackbar.setText(R.string.clear_auditor_pairings_success).show());
+                            runOnUiThread(() -> {
+                                this.auditeeListAdapter.updateList(List.of());
+                                snackbar.setText(R.string.clear_auditor_pairings_success).show();
+                            });
                         });
                     })
                     .setNegativeButton(R.string.cancel, null)
