@@ -123,16 +123,21 @@ public class AttestationActivity extends AppCompatActivity {
                                 snackbar.setText(R.string.scanned_invalid_account_qr_code).show();
                                 return;
                             }
-                            PreferenceManager.getDefaultSharedPreferences(this).edit()
-                                    .putLong(RemoteVerifyJob.KEY_USER_ID, Long.parseLong(values[1]))
-                                    .putString(RemoteVerifyJob.KEY_SUBSCRIBE_KEY, values[2])
-                                    .apply();
+                            final long userId;
+                            final int interval;
                             try {
-                                RemoteVerifyJob.schedule(this, Integer.parseInt(values[3]));
-                                snackbar.setText(R.string.enable_remote_verify_success).show();
+                                userId = Long.parseLong(values[1]);
+                                interval = Integer.parseInt(values[3]);
                             } catch (final NumberFormatException e) {
                                 snackbar.setText(R.string.scanned_invalid_account_qr_code).show();
+                                return;
                             }
+                            PreferenceManager.getDefaultSharedPreferences(this).edit()
+                                    .putLong(RemoteVerifyJob.KEY_USER_ID, userId)
+                                    .putString(RemoteVerifyJob.KEY_SUBSCRIBE_KEY, values[2])
+                                    .apply();
+                            RemoteVerifyJob.schedule(this, interval);
+                            snackbar.setText(R.string.enable_remote_verify_success).show();
                         } else {
                             throw new RuntimeException("received unexpected scan result");
                         }
