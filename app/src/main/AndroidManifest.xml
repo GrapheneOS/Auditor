@@ -28,6 +28,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".QRScannerActivity" />
+        <activity android:name=".InspectAuditeeActivity" />
 
         <receiver android:name=".BootReceiver"
                 android:exported="false">
