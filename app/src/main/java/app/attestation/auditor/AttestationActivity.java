@@ -549,7 +549,7 @@ public class AttestationActivity extends AppCompatActivity {
                                     .remove(RemoteVerifyJob.KEY_SUBSCRIBE_KEY)
                                     .apply();
 
-                            snackbar.setText(R.string.disable_remote_verify_success).show();
+                            runOnUiThread(() -> snackbar.setText(R.string.disable_remote_verify_success).show());
                         });
                         binding.content.remoteVerify.setVisibility(View.VISIBLE);
                     })
