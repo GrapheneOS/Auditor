@@ -117,7 +117,6 @@ public class AttestationActivity extends AppCompatActivity {
                             handleAttestation(contentsBytes);
                         } else if (stage == Stage.EnableRemoteVerify) {
                             stage = Stage.None;
-                            Log.d(TAG, "account: " + contents);
                             final String[] values = contents.split(" ");
                             if (values.length < 4 || !RemoteVerifyJob.DOMAIN.equals(values[0])) {
                                 snackbar.setText(R.string.scanned_invalid_account_qr_code).show();
