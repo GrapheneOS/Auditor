@@ -1217,13 +1217,18 @@ class AttestationProtocol {
             throws DataFormatException, GeneralSecurityException {
         final byte[] chain = new byte[MAX_ENCODED_CHAIN_LENGTH];
         final Inflater inflater = new Inflater(true);
-        inflater.setInput(compressedChain);
-        inflater.setDictionary(dictionary);
-        final int chainLength = inflater.inflate(chain);
-        if (!inflater.finished()) {
-            throw new GeneralSecurityException("certificate chain is too large");
+        final int chainLength;
+        try {
+            inflater.setInput(compressedChain);
+            inflater.setDictionary(dictionary);
+            chainLength = inflater.inflate(chain);
+            if (!inflater.finished()) {
+                throw new GeneralSecurityException("certificate chain is too large");
+            }
+        } finally {
+            inflater.end();
         }
-        inflater.end();
+
         Log.d(TAG, "encoded length: " + chainLength + ", compressed length: " + compressedChain.length);
 
         final ByteBuffer chainDeserializer = ByteBuffer.wrap(chain, 0, chainLength);
@@ -1258,14 +1263,18 @@ class AttestationProtocol {
 
         final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         final Deflater deflater = new Deflater(Deflater.BEST_COMPRESSION, true);
-        deflater.setDictionary(dictionary);
-        final DeflaterOutputStream deflaterStream = new DeflaterOutputStream(byteStream, deflater);
-        deflaterStream.write(chain);
-        deflaterStream.finish();
-        final byte[] compressed = byteStream.toByteArray();
-        Log.d(TAG, "encoded length: " + chain.length + ", compressed length: " + compressed.length);
+        try {
+            deflater.setDictionary(dictionary);
+            final DeflaterOutputStream deflaterStream = new DeflaterOutputStream(byteStream, deflater);
+            deflaterStream.write(chain);
+            deflaterStream.finish();
+            final byte[] compressed = byteStream.toByteArray();
+            Log.d(TAG, "encoded length: " + chain.length + ", compressed length: " + compressed.length);
 
-        return compressed;
+            return compressed;
+        } finally {
+            deflater.end();
+        }
     }
 
     static VerificationResult verifySerialized(final Context context, final byte[] attestationResult,
