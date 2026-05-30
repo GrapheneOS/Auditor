@@ -157,10 +157,6 @@ class AttestationProtocol {
     //
     // Protocol version changes:
     //
-    // 6: autoRebootSeconds added
-    // 6: portSecurityMode added
-    // 6: userCount added
-    // 6: oemUnlockAllowed added
     // 7: new DEFLATE dictionary with new ECDSA root included
     //
     // n/a
@@ -202,7 +198,7 @@ class AttestationProtocol {
     // downgrade protection for the OS version/patch (bootloader/TEE enforced) and app version (OS
     // enforced) by keeping them updated.
     private static final byte PROTOCOL_VERSION = 7;
-    private static final byte PROTOCOL_VERSION_MINIMUM = 5;
+    private static final byte PROTOCOL_VERSION_MINIMUM = 6;
     // can become longer in the future, but this is the minimum length
     static final byte CHALLENGE_MESSAGE_LENGTH = 1 + RANDOM_TOKEN_LENGTH * 2;
     private static final int MAX_ENCODED_CHAIN_LENGTH = 5000;
@@ -244,7 +240,7 @@ class AttestationProtocol {
     private static final byte AUDITOR_APP_VARIANT_PLAY = 1;
     private static final byte AUDITOR_APP_VARIANT_DEBUG = 2;
 
-    private static final int AUDITOR_APP_MINIMUM_VERSION = 87;
+    private static final int AUDITOR_APP_MINIMUM_VERSION = 89;
     private static final int OS_VERSION_MINIMUM = 130000;
     private static final int OS_PATCH_LEVEL_MINIMUM = 202208;
     private static final int VENDOR_PATCH_LEVEL_MINIMUM = 20220805;
@@ -925,8 +921,6 @@ class AttestationProtocol {
             int autoRebootSeconds, byte portSecurityMode, byte userCount, byte oemUnlocked) {
         static final int UNKNOWN_VALUE = -1;
         static final int INVALID_VALUE = -2;
-        static final SecurityStateExt UNKNOWN = new SecurityStateExt(UNKNOWN_VALUE,
-                (byte) UNKNOWN_VALUE, (byte) UNKNOWN_VALUE, (byte) UNKNOWN_VALUE);
     }
 
     private static VerificationResult verify(final Context context, final byte[] fingerprint,
@@ -1312,17 +1306,12 @@ class AttestationProtocol {
             throw new GeneralSecurityException("invalid device administrator state");
         }
 
-        final SecurityStateExt securityStateExt;
-        if (version >= 6) {
-            final int autoRebootSeconds = deserializer.getInt();
-            final byte portSecurityMode = deserializer.get();
-            final byte userCount = deserializer.get();
-            final byte oemUnlockAllowed = deserializer.get();
-            securityStateExt = new SecurityStateExt(autoRebootSeconds,
-                    portSecurityMode, userCount, oemUnlockAllowed);
-        } else {
-            securityStateExt = SecurityStateExt.UNKNOWN;
-        }
+        final int autoRebootSeconds = deserializer.getInt();
+        final byte portSecurityMode = deserializer.get();
+        final byte userCount = deserializer.get();
+        final byte oemUnlockAllowed = deserializer.get();
+        final SecurityStateExt securityStateExt = new SecurityStateExt(autoRebootSeconds,
+                portSecurityMode, userCount, oemUnlockAllowed);
 
         final int signatureLength = deserializer.remaining();
         final byte[] signature = new byte[signatureLength];
@@ -1597,54 +1586,52 @@ class AttestationProtocol {
             }
             serializer.putInt(osEnforcedFlags);
 
-            if (version >= 6) {
-                final int autoRebootSeconds;
-                {
-                    final String key = "android.ext.AUTO_REBOOT_TIMEOUT";
-                    final int def = SecurityStateExt.UNKNOWN_VALUE;
-                    final int val = extraSecurityState.getInt(key, def);
-                    final boolean isValid = val >= TimeUnit.SECONDS.toMillis(20) || val == 0;
-                    final int fallbackVal = (def == val) ? def : SecurityStateExt.INVALID_VALUE;
-                    autoRebootSeconds = isValid ? (int) TimeUnit.MILLISECONDS.toSeconds(val) : fallbackVal;
-                }
-                serializer.putInt(autoRebootSeconds);
-
-                final byte portSecurityMode;
-                {
-                    final String key = "android.ext.USB_PORT_SECURITY_MODE";
-                    final byte def = SecurityStateExt.UNKNOWN_VALUE;
-                    final int val = extraSecurityState.getInt(key, def);
-                    // Update once USB-C port security settings valid value expands.
-                    final boolean isValid = val >= 0 && val <= 4;
-                    final byte fallbackVal = (def == val) ? def : SecurityStateExt.INVALID_VALUE;
-                    portSecurityMode = isValid ? (byte) val : fallbackVal;
-                }
-                serializer.put(portSecurityMode);
-
-                final byte userCount;
-                {
-                    final String key = "android.ext.USER_COUNT";
-                    final byte def = SecurityStateExt.UNKNOWN_VALUE;
-                    final int val = extraSecurityState.getInt(key, def);
-                    final boolean isKnown = val >= 0 && val <= Byte.MAX_VALUE;
-                    final byte fallbackVal = (def == val) ? def : SecurityStateExt.INVALID_VALUE;
-                    userCount = isKnown ? (byte) val : fallbackVal;
-                }
-                serializer.put(userCount);
-
-                final byte oemUnlockAllowed;
-                {
-                    final String key = "android.ext.OEM_UNLOCK_ALLOWED";
-                    final byte def = SecurityStateExt.UNKNOWN_VALUE;
-                    @SuppressWarnings("deprecation") // getBoolean(...) is ambiguous
-                    final Object objVal = extraSecurityState.get(key);
-                    final byte val = (objVal instanceof Boolean boolVal) ? (byte) (boolVal ? 1 : 0) : def;
-                    final boolean isValid = val >= 0 && val <= 1;
-                    final byte fallbackVal = (objVal == null || objVal instanceof Boolean) ? def : SecurityStateExt.INVALID_VALUE;
-                    oemUnlockAllowed = isValid ? val : fallbackVal;
-                }
-                serializer.put(oemUnlockAllowed);
+            final int autoRebootSeconds;
+            {
+                final String key = "android.ext.AUTO_REBOOT_TIMEOUT";
+                final int def = SecurityStateExt.UNKNOWN_VALUE;
+                final int val = extraSecurityState.getInt(key, def);
+                final boolean isValid = val >= TimeUnit.SECONDS.toMillis(20) || val == 0;
+                final int fallbackVal = (def == val) ? def : SecurityStateExt.INVALID_VALUE;
+                autoRebootSeconds = isValid ? (int) TimeUnit.MILLISECONDS.toSeconds(val) : fallbackVal;
             }
+            serializer.putInt(autoRebootSeconds);
+
+            final byte portSecurityMode;
+            {
+                final String key = "android.ext.USB_PORT_SECURITY_MODE";
+                final byte def = SecurityStateExt.UNKNOWN_VALUE;
+                final int val = extraSecurityState.getInt(key, def);
+                // Update once USB-C port security settings valid value expands.
+                final boolean isValid = val >= 0 && val <= 4;
+                final byte fallbackVal = (def == val) ? def : SecurityStateExt.INVALID_VALUE;
+                portSecurityMode = isValid ? (byte) val : fallbackVal;
+            }
+            serializer.put(portSecurityMode);
+
+            final byte userCount;
+            {
+                final String key = "android.ext.USER_COUNT";
+                final byte def = SecurityStateExt.UNKNOWN_VALUE;
+                final int val = extraSecurityState.getInt(key, def);
+                final boolean isKnown = val >= 0 && val <= Byte.MAX_VALUE;
+                final byte fallbackVal = (def == val) ? def : SecurityStateExt.INVALID_VALUE;
+                userCount = isKnown ? (byte) val : fallbackVal;
+            }
+            serializer.put(userCount);
+
+            final byte oemUnlockAllowed;
+            {
+                final String key = "android.ext.OEM_UNLOCK_ALLOWED";
+                final byte def = SecurityStateExt.UNKNOWN_VALUE;
+                @SuppressWarnings("deprecation") // getBoolean(...) is ambiguous
+                final Object objVal = extraSecurityState.get(key);
+                final byte val = (objVal instanceof Boolean boolVal) ? (byte) (boolVal ? 1 : 0) : def;
+                final boolean isValid = val >= 0 && val <= 1;
+                final byte fallbackVal = (objVal == null || objVal instanceof Boolean) ? def : SecurityStateExt.INVALID_VALUE;
+                oemUnlockAllowed = isValid ? val : fallbackVal;
+            }
+            serializer.put(oemUnlockAllowed);
 
             final ByteBuffer message = serializer.duplicate();
             message.flip();
