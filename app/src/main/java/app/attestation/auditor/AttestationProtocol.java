@@ -698,7 +698,7 @@ class AttestationProtocol {
         }
 
         final byte[] verifiedBootHash = rootOfTrust.verifiedBootHash.orElse(null);
-        if (attestationVersion >= 3 && verifiedBootHash == null) {
+        if (verifiedBootHash == null) {
             throw new GeneralSecurityException("verifiedBootHash expected for attestation version >= 3");
         }
 
@@ -894,10 +894,8 @@ class AttestationProtocol {
         builder.append(context.getString(R.string.verified_boot_key_hash,
                     verified.verifiedBootKey));
 
-        if (verified.verifiedBootHash != null) {
-            builder.append(context.getString(R.string.verified_boot_hash,
-                    BaseEncoding.base16().encode(verified.verifiedBootHash)));
-        }
+        builder.append(context.getString(R.string.verified_boot_hash,
+                BaseEncoding.base16().encode(verified.verifiedBootHash)));
     }
 
     private static void verifySignature(final PublicKey key, final ByteBuffer message,
