@@ -831,10 +831,11 @@ class AttestationProtocol {
             }
         }
 
-        // Last cert is self-signed.
+        // Last certificate is a self-signed root with expiry ignored
         final int i = certChain.length - 1;
         try {
-            if (i == 0 || !hasPersistentKey) {
+            // Root certificate expiry ignored until Pixel 6 support is dropped
+            if (false && i == 0 || !hasPersistentKey) {
                 ((X509Certificate) certChain[i]).checkValidity();
             }
             certChain[i].verify(certChain[i].getPublicKey());
