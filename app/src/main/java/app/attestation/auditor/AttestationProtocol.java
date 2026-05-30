@@ -821,7 +821,7 @@ class AttestationProtocol {
             throws GeneralSecurityException {
         for (int i = 1; i < certChain.length; ++i) {
             try {
-                if (i == 1 || !hasPersistentKey) {
+                if (i == 1 || i == certChain.length - 1 || !hasPersistentKey) {
                     ((X509Certificate) certChain[i - 1]).checkValidity();
                 }
                 certChain[i - 1].verify(certChain[i].getPublicKey());
@@ -831,12 +831,9 @@ class AttestationProtocol {
             }
         }
 
-        // Last cert is self-signed.
+        // Last certificate must be self-signed
         final int i = certChain.length - 1;
         try {
-            if (i == 0 || !hasPersistentKey) {
-                ((X509Certificate) certChain[i]).checkValidity();
-            }
             certChain[i].verify(certChain[i].getPublicKey());
         } catch (CertificateException e) {
             throw new GeneralSecurityException(
