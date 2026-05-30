@@ -48,7 +48,7 @@ android {
         applicationId = "app.attestation.auditor"
         minSdk = 33
         targetSdk = 36
-        versionCode = 92
+        versionCode = 93
         versionName = versionCode.toString()
     }
 
