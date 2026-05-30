@@ -241,7 +241,7 @@ class AttestationProtocol {
     private static final byte AUDITOR_APP_VARIANT_DEBUG = 2;
 
     private static final int AUDITOR_APP_MINIMUM_VERSION = 89;
-    private static final int OS_VERSION_MINIMUM = 130000;
+    private static final int OS_VERSION_MINIMUM = 140000;
     private static final int OS_PATCH_LEVEL_MINIMUM = 202505;
     private static final int VENDOR_PATCH_LEVEL_MINIMUM = 20250505;
     private static final int BOOT_PATCH_LEVEL_MINIMUM = 20250505;
