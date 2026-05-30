@@ -54,6 +54,10 @@
     <string name="verify_strong"><b>Successfully performed strong paired verification and identity confirmation.</b>\n\n</string>
     <string name="verify_basic"><b>Successfully performed basic initial verification and pairing.</b>\n\n</string>
 
+    <string name="paired_auditees_list"><b>Paired auditees</b></string>
+    <string name="paired_auditees_list_empty"><b>No paired auditees</b></string>
+    <string name="paired_auditees_list_loading"><b>Loading paired auditees...</b></string>
+
     <string name="hardware_enforced"><b>Hardware verified information:</b>\n\n</string>
     <string name="identity">Pairing identity (hash of pinned hardware-backed key): %s\n</string>
     <string name="security_level">Pinned security level: %s\n</string>
@@ -115,6 +119,23 @@
 
     <string name="no">no</string>
     <string name="yes">yes</string>
+
+    <string name="inspect_auditee_title">Inspect Auditee</string>
+    <string name="inspect_auditee_os_provided_info">Information from the verified OS</string>
+    <string name="inspect_auditee_hardware_verified">Hardware verified information</string>
+    <string name="inspect_auditee_attestation_history">Attestation history</string>
+    <string name="inspect_auditee_field_name_fingerprint">Fingerprint</string>
+    <string name="inspect_auditee_field_name_pinned_security_level">Security level</string>
+    <string name="inspect_auditee_field_name_pinned_os_version">OS version</string>
+    <string name="inspect_auditee_field_name_pinned_os_patch_level">OS patch level</string>
+    <string name="inspect_auditee_field_name_pinned_vendor_patch_level">Vendor patch level</string>
+    <string name="inspect_auditee_field_name_pinned_boot_patch_level">Boot patch level</string>
+    <string name="inspect_auditee_field_name_verified_boot_key">Verified boot key</string>
+    <string name="inspect_auditee_field_name_pinned_app_version">App version</string>
+    <string name="inspect_auditee_field_name_pinned_app_variant">App variant</string>
+    <string name="inspect_auditee_field_name_first_verified">First verified</string>
+    <string name="inspect_auditee_field_name_last_verified">Last verified</string>
+    <string name="inspect_auditee_error_missing_fingerprint">Auditee fingerprint was not provided</string>
 
     <string name="device_pixel_4_generic">Google Pixel 4 / Pixel 4 XL</string>
     <string name="device_pixel_4">Google Pixel 4</string>

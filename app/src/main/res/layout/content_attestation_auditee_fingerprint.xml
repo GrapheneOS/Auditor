@@ -1,0 +1,21 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/content_smaller_margin"
+    android:background="?attr/colorSurfaceContainer"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <com.google.android.material.textview.MaterialTextView
+        style="@style/TextAppearance.Material3.LabelLarge"
+        android:id="@+id/auditee_fingerprint_hex"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/content_smaller_margin"
+        android:maxLines="100"
+        android:scrollbarAlwaysDrawHorizontalTrack="false"
+        android:scrollbarAlwaysDrawVerticalTrack="false"
+        android:scrollbars="vertical"
+        android:scrollHorizontally="false" />
+
+</LinearLayout>

@@ -1,3 +1,5 @@
 <resources>
     <dimen name="activity_horizontal_margin">0dp</dimen>
+    <dimen name="content_normal_margin">16dp</dimen>
+    <dimen name="content_smaller_margin">8dp</dimen>
 </resources>
