@@ -149,12 +149,6 @@ public class AttestationActivity extends AppCompatActivity {
             });
 
     private static final boolean isSupportedAuditee = ImmutableSet.of(
-            "Pixel 4",
-            "Pixel 4 XL",
-            "Pixel 4a",
-            "Pixel 4a (5G)",
-            "Pixel 5",
-            "Pixel 5a",
             "Pixel 6",
             "Pixel 6 Pro",
             "Pixel 6a",
