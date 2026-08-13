@@ -145,6 +145,8 @@ public class AttestationActivity extends AppCompatActivity {
                             stage = Stage.None;
                         }
                     }
+                } else if (stage == Stage.Auditee || stage == Stage.EnableRemoteVerify) {
+                    stage = Stage.None;
                 }
             });
 
