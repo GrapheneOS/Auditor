@@ -349,6 +349,14 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_10_pro_fold, 300, 300, false, R.string.os_stock))
             .put("E354CD6BBB15D64B2E95B2F79E9DF6CE22B8A5D0D66CFB70330D6A1BCD7212A0",
                     new DeviceInfo(R.string.device_pixel_10a, 300, 300, false, R.string.os_stock))
+            .put("6BDF2D55D85648098947994EC7FE6521381368EC6181CBBF6BE5515CF4AD8817",
+                    new DeviceInfo(R.string.device_pixel_11, 500, 500, false, R.string.os_stock))
+            .put("E14876FD7340FF70F4BBF29C4578E8714DEDAAF07E7BD64A1193DDC6D9BB043D",
+                    new DeviceInfo(R.string.device_pixel_11_pro, 500, 500, false, R.string.os_stock))
+            .put("47DD7FE7FA25141E6D211D9741D424AE16331A77DF981E56DAF21F59E29AB625",
+                    new DeviceInfo(R.string.device_pixel_11_pro_xl, 500, 500, false, R.string.os_stock))
+            .put("106857A6FB8EED09A0799C83E4AACF69544E2137D98DFF7043E87BA3DCBCFA2C",
+                    new DeviceInfo(R.string.device_pixel_11_pro_fold, 500, 500, false, R.string.os_stock))
             .build();
 
     private static final ImmutableMap<String, DeviceInfo> fingerprintsStrongBoxNonStock = ImmutableMap
@@ -441,6 +449,14 @@ class AttestationProtocol {
                     new DeviceInfo(R.string.device_pixel_10_pro_fold, 300, 300, false, R.string.os_stock))
             .put("E354CD6BBB15D64B2E95B2F79E9DF6CE22B8A5D0D66CFB70330D6A1BCD7212A0",
                     new DeviceInfo(R.string.device_pixel_10a, 300, 300, false, R.string.os_stock))
+            .put("6BDF2D55D85648098947994EC7FE6521381368EC6181CBBF6BE5515CF4AD8817",
+                    new DeviceInfo(R.string.device_pixel_11, 400, 400, false, R.string.os_stock))
+            .put("E14876FD7340FF70F4BBF29C4578E8714DEDAAF07E7BD64A1193DDC6D9BB043D",
+                    new DeviceInfo(R.string.device_pixel_11_pro, 400, 400, false, R.string.os_stock))
+            .put("47DD7FE7FA25141E6D211D9741D424AE16331A77DF981E56DAF21F59E29AB625",
+                    new DeviceInfo(R.string.device_pixel_11_pro_xl, 400, 400, false, R.string.os_stock))
+            .put("106857A6FB8EED09A0799C83E4AACF69544E2137D98DFF7043E87BA3DCBCFA2C",
+                    new DeviceInfo(R.string.device_pixel_11_pro_fold, 400, 400, false, R.string.os_stock))
             .build();
 
     private static byte[] getChallengeIndex(final Context context) {
