@@ -1,0 +1,151 @@
+<resources>
+    <string name="app_name">Auditor</string>
+    <string name="introduction">你需要两个Android 12或者更高版本系统的设备来完成验证:\n\n- 被验证的设备 (Auditee) 需要在支持范围内\n\n- 一台用于验证的Android设备 (Auditor).\n\n验证的过程中需要通过扫描二维码在两台设备中交换数据。</string>
+    <string name="unsupported_auditee">该设备不在支持范围内。</string>
+    <string name="camera_permission_denied">扫描二维码需要相机权限</string>
+    <string name="auditee_button">Auditee （被验证的设备）</string>
+    <string name="auditor_button">Auditor （用于验证的设备）</string>
+    <string name="qrcode_content_description">二维码</string>
+    <string name="generate_error"><b>生成认证信息的时候遇到了错误：\n\n</b></string>
+    <string name="verify_error"><b>验证认证信息的时候遇到了错误\n\n</b></string>
+    <string name="qr_code_scan_hint_auditee">现在在另一台设备上扫描这个二维码。</string>
+    <string name="qr_code_scan_hint_auditee_pairing">现在在另一台设备上扫描这个二维码。\n\n这是第一次配对，如果没有成功完成的话需要两台设备清除配对记录后才能重试。</string>
+    <string name="qr_code_scan_hint_auditor">现在在另一台设备上扫描这个二维码。\n\n扫描后请点击二维码以继续。</string>
+    <string name="scanned_invalid_account_qr_code">扫描到了无效的账户二维码。</string>
+
+    <string name="bind_failure">开启摄像头失败，可能是硬件或者操作系统出了问题，请尝试重启手机。</string>
+    <string name="camera_provider_init_failure">加载Camera Provider失败，可能是硬件或者操作系统出了问题，请尝试重启手机。</string>
+
+    <string name="action_clear_auditee">清除被验证设备配对信息</string>
+    <string name="action_clear_auditor">清除验证设备配对信息</string>
+    <string name="action_enable_remote_verify">启用远程验证</string>
+    <string name="action_disable_remote_verify">禁用远程验证</string>
+    <string name="action_submit_sample">提交样本的数据</string>
+    <string name="action_help">帮助</string>
+
+    <string name="enable_remote_verify_success">定期远程验证</string>
+    <string name="disable_remote_verify_success">已禁用远程验证</string>
+    <string name="schedule_submit_sample_success">定期提交采集数据</string>
+    <string name="clear_auditee_pairings_success">已清除被验证设备配对信息</string>
+    <string name="clear_auditee_pairings_failure">彻底清除被验证设备配对信息失败</string>
+    <string name="clear_auditor_pairings_success">已清除验证设备配对信息</string>
+
+    <string name="cancel">取消</string>
+    <string name="clear">清除</string>
+    <string name="disable">禁用</string>
+
+    <string name="remote_verification_notification_success_channel">远程验证成功</string>
+    <string name="remote_verification_notification_success_title">远程验证成功</string>
+    <string name="remote_verification_notification_success_content">提交远程验证数据成功。</string>
+
+    <string name="remote_verification_notification_failure_channel">远程验证失败</string>
+    <string name="remote_verification_notification_failure_title">远程验证失败</string>
+    <string name="remote_verification_notification_failure_content">提交远程验证数据失败。</string>
+
+    <string name="sample_submission_notification_channel">采集样本提交</string>
+    <string name="sample_submission_notification_title">提交的样本数据</string>
+    <string name="sample_submission_notification_content">提交样本数据成功。</string>
+    <string name="sample_submission_notification_title_failure">提交样本数据失败。</string>
+    <string name="sample_submission_notification_content_failure">无法提交样本数据。</string>
+
+    <string name="scanner_label">请扫描另一台设备上显示的二维码。</string>
+    <string name="verifying_attestation">正在验证认证信息…</string>
+    <string name="generating_attestation">正在生成认证信息…</string>
+    <string name="verify_strong"><b>成功完成了强配对验证和标识确认。</b>\n\n</string>
+    <string name="verify_basic"><b>成功完成了基本初始验证和配对。</b>\n\n</string>
+
+    <string name="hardware_enforced"><b>硬件验证信息：</b>\n\n</string>
+    <string name="identity">配对标识（绑定硬件密钥的哈希值）： %s\n</string>
+    <string name="security_level">绑定安全等级：%s\n</string>
+    <string name="security_level_tee">标准 — 可信执行环境 (TEE)</string>
+    <string name="security_level_tee_attest_key">标准 — 具有配对专用验证密钥的可信执行环境 (TEE) </string>
+    <string name="security_level_strongbox">标准 — StrongBox硬件安全模块 (HSM)</string>
+    <string name="security_level_strongbox_attest_key">高 — 具有配对专用验证密钥的StrongBox硬件安全模块(HSM)</string>
+    <string name="device">绑定设备： %s\n</string>
+    <string name="os">绑定操作系统： %s （未经修改的官方发布版）\n</string>
+    <string name="os_version">绑定操作系统版本： %s\n</string>
+    <string name="os_patch_level">绑定操作系统补丁级别： %s\n</string>
+    <string name="vendor_patch_level">绑定的供应商补丁级别： %s\n</string>
+    <string name="boot_patch_level">绑定的引导分区补丁级别： %s\n</string>
+    <string name="verified_boot_key_hash">绑定的已验证引导分区密钥哈希值： %s\n</string>
+    <string name="verified_boot_hash">已验证的引导哈希值： %s\n</string>
+
+    <string name="os_enforced">\n<b>经验证的操作系统提供的信息：</b>\n\n</string>
+    <string name="auditor_app_version">绑定的被验证方软件版本： %d\n</string>
+    <string name="auditor_app_variant">绑定的验证方软件版本： %s\n</string>
+    <string name="auditor_app_variant_release">GrapheneOS签名的发布版</string>
+    <string name="auditor_app_variant_play">Play Store签名的发布版</string>
+    <string name="auditor_app_variant_debug">GrapheneOS签名的测试版</string>
+    <string name="user_profile_secure">用户资料是否安全： %s\n</string>
+    <string name="enrolled_biometrics">已录入的生物识别信息： %s\n</string>
+    <string name="accessibility">无障碍服务是否已启用： %s\n</string>
+    <string name="device_admin">设备管理员是否已启用： %s\n</string>
+    <string name="device_admin_system">是，只有系统应用</string>
+    <string name="device_admin_non_system">是，有非系统应用</string>
+    <string name="adb_enabled">Android调试桥是否已启用: %s\n</string>
+    <string name="add_users_when_locked">可以从锁定屏幕添加用户： %s\n</string>
+    <string name="oem_unlock_allowed">OEM解锁是否已启用： %s\n</string>
+    <string name="system_user">是否是主用户账户： %s\n</string>
+    <string name="auto_reboot_timeout">自动重启期限： %s\n</string>
+    <string name="auto_reboot_off">关闭</string>
+    <string name="auto_reboot_seconds_plural_value">%d 秒</string>
+    <string name="auto_reboot_minutes_plural_value">%d 分钟</string>
+    <string name="auto_reboot_hours_plural_value">%d 小时</string>
+    <string name="auto_reboot_one_second">1 秒</string>
+    <string name="auto_reboot_one_minute">1 分钟</string>
+    <string name="auto_reboot_one_hour">1 小时</string>
+
+    <string name="usbc_port_security_mode">USB-C接口安全模式： %s\n</string>
+    <string name="usbc_port_and_pogo_pins_security_mode">USB-C接口和弹簧触点安全模式： %s\n</string>
+
+    <string name="usbc_port_security_mode_off">关闭</string>
+    <string name="usbc_port_and_pogo_pins_security_mode_off">USB-C接口关闭，弹簧触点仅用于充电</string>
+    <string name="usbc_port_security_mode_charging_only">仅用于充电</string>
+    <string name="usbc_port_security_mode_charging_only_when_locked">锁定时仅用于充电</string>
+    <string name="usbc_port_security_mode_charging_only_when_locked_afu">除了首次解锁前，锁定时仅用于充电</string>
+    <string name="usbc_port_security_mode_on">开启</string>
+
+    <string name="user_count">用户数量： %s\n</string>
+
+    <string name="invalid_value">无效</string>
+
+    <string name="history">\n<b>认证记录：</b>\n\n</string>
+    <string name="first_verified">首次被验证： %s\n</string>
+    <string name="last_verified">最后一次被验证： %s\n</string>
+
+    <string name="no">否</string>
+    <string name="yes">是</string>
+
+    <string name="device_pixel_4_generic">Google Pixel 4 / Pixel 4 XL</string>
+    <string name="device_pixel_4">Google Pixel 4</string>
+    <string name="device_pixel_4_xl">Google Pixel 4 XL</string>
+    <string name="device_pixel_4a">Google Pixel 4a</string>
+    <string name="device_pixel_4a_5g">Google Pixel 4a (5G)</string>
+    <string name="device_pixel_5">Google Pixel 5</string>
+    <string name="device_pixel_5_generic">Google Pixel 4a (5G) / Pixel 5</string>
+    <string name="device_pixel_5a">Google Pixel 5a</string>
+    <string name="device_pixel_6">Google Pixel 6</string>
+    <string name="device_pixel_6_pro">Google Pixel 6 Pro</string>
+    <string name="device_pixel_6a">Google Pixel 6a</string>
+    <string name="device_pixel_7">Google Pixel 7</string>
+    <string name="device_pixel_7_pro">Google Pixel 7 Pro</string>
+    <string name="device_pixel_7a">Google Pixel 7a</string>
+    <string name="device_pixel_tablet">Google Pixel Tablet</string>
+    <string name="device_pixel_fold">Google Pixel Fold</string>
+    <string name="device_pixel_8">Google Pixel 8</string>
+    <string name="device_pixel_8_pro">Google Pixel 8 Pro</string>
+    <string name="device_pixel_8a">Google Pixel 8a</string>
+    <string name="device_pixel_9">Google Pixel 9</string>
+    <string name="device_pixel_9_pro">Google Pixel 9 Pro</string>
+    <string name="device_pixel_9_pro_xl">Google Pixel 9 Pro XL</string>
+    <string name="device_pixel_9_pro_fold">Google Pixel 9 Pro Fold</string>
+    <string name="device_pixel_9a">Google Pixel 9a</string>
+    <string name="device_pixel_10">Google Pixel 10</string>
+    <string name="device_pixel_10_pro">Google Pixel 10 Pro</string>
+    <string name="device_pixel_10_pro_xl">Google Pixel 10 Pro XL</string>
+    <string name="device_pixel_10_pro_fold">Google Pixel 10 Pro Fold</string>
+    <string name="device_pixel_10a">Google Pixel 10a</string>
+
+    <string name="os_stock">原版系统</string>
+    <string name="os_graphene">GrapheneOS</string>
+</resources>
