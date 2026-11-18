@@ -145,6 +145,8 @@ public class AttestationActivity extends AppCompatActivity {
                             stage = Stage.None;
                         }
                     }
+                } else if (stage == Stage.Auditee || stage == Stage.EnableRemoteVerify) {
+                    stage = Stage.None;
                 }
             });
 
@@ -445,6 +447,9 @@ public class AttestationActivity extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startQrScanner();
             } else {
+                if (stage == Stage.Auditee || stage == Stage.EnableRemoteVerify) {
+                    stage = Stage.None;
+                }
                 snackbar.setText(R.string.camera_permission_denied).show();
             }
         } else if (requestCode == PERMISSIONS_REQUEST_POST_NOTIFICATIONS_REMOTE_VERIFY) {
