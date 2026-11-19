@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -71,6 +72,7 @@ public class RemoteVerifyJob extends JobService {
 
     static final ExecutorService executor = Executors.newSingleThreadExecutor();
     private Future<?> task;
+    private AtomicBoolean taskStopped;
 
     static boolean isEnabled(final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).contains(KEY_USER_ID);
@@ -144,6 +146,8 @@ public class RemoteVerifyJob extends JobService {
 
     @Override
     public boolean onStartJob(final JobParameters params) {
+        final AtomicBoolean stopped = new AtomicBoolean();
+        taskStopped = stopped;
         task = executor.submit(() -> {
             final Context context = RemoteVerifyJob.this;
             boolean failure = false;
@@ -215,6 +219,11 @@ public class RemoteVerifyJob extends JobService {
                 }
             }
 
+            // onStopJob reschedules the job
+            if (failure && stopped.get()) {
+                return;
+            }
+
             final NotificationManager manager = context.getSystemService(NotificationManager.class);
 
             final List<NotificationChannel> channels = new ArrayList<>();
@@ -270,6 +279,7 @@ public class RemoteVerifyJob extends JobService {
 
     @Override
     public boolean onStopJob(final JobParameters params) {
+        taskStopped.set(true);
         task.cancel(true);
         return true;
     }
