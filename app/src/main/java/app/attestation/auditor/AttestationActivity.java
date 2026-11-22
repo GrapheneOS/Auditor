@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 import androidx.activity.EdgeToEdge;
@@ -87,6 +88,7 @@ public class AttestationActivity extends AppCompatActivity {
     }
 
     private Stage stage = Stage.None;
+    private boolean resumed;
     private boolean auditeePairing;
     private byte[] auditeeSerializedAttestation;
     private byte[] auditorChallenge;
@@ -114,6 +116,7 @@ public class AttestationActivity extends AppCompatActivity {
                         } else if (stage == Stage.Auditor) {
                             stage = Stage.Result;
                             binding.content.imageview.setVisibility(View.GONE);
+                            updateQrCodeBrightness();
                             handleAttestation(contentsBytes);
                         } else if (stage == Stage.EnableRemoteVerify) {
                             stage = Stage.None;
@@ -268,6 +271,7 @@ public class AttestationActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        resumed = true;
         final boolean isRemoteVerifyEnabled = RemoteVerifyJob.isEnabled(this);
         int visibility = View.VISIBLE;
         if (isRemoteVerifyEnabled) {
@@ -282,6 +286,39 @@ public class AttestationActivity extends AppCompatActivity {
             stage = Stage.EnableRemoteVerify;
             startQrScanner();
         });
+        updateQrCodeBrightness();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        resumed = false;
+        setQrCodeBrightness(false);
+    }
+
+    /**
+     * The QR code is the only thing on screen that another device's camera has to read, and it is
+     * noticeably hard to scan at a low brightness, so the screen is brightened for as long as the
+     * code is being shown and restored to the user's own setting afterwards.
+     *
+     * The resumed check matters because the attestation is generated on a background thread and
+     * shown from a posted UI callback, which can land after onPause: without it, a window that is
+     * no longer resumed could be brightened again after onPause restored the user's brightness.
+     */
+    private void updateQrCodeBrightness() {
+        setQrCodeBrightness(resumed && (stage == Stage.AuditeeResults || stage == Stage.Auditor));
+    }
+
+    private void setQrCodeBrightness(final boolean bright) {
+        final WindowManager.LayoutParams attributes = getWindow().getAttributes();
+        final float brightness = bright
+                ? WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL
+                : WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
+        if (attributes.screenBrightness == brightness) {
+            return;
+        }
+        attributes.screenBrightness = brightness;
+        getWindow().setAttributes(attributes);
     }
 
     @Override
@@ -330,6 +367,7 @@ public class AttestationActivity extends AppCompatActivity {
         binding.content.textview.setText(R.string.qr_code_scan_hint_auditor);
         chooseBestLayout(auditorChallenge);
         binding.content.imageview.setOnClickListener(view -> startQrScanner());
+        updateQrCodeBrightness();
     }
 
     private void handleAttestation(final byte[] serialized) {
@@ -392,6 +430,7 @@ public class AttestationActivity extends AppCompatActivity {
             binding.content.textview.setText(R.string.qr_code_scan_hint_auditee);
         }
         chooseBestLayout(serialized);
+        updateQrCodeBrightness();
     }
 
     private Bitmap createQrCode(final byte[] contents) {
